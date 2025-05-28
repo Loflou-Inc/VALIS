@@ -1,0 +1,3 @@
+@echo off
+echo Starting Claude Memory Server (Direct Console Mode)...
+python F:\MEMORY_DEV\memory_server.py

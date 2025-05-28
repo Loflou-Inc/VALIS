@@ -12,17 +12,39 @@ import os
 from datetime import datetime
 
 def load_persona(persona_id):
-    """Load persona definition"""
+    """Load persona definition with temporal stabilization"""
+    import logging
+    logger = logging.getLogger('VALIS.MCP')
+    
     try:
-        personas_path = os.path.join(os.path.dirname(__file__), 'src', 'data', 'personas')
+        # Fix dimensional path mismatch - personas are in ../personas/ relative to this file
+        personas_path = os.path.join(os.path.dirname(__file__), '..', 'personas')
+        
+        # Validate personas directory exists
+        if not os.path.exists(personas_path):
+            logger.error(f"TEMPORAL ANOMALY: Personas directory not found at {personas_path}")
+            return None
+            
         persona_file = os.path.join(personas_path, f"{persona_id}.json")
+        logger.info(f"Loading persona from: {persona_file}")
         
         if not os.path.exists(persona_file):
+            logger.warning(f"Persona file not found: {persona_file}")
             return None
             
         with open(persona_file, 'r') as f:
-            return json.load(f)
+            persona_data = json.load(f)
+            logger.info(f"Successfully loaded persona: {persona_id}")
+            return persona_data
+            
+    except FileNotFoundError as e:
+        logger.error(f"Persona file not found: {e}")
+        return None
+    except json.JSONDecodeError as e:
+        logger.error(f"Invalid JSON in persona file {persona_id}: {e}")
+        return None
     except Exception as e:
+        logger.error(f"Unexpected error loading persona {persona_id}: {e}")
         return None
 
 def build_persona_prompt(persona, message, context=None):

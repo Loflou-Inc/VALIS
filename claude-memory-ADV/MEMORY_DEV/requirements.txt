@@ -1,0 +1,4 @@
+# Requirements for Claude Memory System
+sentence-transformers==2.2.2
+chromadb==0.4.15
+requests==2.31.0

@@ -1,0 +1,3 @@
+@echo off
+echo Starting Claude Memory Server...
+python F:\MEMORY_DEV\memory_server.py
