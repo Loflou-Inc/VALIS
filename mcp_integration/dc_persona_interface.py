@@ -17,33 +17,44 @@ def load_persona(persona_id):
     logger = logging.getLogger('VALIS.MCP')
     
     try:
-        # Fix dimensional path mismatch - personas are in ../personas/ relative to this file
-        personas_path = os.path.join(os.path.dirname(__file__), '..', 'personas')
+        # Get the VALIS root directory (go up one level from mcp_integration)
+        valis_root = os.path.dirname(os.path.dirname(__file__))
+        personas_path = os.path.join(valis_root, 'personas')
         
-        # Validate personas directory exists
+        # Add debugging output to verify correct loading
+        print(f"DEBUG: Looking for personas in: {personas_path}")
+        
+        # Add proper path validation
         if not os.path.exists(personas_path):
+            print(f"ERROR: Personas directory not found at {personas_path}")
             logger.error(f"TEMPORAL ANOMALY: Personas directory not found at {personas_path}")
             return None
             
         persona_file = os.path.join(personas_path, f"{persona_id}.json")
+        print(f"DEBUG: Loading persona file: {persona_file}")
         logger.info(f"Loading persona from: {persona_file}")
         
         if not os.path.exists(persona_file):
+            print(f"ERROR: Persona file not found: {persona_file}")
             logger.warning(f"Persona file not found: {persona_file}")
             return None
             
         with open(persona_file, 'r') as f:
             persona_data = json.load(f)
+            print(f"DEBUG: Successfully loaded persona: {persona_id}")
             logger.info(f"Successfully loaded persona: {persona_id}")
             return persona_data
             
     except FileNotFoundError as e:
+        print(f"ERROR: Persona file not found: {e}")
         logger.error(f"Persona file not found: {e}")
         return None
     except json.JSONDecodeError as e:
+        print(f"ERROR: Invalid JSON in persona file {persona_id}: {e}")
         logger.error(f"Invalid JSON in persona file {persona_id}: {e}")
         return None
     except Exception as e:
+        print(f"ERROR: Unexpected error loading persona {persona_id}: {e}")
         logger.error(f"Unexpected error loading persona {persona_id}: {e}")
         return None
 

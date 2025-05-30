@@ -144,7 +144,13 @@ class ProviderManager:
         session_id: Optional[str] = None,
         context: Optional[Dict] = None
     ) -> Dict[str, Any]:
-        """Get a response using the provider cascade with temporal stabilization"""
+        """Get a response using the provider cascade with enhanced error handling"""
+        
+        # Enhanced logging at the start
+        self.logger.info(f"Starting provider cascade for persona: {persona.get('name', 'Unknown')}")
+        self.logger.info(f"Available providers: {[p.__class__.__name__ for p in self.providers]}")
+        
+        errors_encountered = []
         
         # Generate unique request ID for tracking
         request_id = str(uuid.uuid4())[:8]
@@ -161,7 +167,56 @@ class ProviderManager:
             }
             
             try:
-                return await self._execute_cascade(request_id, persona, message, session_id, context)
+                # Better error tracking in the provider loop
+                for i, provider in enumerate(self.providers):
+                    try:
+                        self.logger.info(f"Attempting provider {i+1}/{len(self.providers)}: {provider.__class__.__name__}")
+                        
+                        # Check if provider is available
+                        if not await provider.is_available():
+                            error_msg = f"Provider {provider.__class__.__name__} not available"
+                            self.logger.warning(error_msg)
+                            errors_encountered.append(error_msg)
+                            continue
+                        
+                        # Try to get response with timeout
+                        result = await asyncio.wait_for(
+                            provider.get_response(persona=persona, message=message, session_id=session_id, context=context),
+                            timeout=30.0  # 30 second timeout per provider
+                        )
+                        
+                        if result.get("success"):
+                            result["provider_used"] = provider.__class__.__name__
+                            result["providers_tried"] = i + 1
+                            result["request_id"] = request_id
+                            result["response_time"] = time.time() - request_start
+                            self.logger.info(f"SUCCESS with provider: {provider.__class__.__name__}")
+                            return result
+                        else:
+                            error_msg = f"Provider {provider.__class__.__name__} failed: {result.get('error')}"
+                            self.logger.warning(error_msg)
+                            errors_encountered.append(error_msg)
+                            
+                    except asyncio.TimeoutError:
+                        error_msg = f"Provider {provider.__class__.__name__} timed out after 30 seconds"
+                        self.logger.error(error_msg)
+                        errors_encountered.append(error_msg)
+                    except Exception as e:
+                        error_msg = f"Provider {provider.__class__.__name__} error: {str(e)}"
+                        self.logger.error(error_msg)
+                        errors_encountered.append(error_msg)
+                
+                # Enhanced failure response
+                return {
+                    "success": False,
+                    "error": "All providers failed to generate a response",
+                    "provider_used": "none",
+                    "errors_encountered": errors_encountered,
+                    "providers_attempted": len(self.providers),
+                    "request_id": request_id,
+                    "response_time": time.time() - request_start
+                }
+                
             finally:
                 # Clean up request tracking
                 if request_id in self.active_requests:

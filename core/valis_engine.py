@@ -1,9 +1,9 @@
 """
 VALIS - Vast Active Living Intelligence System
-Universal AI Persona Engine with Temporal Stabilization
+Universal AI Persona Engine
 
 The core engine that provides AI personas to any application.
-Supports multiple AI backends with graceful fallbacks and async coordination.
+Supports multiple AI backends with graceful fallbacks.
 
 Based on Philip K. Dick's concept of VALIS - a mystical AI intelligence.
 """
@@ -11,11 +11,10 @@ Based on Philip K. Dick's concept of VALIS - a mystical AI intelligence.
 import json
 import logging
 import asyncio
-import uuid
+import sys
 from typing import Dict, List, Optional, Any
 from pathlib import Path
-from datetime import datetime, timedelta
-from collections import defaultdict
+from datetime import datetime
 
 class VALISEngine:
     """
@@ -26,33 +25,70 @@ class VALISEngine:
     """
     
     def __init__(self, config_path: Optional[str] = None):
-        """Initialize VALIS with temporal stabilization"""
+        """Initialize VALIS with configuration"""
         self.config = self._load_config(config_path)
         self.personas = {}
         self.providers = []
         self.logger = self._setup_logging()
         
-        # Temporal coordination components
-        self.session_lock = asyncio.Lock()
-        self.active_sessions = {}
-        self.session_cleanup_task = None
-        self.session_timeout = timedelta(minutes=30)
+        # Add concurrency control (Doc Brown's specs)
+        self._request_lock = asyncio.Lock()
+        self._active_requests = {}  # Track active requests by session_id
+        self._request_counter = 0
         
-        # Request coordination
-        self.request_queue = asyncio.Queue(maxsize=100)  # Backpressure limit
-        self.request_semaphore = asyncio.Semaphore(20)   # Concurrent request limit
-        self.persona_locks = defaultdict(asyncio.Lock)   # Per-persona locks
+        # Add basic memory integration (Task 2.1)
+        self.memory_enabled = self.config.get('enable_memory', False)
+        self.memory_client = None
+
+        if self.memory_enabled:
+            try:
+                sys.path.append(str(Path(__file__).parent.parent / "claude-memory-ADV" / "MEMORY_DEV"))
+                from memory_manager import add_memory, query_memories
+                self.memory_client = {"add": add_memory, "query": query_memories}
+                self.logger.info("Memory system connected successfully")
+            except Exception as e:
+                self.logger.warning(f"Memory system connection failed: {e}")
+                self.memory_enabled = False
         
-        # Performance tracking
-        self.request_metrics = defaultdict(list)
-        self.engine_start_time = datetime.now()
+        # Add session tracking (Task 2.2)
+        self.sessions = {}  # Track active sessions
+        self.session_timeout = 30 * 60  # 30 minutes in seconds
+        
+        # NEURAL MATRIX HEALTH MONITORING (Task 2.4)
+        try:
+            from core.neural_health_monitor import NeuralMatrixHealthMonitor
+            memory_dir = str(Path(__file__).parent.parent / "claude-memory-ADV" / "MEMORY_DEV")
+            self.neural_health_monitor = NeuralMatrixHealthMonitor(memory_dir)
+            self.logger.info("Neural Matrix Health Monitor initialized")
+        except Exception as e:
+            self.logger.warning(f"Neural Health Monitor initialization failed: {e}")
+            self.neural_health_monitor = None
         
         # Load personas and providers
         self._initialize_personas()
         self._initialize_providers()
         
-        # Start session cleanup task
-        self._start_session_cleanup()
+    def _get_session_context(self, session_id: str) -> Dict[str, Any]:
+        """Get or create session context"""
+        import time
+        current_time = time.time()
+        
+        if session_id in self.sessions:
+            # Update last activity time
+            self.sessions[session_id]["last_activity"] = current_time
+            return self.sessions[session_id]
+        else:
+            # Create new session
+            session_context = {
+                "created": current_time,
+                "last_activity": current_time,
+                "request_count": 0,
+                "last_persona": None,
+                "conversation_summary": []
+            }
+            self.sessions[session_id] = session_context
+            self.logger.info(f"Created new session: {session_id}")
+            return session_context
         
     def _load_config(self, config_path: Optional[str]) -> Dict:
         """Load VALIS configuration"""
@@ -69,6 +105,7 @@ class VALISEngine:
                 user_config = json.load(f)
                 default_config.update(user_config)
         return default_config    
+        
     def _setup_logging(self) -> logging.Logger:
         """Setup logging for VALIS"""
         logger = logging.getLogger('VALIS')
@@ -106,6 +143,7 @@ class VALISEngine:
         from core.provider_manager import ProviderManager
         self.provider_manager = ProviderManager(self.config['providers'])
         self.logger.info(f"Initialized {len(self.config['providers'])} providers")    
+        
     async def get_persona_response(
         self, 
         persona_id: str, 
@@ -113,89 +151,129 @@ class VALISEngine:
         session_id: Optional[str] = None,
         context: Optional[Dict] = None
     ) -> Dict[str, Any]:
-        """Get a response from a specific persona with temporal coordination"""
-        request_start = datetime.now()
+        """Get a response from a specific persona with enhanced concurrency control"""
         
-        # Validate persona exists
+        # Generate unique request ID
+        async with self._request_lock:
+            self._request_counter += 1
+            request_id = f"req_{self._request_counter}_{persona_id}"
+        
+        self.logger.info(f"Processing request {request_id} for persona {persona_id}")
+        
+        # Add session context tracking (Task 2.2)
+        session_context = None
+        if session_id:
+            session_context = self._get_session_context(session_id)
+            session_context["request_count"] += 1
+            session_context["last_persona"] = persona_id
+        
         if persona_id not in self.personas:
             return {
                 "success": False,
                 "error": f"Unknown persona: {persona_id}",
-                "available_personas": list(self.personas.keys())
+                "available_personas": list(self.personas.keys()),
+                "request_id": request_id
             }
         
-        # Check for backpressure
-        if await self._check_request_queue_pressure():
+        persona = self.personas[persona_id]
+        
+        # Check for concurrent requests from same session
+        if session_id:
+            async with self._request_lock:
+                if session_id in self._active_requests:
+                    self.logger.warning(f"Concurrent request detected for session {session_id}")
+                    await asyncio.sleep(0.1)  # Brief delay to prevent cascade conflicts
+                self._active_requests[session_id] = request_id
+        
+        try:
+            # NEURAL MATRIX CONTEXT DEGRADATION PREVENTION (Task 2.3)
+            # Enrich context with neural memories for seamless provider cascade
+            enhanced_context = context.copy() if context else {}
+            
+            if self.memory_enabled and self.memory_client:
+                try:
+                    # Retrieve relevant conversation history for context continuity
+                    memory_query = f"{persona_id} {message[:100]}"
+                    relevant_memories = self.memory_client["query"](memory_query, top_k=8)
+                    
+                    if relevant_memories:
+                        # Compress neural context to prevent token limit issues
+                        compressed_context = self._compress_neural_context(relevant_memories)
+                        
+                        # NEURAL HEALTH MONITORING (Task 2.4)
+                        # Track context retrieval and compression metrics
+                        if self.neural_health_monitor:
+                            compression_ratio = compressed_context["compressed_count"] / compressed_context["memory_count"] if compressed_context["memory_count"] > 0 else 1.0
+                            self.neural_health_monitor.monitor_context_quality(
+                                handoff_success=True,
+                                compression_ratio=compression_ratio
+                            )
+                            self.neural_health_monitor.metrics['context_retrievals'] += 1
+                        
+                        # Create neural context for provider handoff
+                        neural_context = {
+                            "conversation_summary": compressed_context["summary"],
+                            "recent_interactions": compressed_context["recent_memories"][:3],
+                            "context_source": "neural_matrix",
+                            "persona_continuity": f"Continuing conversation with {persona['name']} - {compressed_context['memory_count']} previous interactions",
+                            "context_stats": {
+                                "total_memories": compressed_context["memory_count"],
+                                "included_memories": compressed_context["compressed_count"],
+                                "context_compressed": compressed_context["context_compressed"]
+                            }
+                        }
+                        enhanced_context["neural_context"] = neural_context
+                        self.logger.info(f"Neural context added: {compressed_context['compressed_count']}/{compressed_context['memory_count']} memories for provider cascade")
+                    
+                    # Add session-specific context if available
+                    if session_context:
+                        enhanced_context["session_info"] = {
+                            "request_count": session_context["request_count"],
+                            "last_persona": session_context["last_persona"],
+                            "session_continuity": f"This is request #{session_context['request_count']} in this session"
+                        }
+                        
+                except Exception as e:
+                    self.logger.warning(f"Neural context enhancement failed: {e}")
+                    # Continue with original context if neural enhancement fails
+                    enhanced_context = context.copy() if context else {}
+            
+            # Get response through provider cascade with enhanced neural context
+            result = await self.provider_manager.get_response(
+                persona=persona,
+                message=message,
+                session_id=session_id,
+                context=enhanced_context
+            )
+            
+            result["request_id"] = request_id
+            self.logger.info(f"Request {request_id} completed via {result.get('provider_used', 'unknown')}")
+            
+            # Add simple memory storage after successful persona responses (Task 2.1)
+            if self.memory_enabled and self.memory_client and result.get('success'):
+                try:
+                    memory_text = f"User asked {persona_id}: {message[:50]}..."
+                    self.memory_client["add"](memory_text)
+                    self.logger.info("Interaction stored in memory")
+                except Exception as e:
+                    self.logger.warning(f"Memory storage failed: {e}")
+            
+            return result
+            
+        except Exception as e:
+            self.logger.error(f"Request {request_id} failed: {e}")
             return {
                 "success": False,
-                "error": "System overloaded - too many concurrent requests",
-                "retry_after": 30
+                "error": str(e),
+                "persona_id": persona_id,
+                "request_id": request_id
             }
-        
-        # Use semaphore to limit concurrent requests
-        async with self.request_semaphore:
-            # Manage session with temporal coordination
-            session_id = await self._manage_session(session_id)
-            
-            # Use per-persona lock to prevent conflicts
-            async with self.persona_locks[persona_id]:
-                try:
-                    persona = self.personas[persona_id]
+        finally:
+            # Clean up active request tracking
+            if session_id:
+                async with self._request_lock:
+                    self._active_requests.pop(session_id, None)    
                     
-                    # Add request tracking context
-                    enhanced_context = context or {}
-                    enhanced_context.update({
-                        'session_id': session_id,
-                        'request_timestamp': request_start.isoformat(),
-                        'engine_uptime': str(datetime.now() - self.engine_start_time)
-                    })
-                    
-                    # Get response through provider cascade
-                    result = await self.provider_manager.get_response(
-                        persona=persona,
-                        message=message,
-                        session_id=session_id,
-                        context=enhanced_context
-                    )
-                    
-                    # Record performance metrics
-                    response_time = (datetime.now() - request_start).total_seconds()
-                    self.request_metrics[persona_id].append({
-                        'timestamp': request_start,
-                        'response_time': response_time,
-                        'success': result.get('success', False),
-                        'provider_used': result.get('provider_used', 'unknown')
-                    })
-                    
-                    # Add temporal metadata to response
-                    result.update({
-                        'session_id': session_id,
-                        'response_time': response_time,
-                        'engine_version': 'VALIS-Temporal-Stabilized'
-                    })
-                    
-                    self.logger.info(f"Response generated for {persona_id} via {result.get('provider_used', 'unknown')} in {response_time:.3f}s")
-                    return result
-                    
-                except Exception as e:
-                    response_time = (datetime.now() - request_start).total_seconds()
-                    
-                    # Record failed request metrics
-                    self.request_metrics[persona_id].append({
-                        'timestamp': request_start,
-                        'response_time': response_time,
-                        'success': False,
-                        'error': str(e)
-                    })
-                    
-                    self.logger.error(f"Error getting response for {persona_id}: {e}")
-                    return {
-                        "success": False, 
-                        "error": str(e), 
-                        "persona_id": persona_id,
-                        "session_id": session_id,
-                        "response_time": response_time
-                    }    
     def get_available_personas(self) -> List[Dict[str, Any]]:
         """Get list of all available personas with their basic info"""
         return [
@@ -213,137 +291,140 @@ class VALISEngine:
         return self.personas.get(persona_id)
     
     def health_check(self) -> Dict[str, Any]:
-        """Check the health of the VALIS system"""
-        return {
+        """Check the health of the VALIS system with comprehensive neural matrix monitoring"""
+        base_health = {
             "status": "operational",
             "personas_loaded": len(self.personas),
             "providers_available": len(self.config['providers']),
-            "personas": list(self.personas.keys())
+            "personas": list(self.personas.keys()),
+            "memory_enabled": self.memory_enabled,
+            "memory_connected": bool(self.memory_client),
+            "active_sessions": len(self.sessions),
+            "total_session_requests": sum(s.get("request_count", 0) for s in self.sessions.values())
         }
-    
-    def _start_session_cleanup(self):
-        """Start the session cleanup background task"""
-        async def cleanup_sessions():
-            while True:
-                try:
-                    await asyncio.sleep(300)  # Check every 5 minutes
-                    await self._cleanup_expired_sessions()
-                except Exception as e:
-                    self.logger.error(f"Session cleanup error: {e}")
         
-        # Start the cleanup task (will run in background)
-        try:
-            loop = asyncio.get_event_loop()
-            self.session_cleanup_task = loop.create_task(cleanup_sessions())
-        except RuntimeError:
-            # No event loop running yet, cleanup will start when needed
-            self.session_cleanup_task = None
-    
-    async def _cleanup_expired_sessions(self):
-        """Clean up expired sessions to prevent memory leaks"""
-        async with self.session_lock:
-            now = datetime.now()
-            expired_sessions = []
-            
-            for session_id, session_data in self.active_sessions.items():
-                if now - session_data['last_activity'] > self.session_timeout:
-                    expired_sessions.append(session_id)
-            
-            for session_id in expired_sessions:
-                del self.active_sessions[session_id]
-                self.logger.debug(f"Cleaned up expired session: {session_id}")
-            
-            if expired_sessions:
-                self.logger.info(f"Cleaned up {len(expired_sessions)} expired sessions")
-    
-    async def _manage_session(self, session_id: Optional[str]) -> str:
-        """Manage session state with temporal coordination"""
-        if not session_id:
-            session_id = str(uuid.uuid4())
-        
-        async with self.session_lock:
-            now = datetime.now()
-            
-            if session_id not in self.active_sessions:
-                self.active_sessions[session_id] = {
-                    'created': now,
-                    'last_activity': now,
-                    'request_count': 0
+        # NEURAL MATRIX HEALTH MONITORING (Task 2.4)
+        if self.neural_health_monitor:
+            try:
+                # Update session count in health monitor
+                self.neural_health_monitor.metrics['active_sessions'] = len(self.sessions)
+                
+                # Get comprehensive neural matrix health report
+                neural_health = self.neural_health_monitor.get_comprehensive_health_report(self.sessions)
+                base_health["neural_matrix_health"] = neural_health
+                
+                # Update overall status based on neural matrix health
+                neural_status = neural_health.get("overall_status", "green")
+                if neural_status == "red":
+                    base_health["status"] = "degraded"
+                elif neural_status == "yellow" and base_health["status"] == "operational":
+                    base_health["status"] = "warning"
+                    
+            except Exception as e:
+                self.logger.warning(f"Neural health monitoring failed: {e}")
+                base_health["neural_matrix_health"] = {
+                    "error": str(e),
+                    "overall_status": "unknown"
                 }
-                self.logger.debug(f"Created new session: {session_id}")
-            else:
-                self.active_sessions[session_id]['last_activity'] = now
-            
-            self.active_sessions[session_id]['request_count'] += 1
-            
-        return session_id
-    
-    async def _check_request_queue_pressure(self) -> bool:
-        """Check if request queue has backpressure"""
-        queue_size = self.request_queue.qsize() if hasattr(self.request_queue, '_qsize') else 0
         
-        if queue_size > 80:  # 80% of maxsize
-            self.logger.warning(f"High request queue pressure: {queue_size}/100")
-            return True
-        return False
+        return base_health
     
-    def get_engine_status(self) -> Dict[str, Any]:
-        """Get comprehensive engine status for monitoring"""
-        now = datetime.now()
-        uptime = now - self.engine_start_time
+    def _compress_neural_context(self, memories: List[str], max_tokens: int = 1000) -> Dict[str, Any]:
+        """Compress neural context to prevent token limit exceeded errors"""
+        if not memories:
+            return {"summary": "No previous conversation history", "memory_count": 0}
+        
+        # Simple compression: limit number of memories and truncate if needed
+        compressed_memories = []
+        total_chars = 0
+        max_chars = max_tokens * 3  # Rough estimate: 1 token ≈ 3 characters
+        
+        for memory in memories[:10]:  # Limit to 10 most recent/relevant memories
+            if total_chars + len(memory) > max_chars:
+                # Truncate this memory to fit
+                remaining_chars = max_chars - total_chars
+                if remaining_chars > 50:  # Only include if we have at least 50 chars
+                    compressed_memories.append(memory[:remaining_chars] + "...")
+                break
+            compressed_memories.append(memory)
+            total_chars += len(memory)
+        
+        # Create compressed context
+        if compressed_memories:
+            summary = f"Previous conversation context: {'; '.join(compressed_memories[:3])}"
+            if len(compressed_memories) > 3:
+                summary += f" (and {len(compressed_memories) - 3} more interactions)"
+        else:
+            summary = "Limited conversation history available"
         
         return {
-            "status": "operational",
-            "uptime": str(uptime),
-            "personas_loaded": len(self.personas),
-            "active_sessions": len(self.active_sessions),
-            "total_requests": sum(len(metrics) for metrics in self.request_metrics.values()),
-            "recent_requests": sum(
-                len([m for m in metrics if now - m['timestamp'] < timedelta(minutes=5)]) 
-                for metrics in self.request_metrics.values()
-            ),
-            "provider_cascade": self.provider_manager.get_cascade_status() if hasattr(self, 'provider_manager') else {},
-            "performance_summary": self._get_performance_summary()
+            "summary": summary,
+            "recent_memories": compressed_memories,
+            "memory_count": len(memories),
+            "compressed_count": len(compressed_memories),
+            "context_compressed": len(compressed_memories) < len(memories)
         }
     
-    def _get_performance_summary(self) -> Dict[str, Any]:
-        """Get performance summary for all personas"""
-        summary = {}
-        now = datetime.now()
+    def cleanup_expired_sessions(self):
+        """Remove expired sessions with neural matrix health monitoring"""
+        import time
+        current_time = time.time()
+        expired_sessions = []
         
-        for persona_id, metrics in self.request_metrics.items():
-            recent_metrics = [m for m in metrics if now - m['timestamp'] < timedelta(hours=1)]
-            
-            if recent_metrics:
-                response_times = [m['response_time'] for m in recent_metrics if 'response_time' in m]
-                success_rate = len([m for m in recent_metrics if m.get('success', False)]) / len(recent_metrics)
-                
-                summary[persona_id] = {
-                    "requests_last_hour": len(recent_metrics),
-                    "success_rate": success_rate,
-                    "avg_response_time": sum(response_times) / len(response_times) if response_times else 0,
-                    "max_response_time": max(response_times) if response_times else 0
-                }
+        for session_id, session_data in self.sessions.items():
+            if current_time - session_data["last_activity"] > self.session_timeout:
+                expired_sessions.append(session_id)
         
-        return summary
-    
-    async def shutdown(self):
-        """Graceful shutdown of VALIS engine"""
-        self.logger.info("Shutting down VALIS engine...")
+        for session_id in expired_sessions:
+            del self.sessions[session_id]
+            self.logger.info(f"Cleaned up expired session: {session_id}")
         
-        # Cancel session cleanup task
-        if self.session_cleanup_task:
-            self.session_cleanup_task.cancel()
+        # NEURAL MATRIX CLEANUP (Task 2.4)
+        if self.neural_health_monitor:
             try:
-                await self.session_cleanup_task
-            except asyncio.CancelledError:
-                pass
+                cleanup_results = self.neural_health_monitor.run_cleanup_protocols(self.sessions)
+                self.logger.info(f"Neural matrix cleanup completed: {cleanup_results}")
+            except Exception as e:
+                self.logger.warning(f"Neural matrix cleanup failed: {e}")
         
-        # Clear active sessions
-        async with self.session_lock:
-            self.active_sessions.clear()
+        return len(expired_sessions)
+    
+    def run_neural_health_check(self) -> Dict[str, Any]:
+        """Run comprehensive neural matrix health check and optimization"""
+        if not self.neural_health_monitor:
+            return {"error": "Neural health monitor not available"}
         
-        self.logger.info("VALIS engine shutdown complete")
+        try:
+            # Run integrity check
+            integrity_results = self.neural_health_monitor.check_neural_integrity()
+            
+            # Run performance optimization
+            optimization_results = self.neural_health_monitor.optimize_performance()
+            
+            # Run cleanup if needed
+            cleanup_results = self.neural_health_monitor.run_cleanup_protocols(self.sessions)
+            
+            return {
+                "integrity": integrity_results,
+                "optimization": optimization_results,
+                "cleanup": cleanup_results,
+                "timestamp": datetime.now().isoformat()
+            }
+            
+        except Exception as e:
+            self.logger.error(f"Neural health check failed: {e}")
+            return {"error": str(e)}
+    
+    def get_neural_health_dashboard(self) -> Dict[str, Any]:
+        """Get real-time neural matrix health dashboard"""
+        if not self.neural_health_monitor:
+            return {"error": "Neural health monitor not available"}
+        
+        try:
+            return self.neural_health_monitor.get_comprehensive_health_report(self.sessions)
+        except Exception as e:
+            self.logger.error(f"Neural health dashboard failed: {e}")
+            return {"error": str(e)}
 
 # Convenience function for simple usage
 async def ask_persona(persona_id: str, message: str, session_id: Optional[str] = None) -> str:

@@ -100,7 +100,7 @@ class HardcodedFallbackProvider:
         }
     
     async def get_response(self, persona: Dict[str, Any], message: str, session_id: Optional[str] = None, context: Optional[Dict] = None) -> Dict[str, Any]:
-        """Get a hardcoded response based on persona and message content"""
+        """Get a hardcoded response with neural context awareness"""
         
         try:
             # Determine persona type
@@ -112,18 +112,43 @@ class HardcodedFallbackProvider:
             elif "billy" in persona_name or "corgan" in persona_name:
                 persona_id = "billy_corgan"
             
+            # NEURAL CONTEXT AWARENESS (Task 2.3)
+            # Check for neural context from provider cascade
+            neural_context = None
+            context_awareness = ""
+            
+            if context and "neural_context" in context:
+                neural_context = context["neural_context"]
+                
+                # Create context awareness message
+                if neural_context.get("conversation_summary"):
+                    context_awareness = f" I remember our previous conversations: {neural_context['conversation_summary'][:200]}..."
+                
+                # Add session continuity if available
+                if context.get("session_info"):
+                    session_info = context["session_info"]
+                    context_awareness += f" This is our {session_info['request_count']} interaction in this session."
+            
             # Categorize the message
             category = self._categorize_message(message)
             
-            # Get appropriate response
-            response = self._get_response_for_category(persona_id, category)
+            # Get appropriate response with neural context awareness
+            base_response = self._get_response_for_category(persona_id, category)
+            
+            # Enhance response with neural context if available
+            if context_awareness:
+                enhanced_response = base_response.replace(".", f".{context_awareness}", 1)
+            else:
+                enhanced_response = base_response
             
             return {
                 "success": True,
-                "response": response,
+                "response": enhanced_response,
                 "provider": "Hardcoded Fallback",
                 "cost": "FREE",
-                "category_detected": category
+                "category_detected": category,
+                "neural_context_used": bool(neural_context),
+                "context_handoff_successful": bool(context_awareness)
             }
             
         except Exception as e:

@@ -20,10 +20,10 @@ async def test_basic_functionality():
     
     engine = VALISEngine()
     
-    # Test engine status
-    status = engine.get_engine_status()
+    # Test engine health check
+    status = engine.health_check()
     print(f"SUCCESS: Loaded {status['personas_loaded']} personas")
-    print(f"SUCCESS: Engine uptime: {status['uptime']}")
+    print(f"SUCCESS: Engine status: {status['status']}")
     
     # Test persona listing
     personas = engine.get_available_personas()
@@ -130,14 +130,13 @@ async def main():
         
         # Final status
         print("\n>> Final engine status:")
-        final_status = engine.get_engine_status()
+        final_status = engine.health_check()
         for key, value in final_status.items():
             if key != 'provider_cascade':  # Skip complex nested data
                 print(f"   {key}: {value}")
         
-        # Graceful shutdown
-        await engine.shutdown()
-        print("\nSUCCESS: Engine shutdown successfully")
+        # Test completed successfully
+        print("\nSUCCESS: Test completed successfully")
         
     except Exception as e:
         print(f"\nERROR: Test failed with error: {e}")
