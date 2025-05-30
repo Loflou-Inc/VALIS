@@ -1,0 +1,33 @@
+# VALIS - Universal AI Persona System
+# Core dependencies for full functionality
+
+# HTTP client for API providers
+aiohttp>=3.8.0
+
+# Async support (usually built-in but ensure compatibility)
+asyncio-throttle>=1.0.0
+
+# JSON schema validation
+jsonschema>=4.0.0
+
+# Text processing and embeddings
+sentence-transformers>=2.2.0
+
+# Optional: Vector database support
+# chromadb>=0.4.0  # Commented out - optional dependency
+
+# Optional: Advanced NLP features
+# transformers>=4.20.0  # Commented out - optional dependency
+
+# Development and testing dependencies
+pytest>=7.0.0
+pytest-asyncio>=0.21.0
+
+# File handling
+pathlib  # Built-in, but explicit for clarity
+
+# Math and data processing
+numpy>=1.21.0
+
+# Configuration and data formats
+pydantic>=1.10.0

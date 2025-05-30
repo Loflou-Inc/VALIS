@@ -10,32 +10,45 @@ import asyncio
 import os
 from typing import Dict, Optional, Any
 from pathlib import Path
+from providers.base_provider import BaseProvider, register_provider
 
-class DesktopCommanderProvider:
+@register_provider("desktop_commander_mcp")
+class DesktopCommanderProvider(BaseProvider):
     """Provider that connects to Desktop Commander MCP for persona responses"""
     
     def __init__(self):
+        super().__init__()
         self.name = "Desktop Commander MCP"
         self.cost = "FREE"
         self.mcp_interface_path = Path(__file__).parent.parent / "mcp_integration" / "dc_persona_interface.py"
         
     async def is_available(self) -> bool:
-        """Check if Desktop Commander MCP is available"""
+        """Check if Desktop Commander MCP is available (DEV-601: Now fully async!)"""
         try:
             # Check if the MCP interface script exists
             if not self.mcp_interface_path.exists():
                 return False
             
-            # Try to run a simple test
-            result = subprocess.run(
-                ["python", str(self.mcp_interface_path)],
-                capture_output=True,
-                text=True,
-                timeout=5
+            # Try to run a simple test using async subprocess (DEV-601)
+            process = await asyncio.create_subprocess_exec(
+                "python", str(self.mcp_interface_path),
+                stdout=asyncio.subprocess.PIPE,
+                stderr=asyncio.subprocess.PIPE
             )
             
-            # If it returns usage info, it's working
-            return "Usage:" in result.stdout or "error" in result.stdout
+            # Wait for completion with timeout
+            try:
+                stdout, stderr = await asyncio.wait_for(process.communicate(), timeout=5.0)
+                output = stdout.decode('utf-8') + stderr.decode('utf-8')
+                
+                # If it returns usage info, it's working
+                return "Usage:" in output or "error" in output
+                
+            except asyncio.TimeoutError:
+                # Kill the process if it takes too long
+                process.kill()
+                await process.wait()
+                return False
             
         except Exception:
             return False    
