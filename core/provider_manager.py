@@ -17,6 +17,12 @@ from collections import defaultdict
 from typing import Dict, List, Optional, Any
 from datetime import datetime, timedelta
 
+# SPRINT 2.7: Import the new registry system for dynamic provider creation
+from providers.base_provider import create_provider, get_registered_providers
+
+# SPRINT 2.8: Import the new configuration management system
+from core.config_manager import get_config
+
 class TemporalError(Exception):
     """Base class for temporal stabilization errors"""
     pass
@@ -32,17 +38,38 @@ class PermanentError(TemporalError):
 class ProviderManager:
     """Manages the cascade of AI providers with temporal stabilization"""
     
-    def __init__(self, provider_names: List[str]):
+    def __init__(self, provider_names: List[str], config: Dict[str, Any] = None):
         self.providers = []
         self.logger = logging.getLogger('VALIS.ProviderManager')
         
-        # Temporal stabilization components
-        self.request_semaphore = asyncio.Semaphore(10)  # Limit concurrent requests
+        # SPRINT 2.8: Use structured configuration instead of flat dictionary
+        if config is None:
+            # Load from global configuration manager
+            valis_config = get_config()
+        else:
+            # Use provided config (for backwards compatibility)
+            from core.config_schema import VALISConfig
+            try:
+                valis_config = VALISConfig(**config)
+            except Exception as e:
+                self.logger.warning(f"Invalid config provided, using defaults: {e}")
+                valis_config = get_config()
+        
+        # Extract performance configuration (no more hardcoded constants!)
+        perf_config = valis_config.performance
+        circuit_config = perf_config.circuit_breaker
+        
+        # Temporal stabilization components (now fully configurable)
+        self.request_semaphore = asyncio.Semaphore(perf_config.max_concurrent_requests)
         self.provider_failures = defaultdict(int)  # Track failure counts
         self.provider_circuit_breakers = defaultdict(datetime)  # Circuit breaker timestamps
-        self.circuit_breaker_threshold = 3  # Failures before circuit opens
-        self.circuit_breaker_timeout = timedelta(minutes=5)  # How long circuit stays open
-        self.retry_delays = [1, 2, 4]  # Exponential backoff for retries
+        self.circuit_breaker_threshold = circuit_config.failure_threshold
+        self.circuit_breaker_timeout = timedelta(minutes=circuit_config.timeout_minutes)
+        self.retry_delays = perf_config.retry_schedule
+        self.provider_timeout = perf_config.provider_timeout
+        
+        # Store config for other methods to use
+        self.valis_config = valis_config
         
         # Request tracking
         self.active_requests = {}
@@ -61,26 +88,34 @@ class ProviderManager:
         self.logger.info(f"Temporal stabilization active with {len(self.providers)} providers")
     
     def _create_provider(self, provider_name: str):
-        """Factory method to create providers"""
+        """
+        SPRINT 2.7: Dynamic provider creation using registry system
+        
+        This elegant registry lookup replaces the primitive if/elif factory pattern!
+        Now adding new providers requires ZERO core code changes.
+        """
+        self.logger.debug(f"Creating provider: {provider_name}")
+        
+        # Import all providers to ensure they're registered
+        # This triggers the @register_provider decorators
         try:
-            if provider_name == "desktop_commander_mcp":
-                from providers.desktop_commander_provider import DesktopCommanderProvider
-                return DesktopCommanderProvider()
-            elif provider_name == "anthropic_api":
-                from providers.anthropic_provider import AnthropicProvider
-                return AnthropicProvider()
-            elif provider_name == "openai_api":
-                from providers.openai_provider import OpenAIProvider
-                return OpenAIProvider()
-            elif provider_name == "hardcoded_fallback":
-                from providers.hardcoded_fallback import HardcodedFallbackProvider
-                return HardcodedFallbackProvider()
-            else:
-                self.logger.warning(f"Unknown provider: {provider_name}")
-                return None
+            from providers import desktop_commander_provider
+            from providers import anthropic_provider  
+            from providers import openai_provider
+            from providers import hardcoded_fallback
         except ImportError as e:
-            self.logger.warning(f"Failed to import provider {provider_name}: {e}")
+            self.logger.warning(f"Failed to import provider modules: {e}")
+        
+        # Use elegant registry lookup instead of primitive if/elif chains
+        provider = create_provider(provider_name)
+        
+        if provider is None:
+            available_providers = list(get_registered_providers().keys())
+            self.logger.warning(f"Unknown provider '{provider_name}'. Available: {available_providers}")
             return None
+        
+        self.logger.info(f"Successfully created provider: {provider_name} -> {provider.__class__.__name__}")
+        return provider
     
     def _is_circuit_breaker_open(self, provider_name: str) -> bool:
         """Check if circuit breaker is open for this provider"""
@@ -182,7 +217,7 @@ class ProviderManager:
                         # Try to get response with timeout
                         result = await asyncio.wait_for(
                             provider.get_response(persona=persona, message=message, session_id=session_id, context=context),
-                            timeout=30.0  # 30 second timeout per provider
+                            timeout=self.provider_timeout  # Use configurable timeout
                         )
                         
                         if result.get("success"):
