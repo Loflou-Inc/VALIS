@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "valis-persona-server": {
+      "command": "python",
+      "args": ["C:\\VALIS\\mcp_server\\valis_persona_mcp_server.py"],
+      "env": {}
+    }
+  }
+}

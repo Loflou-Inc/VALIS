@@ -27,17 +27,16 @@ class VALISEngine:
     def __init__(self, config_path: Optional[str] = None):
         """Initialize VALIS with configuration"""
         # SPRINT 2.8: Use new configuration management system
-        from core.config_manager import ConfigurationManager
-        
         if config_path:
+            from core.config_manager import ConfigurationManager
             config_manager = ConfigurationManager(config_path)
-            self.valis_config = config_manager.load_config()
+            config_obj = config_manager.load_config()
+            self.valis_config = config_obj
+            self.config = config_obj.dict()
         else:
             from core.config_manager import get_config
-            self.valis_config = get_config()
-        
-        # Convert to dict for backward compatibility
-        self.config = self.valis_config.dict()
+            self.config = get_config()
+            self.valis_config = None
         
         self.personas = {}
         self.providers = []
@@ -54,7 +53,7 @@ class VALISEngine:
         self._session_last_activity: Dict[str, float] = {}  # Track for cleanup
         
         # Add basic memory integration (Task 2.1)
-        self.memory_enabled = self.valis_config.enable_memory
+        self.memory_enabled = self.config.enable_memory
         self.memory_client = None
 
         if self.memory_enabled:
@@ -69,7 +68,7 @@ class VALISEngine:
         
         # Add session tracking (Task 2.2)
         self.sessions = {}  # Track active sessions
-        self.session_timeout = self.config.get('session_timeout', 1800)  # Use config value
+        self.session_timeout = 1800  # 30 minutes default
         
         # NEURAL MATRIX HEALTH MONITORING (Task 2.4)
         try:
@@ -120,7 +119,15 @@ class VALISEngine:
     def _setup_logging(self) -> logging.Logger:
         """Setup logging for VALIS"""
         logger = logging.getLogger('VALIS')
-        logger.setLevel(getattr(logging, self.valis_config.logging_level))
+        
+        # Get logging level with fallback
+        log_level = 'INFO'
+        if self.valis_config and hasattr(self.valis_config, 'logging_level'):
+            log_level = self.valis_config.logging_level
+        elif self.config and 'logging_level' in self.config:
+            log_level = self.config['logging_level']
+        
+        logger.setLevel(getattr(logging, log_level, logging.INFO))
         
         if not logger.handlers:
             handler = logging.StreamHandler()
@@ -154,8 +161,9 @@ class VALISEngine:
         """Initialize AI providers in order of preference"""
         from core.provider_manager import ProviderManager
         # SPRINT 2.8: ProviderManager now uses the global configuration automatically
-        self.provider_manager = ProviderManager(self.valis_config.providers)
-        self.logger.info(f"Initialized {len(self.valis_config.providers)} providers")    
+        providers_list = self.config.providers
+        self.provider_manager = ProviderManager(providers_list)
+        self.logger.info(f"Initialized {len(providers_list)} providers")    
         
     async def get_persona_response(
         self, 
@@ -217,17 +225,9 @@ class VALISEngine:
         # No session ID - process immediately (no queuing needed)
         return await self._process_request_immediately(persona, message, context, request_id, persona_id)    
                     
-    def get_available_personas(self) -> List[Dict[str, Any]]:
-        """Get list of all available personas with their basic info"""
-        return [
-            {
-                "id": persona_id,
-                "name": persona_data.get("name", persona_id),
-                "description": persona_data.get("description", ""),
-                "expertise": persona_data.get("expertise", [])
-            }
-            for persona_id, persona_data in self.personas.items()
-        ]
+    def get_available_personas(self) -> Dict[str, Dict[str, Any]]:
+        """Get dictionary of all available personas with their basic info"""
+        return self.personas
     
     def get_persona_info(self, persona_id: str) -> Optional[Dict[str, Any]]:
         """Get detailed information about a specific persona"""
@@ -548,6 +548,90 @@ class VALISEngine:
         except Exception as e:
             self.logger.error(f"Neural health dashboard failed: {e}")
             return {"error": str(e)}
+    
+    def get_active_sessions(self) -> Dict[str, Dict[str, Any]]:
+        """Get active sessions with metadata for API"""
+        session_info = {}
+        for session_id, session_data in self.sessions.items():
+            # Convert float timestamps to ISO format strings
+            created_timestamp = session_data.get('created', datetime.now().timestamp())
+            last_activity_timestamp = session_data.get('last_activity', datetime.now().timestamp())
+            
+            session_info[session_id] = {
+                'created_at': datetime.fromtimestamp(created_timestamp).isoformat(),
+                'last_activity': datetime.fromtimestamp(last_activity_timestamp).isoformat(),
+                'request_count': session_data.get('request_count', 0),
+                'last_persona': session_data.get('last_persona')
+            }
+        return session_info
+    
+    async def health_check(self) -> Dict[str, Any]:
+        """Comprehensive health check for API endpoint"""
+        try:
+            # Check provider availability
+            available_providers = []
+            for provider in self.provider_manager.providers:
+                if await provider.is_available():
+                    available_providers.append(provider.name)
+            
+            # Basic system info
+            system_info = {
+                'total_providers': len(self.provider_manager.providers),
+                'available_providers_count': len(available_providers),
+                'memory_system_enabled': bool(self.memory_enabled),
+                'neural_health_monitor': bool(self.neural_health_monitor),
+                'personas_directory': str(Path("personas"))
+            }
+            
+            # Determine overall status
+            if len(available_providers) > 0:
+                status = "healthy"
+            elif len(self.provider_manager.providers) > 0:
+                status = "degraded"  # Some providers but none available
+            else:
+                status = "error"  # No providers at all
+            
+            return {
+                'status': status,
+                'system_info': system_info,
+                'providers_available': available_providers,
+                'personas_loaded': len(self.personas),
+                'active_sessions': len(self.sessions)
+            }
+            
+        except Exception as e:
+            self.logger.error(f"Health check failed: {e}")
+            return {
+                'status': 'error',
+                'system_info': {'error': str(e)},
+                'providers_available': [],
+                'personas_loaded': 0,
+                'active_sessions': 0
+            }
+    
+    def get_config(self) -> Dict[str, Any]:
+        """Get current configuration for API"""
+        return self.config.dict()
+    
+    async def update_config(self, new_config: Dict[str, Any]) -> bool:
+        """Update configuration dynamically"""
+        try:
+            # Validate new config
+            from core.config_schema import VALISConfig
+            validated_config = VALISConfig(**new_config)
+            
+            # Update internal config
+            self.config = validated_config
+            
+            # Reinitialize components with new config if needed
+            # (For now, just update the config - full reinitialization could be added later)
+            
+            self.logger.info("Configuration updated successfully")
+            return True
+            
+        except Exception as e:
+            self.logger.error(f"Configuration update failed: {e}")
+            return False
 
 # Convenience function for simple usage
 async def ask_persona(persona_id: str, message: str, session_id: Optional[str] = None) -> str:

@@ -4,6 +4,7 @@ AI Provider implementations for VALIS
 """
 
 from .desktop_commander_provider import DesktopCommanderProvider
+from .desktop_commander_mcp_real import RealDesktopCommanderMCPProvider
 from .hardcoded_fallback import HardcodedFallbackProvider
 
 # Import API providers with graceful degradation
@@ -23,6 +24,7 @@ except ImportError as e:
 
 __all__ = [
     "DesktopCommanderProvider", 
+    "RealDesktopCommanderMCPProvider",
     "HardcodedFallbackProvider",
     "AnthropicProvider",
     "OpenAIProvider"

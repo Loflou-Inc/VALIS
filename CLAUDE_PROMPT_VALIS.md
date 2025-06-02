@@ -121,3 +121,9 @@ Always defer to **Laika** unless overridden by **03** or **Biff**.
 Seriously
 
 ---
+
+
+*** Laika 
+
+Read through or last chat in your CLAUDE Knowledge Base.  cleaned_output
+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

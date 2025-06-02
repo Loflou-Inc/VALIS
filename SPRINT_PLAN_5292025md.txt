@@ -1,0 +1,118 @@
+# 🚀 VALIS Sprint Plan – Code Quality & Async Safety
+
+**Sprint Duration:** 2 Weeks  
+**Team Focus:** Code Quality, Async/Await Safety, Provider Implementation  
+**Goal:** Finalize providers, eliminate race conditions, improve modularity, and ensure robust async handling.
+
+---
+
+## 🧠 1. Finalize Provider Implementations
+
+**[DEV-101] Implement AnthropicProvider `get_response()`**
+- Use `aiohttp` or HTTP client to connect to Claude API.
+- Parse persona tone/context into system prompts.
+- Handle timeout, retry, and fallback logic.
+
+**[DEV-102] Implement OpenAIProvider `get_response()`**
+- Integrate OpenAI SDK or HTTP calls.
+- Include persona metadata in system message.
+- Gracefully handle missing key or request failure.
+
+**[DEV-103] Add tests for Anthropic/OpenAI provider logic**
+- Mock API responses.
+- Test success and failure scenarios in cascade.
+
+---
+
+## 🔐 2. Fix Concurrency Guard on Sessions
+
+**[DEV-201] Replace session concurrency sleep with a queue or lock**
+- Use `asyncio.Queue` or task mutex per `session_id`.
+- Prevent overlapping persona requests per session.
+
+**[DEV-202] Add integration test for concurrent session collisions**
+- Simulate 3 calls to same persona/session.
+- Ensure serialized and safe response flow.
+
+---
+
+## 🧩 3. Refactor Provider Registry System
+
+**[DEV-301] Create `BaseProvider` with `@register_provider` decorator**
+- Auto-register subclasses via metaclass or static dict.
+
+**[DEV-302] Refactor `_create_provider()` to use dynamic registry**
+- Eliminate `if/elif` pattern.
+- Preserve backward compatibility.
+
+**[DEV-303] Document provider authoring**
+- Boilerplate + registration walkthrough for devs.
+
+---
+
+## ⚙️ 4. Configurability Improvements
+
+**[DEV-401] Move constants to `config.json`:**
+- `max_concurrent_requests`
+- `provider_timeout`
+- `circuit_breaker_threshold`
+- `circuit_breaker_timeout`
+- `retry_schedule` (e.g. [1, 2, 4])
+
+**[DEV-402] Add schema validation + default fallback**
+- Use `pydantic` or custom schema validator.
+
+---
+
+## 🎭 5. Hardcoded Fallback Enhancements
+
+**[DEV-501] Fallback should read from persona JSON**
+- Use `"tone"`, `"common_phrases"` etc. to generate safe output.
+
+**[DEV-502] Gracefully handle unknown persona IDs**
+- Avoid defaulting to Jane; use neutral tone.
+
+**[DEV-503] Add test coverage for fallback behavior**
+- Validate correct handling of Sam, Alex, others.
+
+---
+
+## 🧼 6. Async Safety & Cleanup
+
+**[DEV-601] Convert `subprocess.run` to async subprocess**
+- In `DesktopCommanderProvider.is_available()`.
+
+**[DEV-602] Audit for sync blocking in async flows**
+- Wrap blocking I/O in `run_in_executor` if needed.
+
+---
+
+## ✅ 7. Sprint Testing & QA
+
+**[QA-701] Provider cascade test (fail → fallback)  
+[QA-702] Persona switch test  
+[QA-703] Broken config test  
+[QA-704] Memory integration test (if enabled)**
+
+---
+
+## 📈 Metrics for Success
+
+- Time-to-response under 1.5s with 3 providers enabled.
+- Provider failure recovery verified in cascade.
+- No race conditions or blocking warnings.
+- Fallback uses persona metadata correctly.
+
+---
+
+## 🧾 Definition of Done
+
+- All async calls are non-blocking.
+- Stubbed providers are fully implemented.
+- Session request locking is race-free.
+- All fallback responses use tone/context.
+- 85%+ test coverage on new logic paths.
+
+---
+
+“*We give you the best you got... and at least we give you SOMETHING.*” – The VALIS Team
