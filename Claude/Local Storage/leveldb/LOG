@@ -1,6 +1,0 @@
-2025/06/02-13:21:14.861 1e8c Reusing MANIFEST C:\Users\admin\AppData\Roaming\Claude\Local Storage\leveldb/MANIFEST-000001
-2025/06/02-13:21:14.863 1e8c Recovering log #1854
-2025/06/02-13:21:14.863 1e8c Reusing old log C:\Users\admin\AppData\Roaming\Claude\Local Storage\leveldb/001854.log 
-2025/06/02-13:40:15.643 1fec Level-0 table #1858: started
-2025/06/02-13:40:15.645 1fec Level-0 table #1858: 17453 bytes OK
-2025/06/02-13:40:15.647 1fec Delete type=0 #1854

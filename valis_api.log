@@ -3846,3 +3846,326 @@ aiohttp.client_exceptions.ClientConnectionError: Connection lost: [SSL: APPLICAT
 2025-06-02 15:08:24,882 - valis_api - INFO - Auto-cleanup: 24 hours
 2025-06-02 15:08:24,882 - valis_api - INFO - Enhanced CORS enabled for localhost:3000
 2025-06-02 15:08:24,882 - valis_api - INFO - Available endpoints: /chat, /personas, /sessions, /health, /config, /sessions/{id}/history, /admin/stats
+2025-06-02 15:08:40,196 - valis_api - INFO - Request: POST /chat
+2025-06-02 15:08:40,198 - valis_api - DEBUG - Request from 127.0.0.1, count: 1
+2025-06-02 15:08:40,198 - valis_api - INFO - Chat request: session=test_new_mcp, persona=jane
+2025-06-02 15:08:40,199 - VALIS - INFO - Processing request req_1_jane for persona jane
+2025-06-02 15:08:40,199 - VALIS - INFO - Created new session: test_new_mcp
+2025-06-02 15:08:40,270 - VALIS - INFO - Neural context added: 7/7 memories for provider cascade
+2025-06-02 15:08:40,270 - VALIS.ProviderManager - INFO - Starting provider cascade for persona: Jane Thompson
+2025-06-02 15:08:40,270 - VALIS.ProviderManager - INFO - Available providers: ['RealDesktopCommanderMCPProvider', 'AnthropicProvider', 'OpenAIProvider', 'HardcodedFallbackProvider']
+2025-06-02 15:08:40,271 - VALIS.ProviderManager - INFO - [fcffd3bc] Starting request for persona jane
+2025-06-02 15:08:40,271 - VALIS.ProviderManager - INFO - Attempting provider 1/4: RealDesktopCommanderMCPProvider
+2025-06-02 15:08:40,271 - VALIS.DesktopCommanderMCPReal - ERROR - MCP test connection failed: 
+2025-06-02 15:08:40,271 - VALIS.ProviderManager - WARNING - Provider RealDesktopCommanderMCPProvider not available
+2025-06-02 15:08:40,271 - VALIS.ProviderManager - INFO - Attempting provider 2/4: AnthropicProvider
+2025-06-02 15:08:40,271 - VALIS.ProviderManager - WARNING - Provider AnthropicProvider not available
+2025-06-02 15:08:40,271 - VALIS.ProviderManager - INFO - Attempting provider 3/4: OpenAIProvider
+2025-06-02 15:08:40,696 - VALIS.OpenAIProvider - INFO - OpenAI API connectivity verified
+2025-06-02 15:08:41,131 - VALIS.ProviderManager - WARNING - Provider OpenAIProvider failed: OpenAI API rate limit exceeded
+2025-06-02 15:08:41,132 - VALIS.ProviderManager - INFO - Attempting provider 4/4: HardcodedFallbackProvider
+2025-06-02 15:08:41,132 - VALIS.ProviderManager - INFO - SUCCESS with provider: HardcodedFallbackProvider
+2025-06-02 15:08:41,132 - VALIS.ProviderManager - INFO - [fcffd3bc] Request completed in 0.86s
+2025-06-02 15:08:41,132 - VALIS - INFO - Request req_1_jane completed via HardcodedFallbackProvider
+2025-06-02 15:08:41,149 - VALIS - INFO - Interaction stored in memory
+2025-06-02 15:08:41,156 - valis_api - DEBUG - Message history stored for session test_new_mcp
+2025-06-02 15:08:41,156 - valis_api - INFO - Response: 200 in 0.960s
+2025-06-02 15:13:45,424 - valis_api - INFO - Request: GET /health
+2025-06-02 15:13:45,424 - VALIS.DesktopCommanderMCPReal - ERROR - MCP test connection failed: 
+2025-06-02 15:13:45,425 - valis_api - INFO - Request: GET /sessions
+2025-06-02 15:13:45,425 - valis_api - INFO - Request: GET /personas
+2025-06-02 15:13:45,425 - valis_api - DEBUG - Retrieving enhanced sessions
+2025-06-02 15:13:45,427 - valis_api - DEBUG - Retrieving personas
+2025-06-02 15:13:45,427 - valis_api - INFO - Request: GET /sessions/session_1748887296623_hbvzkrvaz/history
+2025-06-02 15:13:45,427 - valis_api - INFO - Retrieving history for session: session_1748887296623_hbvzkrvaz
+2025-06-02 15:13:45,428 - valis_api - INFO - Response: 200 in 0.004s
+2025-06-02 15:13:45,429 - valis_api - INFO - Response: 200 in 0.004s
+2025-06-02 15:13:45,429 - valis_api - INFO - Response: 200 in 0.002s
+2025-06-02 15:13:45,952 - VALIS.OpenAIProvider - INFO - OpenAI API connectivity verified
+2025-06-02 15:13:45,975 - valis_api - INFO - Response: 200 in 0.551s
+2025-06-02 15:13:47,955 - valis_api - INFO - Request: GET /sessions/session_1748891627939_3mt0olmqq/history
+2025-06-02 15:13:47,956 - valis_api - INFO - Retrieving history for session: session_1748891627939_3mt0olmqq
+2025-06-02 15:13:47,956 - valis_api - INFO - Response: 200 in 0.001s
+2025-06-02 15:13:55,450 - valis_api - INFO - Request: GET /sessions
+2025-06-02 15:13:55,450 - valis_api - DEBUG - Retrieving enhanced sessions
+2025-06-02 15:13:55,451 - valis_api - INFO - Response: 200 in 0.001s
+2025-06-02 15:13:57,479 - valis_api - INFO - Request: POST /chat
+2025-06-02 15:13:57,480 - valis_api - DEBUG - Request from 127.0.0.1, count: 1
+2025-06-02 15:13:57,480 - valis_api - INFO - Chat request: session=session_1748891627939_3mt0olmqq, persona=jane
+2025-06-02 15:13:57,480 - VALIS - INFO - Processing request req_2_jane for persona jane
+2025-06-02 15:13:57,480 - VALIS - INFO - Created new session: session_1748891627939_3mt0olmqq
+2025-06-02 15:13:57,490 - VALIS - INFO - Neural context added: 8/8 memories for provider cascade
+2025-06-02 15:13:57,491 - VALIS.ProviderManager - INFO - Starting provider cascade for persona: Jane Thompson
+2025-06-02 15:13:57,491 - VALIS.ProviderManager - INFO - Available providers: ['RealDesktopCommanderMCPProvider', 'AnthropicProvider', 'OpenAIProvider', 'HardcodedFallbackProvider']
+2025-06-02 15:13:57,491 - VALIS.ProviderManager - INFO - [994c05fd] Starting request for persona jane
+2025-06-02 15:13:57,491 - VALIS.ProviderManager - INFO - Attempting provider 1/4: RealDesktopCommanderMCPProvider
+2025-06-02 15:13:57,491 - VALIS.DesktopCommanderMCPReal - ERROR - MCP test connection failed: 
+2025-06-02 15:13:57,491 - VALIS.ProviderManager - WARNING - Provider RealDesktopCommanderMCPProvider not available
+2025-06-02 15:13:57,491 - VALIS.ProviderManager - INFO - Attempting provider 2/4: AnthropicProvider
+2025-06-02 15:13:57,492 - VALIS.ProviderManager - WARNING - Provider AnthropicProvider not available
+2025-06-02 15:13:57,492 - VALIS.ProviderManager - INFO - Attempting provider 3/4: OpenAIProvider
+2025-06-02 15:13:58,073 - VALIS.OpenAIProvider - INFO - OpenAI API connectivity verified
+2025-06-02 15:13:58,517 - VALIS.ProviderManager - WARNING - Provider OpenAIProvider failed: OpenAI API rate limit exceeded
+2025-06-02 15:13:58,517 - VALIS.ProviderManager - INFO - Attempting provider 4/4: HardcodedFallbackProvider
+2025-06-02 15:13:58,517 - VALIS.ProviderManager - INFO - SUCCESS with provider: HardcodedFallbackProvider
+2025-06-02 15:13:58,517 - VALIS.ProviderManager - INFO - [994c05fd] Request completed in 1.03s
+2025-06-02 15:13:58,517 - VALIS - INFO - Request req_2_jane completed via HardcodedFallbackProvider
+2025-06-02 15:13:58,532 - VALIS - INFO - Interaction stored in memory
+2025-06-02 15:13:58,538 - valis_api - DEBUG - Message history stored for session session_1748891627939_3mt0olmqq
+2025-06-02 15:13:58,539 - valis_api - INFO - Response: 200 in 1.059s
+2025-06-02 15:14:05,474 - valis_api - INFO - Request: GET /sessions
+2025-06-02 15:14:05,474 - valis_api - DEBUG - Retrieving enhanced sessions
+2025-06-02 15:14:05,476 - valis_api - INFO - Response: 200 in 0.002s
+2025-06-02 15:14:10,331 - valis_api - INFO - Request: GET /health
+2025-06-02 15:14:10,331 - VALIS.DesktopCommanderMCPReal - ERROR - MCP test connection failed: 
+2025-06-02 15:14:10,700 - VALIS.OpenAIProvider - INFO - OpenAI API connectivity verified
+2025-06-02 15:14:10,702 - valis_api - INFO - Response: 200 in 0.371s
+2025-06-02 15:14:10,702 - asyncio - ERROR - Future exception was never retrieved
+future: <Future finished exception=ClientConnectionError('Connection lost: [SSL: APPLICATION_DATA_AFTER_CLOSE_NOTIFY] application data after close notify (_ssl.c:2775)')>
+Traceback (most recent call last):
+  File "C:\Python313\Lib\asyncio\sslproto.py", line 651, in _do_shutdown
+    self._sslobj.unwrap()
+    ~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Python313\Lib\ssl.py", line 955, in unwrap
+    return self._sslobj.shutdown()
+           ~~~~~~~~~~~~~~~~~~~~~^^
+ssl.SSLError: [SSL: APPLICATION_DATA_AFTER_CLOSE_NOTIFY] application data after close notify (_ssl.c:2775)
+
+The above exception was the direct cause of the following exception:
+
+aiohttp.client_exceptions.ClientConnectionError: Connection lost: [SSL: APPLICATION_DATA_AFTER_CLOSE_NOTIFY] application data after close notify (_ssl.c:2775)
+2025-06-02 15:14:14,981 - valis_api - INFO - Request: GET /sessions
+2025-06-02 15:14:14,981 - valis_api - DEBUG - Retrieving enhanced sessions
+2025-06-02 15:14:14,983 - valis_api - INFO - Request: GET /health
+2025-06-02 15:14:14,984 - VALIS.DesktopCommanderMCPReal - ERROR - MCP test connection failed: 
+2025-06-02 15:14:14,984 - valis_api - INFO - Request: GET /personas
+2025-06-02 15:14:14,985 - valis_api - INFO - Response: 200 in 0.004s
+2025-06-02 15:14:14,986 - valis_api - DEBUG - Retrieving personas
+2025-06-02 15:14:14,987 - valis_api - INFO - Request: GET /sessions/session_1748891654968_qpc99oei7/history
+2025-06-02 15:14:14,987 - valis_api - INFO - Response: 200 in 0.003s
+2025-06-02 15:14:14,988 - valis_api - INFO - Retrieving history for session: session_1748891654968_qpc99oei7
+2025-06-02 15:14:14,989 - valis_api - INFO - Response: 200 in 0.002s
+2025-06-02 15:14:15,248 - VALIS.OpenAIProvider - INFO - OpenAI API connectivity verified
+2025-06-02 15:14:15,272 - valis_api - INFO - Response: 200 in 0.289s
+2025-06-02 15:14:19,005 - valis_api - INFO - Request: GET /config
+2025-06-02 15:14:19,006 - valis_api - INFO - Response: 200 in 0.002s
+2025-06-02 15:14:25,039 - valis_api - INFO - Request: GET /sessions
+2025-06-02 15:14:25,039 - valis_api - DEBUG - Retrieving enhanced sessions
+2025-06-02 15:14:25,040 - valis_api - INFO - Response: 200 in 0.002s
+2025-06-02 15:14:35,065 - valis_api - INFO - Request: GET /sessions
+2025-06-02 15:14:35,065 - valis_api - DEBUG - Retrieving enhanced sessions
+2025-06-02 15:14:35,066 - valis_api - INFO - Response: 200 in 0.002s
+2025-06-02 15:14:45,090 - valis_api - INFO - Request: GET /sessions
+2025-06-02 15:14:45,090 - valis_api - DEBUG - Retrieving enhanced sessions
+2025-06-02 15:14:45,091 - valis_api - INFO - Response: 200 in 0.002s
+2025-06-02 15:14:45,288 - valis_api - INFO - Request: GET /health
+2025-06-02 15:14:45,288 - VALIS.DesktopCommanderMCPReal - ERROR - MCP test connection failed: 
+2025-06-02 15:14:45,952 - VALIS.OpenAIProvider - INFO - OpenAI API connectivity verified
+2025-06-02 15:14:45,953 - valis_api - INFO - Response: 200 in 0.665s
+2025-06-02 15:14:45,955 - asyncio - ERROR - Future exception was never retrieved
+future: <Future finished exception=ClientConnectionError('Connection lost: [SSL: APPLICATION_DATA_AFTER_CLOSE_NOTIFY] application data after close notify (_ssl.c:2775)')>
+Traceback (most recent call last):
+  File "C:\Python313\Lib\asyncio\sslproto.py", line 651, in _do_shutdown
+    self._sslobj.unwrap()
+    ~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Python313\Lib\ssl.py", line 955, in unwrap
+    return self._sslobj.shutdown()
+           ~~~~~~~~~~~~~~~~~~~~~^^
+ssl.SSLError: [SSL: APPLICATION_DATA_AFTER_CLOSE_NOTIFY] application data after close notify (_ssl.c:2775)
+
+The above exception was the direct cause of the following exception:
+
+aiohttp.client_exceptions.ClientConnectionError: Connection lost: [SSL: APPLICATION_DATA_AFTER_CLOSE_NOTIFY] application data after close notify (_ssl.c:2775)
+2025-06-02 15:14:48,554 - valis_api - INFO - Request: GET /config
+2025-06-02 15:14:48,555 - valis_api - INFO - Response: 200 in 0.000s
+2025-06-02 15:14:55,104 - valis_api - INFO - Request: GET /sessions
+2025-06-02 15:14:55,104 - valis_api - DEBUG - Retrieving enhanced sessions
+2025-06-02 15:14:55,105 - valis_api - INFO - Response: 200 in 0.002s
+2025-06-02 15:15:05,120 - valis_api - INFO - Request: GET /sessions
+2025-06-02 15:15:05,121 - valis_api - DEBUG - Retrieving enhanced sessions
+2025-06-02 15:15:05,122 - valis_api - INFO - Response: 200 in 0.002s
+2025-06-02 15:15:12,156 - valis_api - INFO - Request: POST /chat
+2025-06-02 15:15:12,157 - valis_api - DEBUG - Request from 127.0.0.1, count: 1
+2025-06-02 15:15:12,157 - valis_api - INFO - Chat request: session=session_1748891654968_qpc99oei7, persona=advisor_alex
+2025-06-02 15:15:12,157 - VALIS - INFO - Processing request req_3_advisor_alex for persona advisor_alex
+2025-06-02 15:15:12,157 - VALIS - INFO - Created new session: session_1748891654968_qpc99oei7
+2025-06-02 15:15:12,168 - VALIS - INFO - Neural context added: 8/8 memories for provider cascade
+2025-06-02 15:15:12,168 - VALIS.ProviderManager - INFO - Starting provider cascade for persona: Advisor Alex
+2025-06-02 15:15:12,169 - VALIS.ProviderManager - INFO - Available providers: ['RealDesktopCommanderMCPProvider', 'AnthropicProvider', 'OpenAIProvider', 'HardcodedFallbackProvider']
+2025-06-02 15:15:12,169 - VALIS.ProviderManager - INFO - [f418f0da] Starting request for persona advisor_alex
+2025-06-02 15:15:12,169 - VALIS.ProviderManager - INFO - Attempting provider 1/4: RealDesktopCommanderMCPProvider
+2025-06-02 15:15:12,169 - VALIS.DesktopCommanderMCPReal - ERROR - MCP test connection failed: 
+2025-06-02 15:15:12,169 - VALIS.ProviderManager - WARNING - Provider RealDesktopCommanderMCPProvider not available
+2025-06-02 15:15:12,169 - VALIS.ProviderManager - INFO - Attempting provider 2/4: AnthropicProvider
+2025-06-02 15:15:12,169 - VALIS.ProviderManager - WARNING - Provider AnthropicProvider not available
+2025-06-02 15:15:12,170 - VALIS.ProviderManager - INFO - Attempting provider 3/4: OpenAIProvider
+2025-06-02 15:15:12,599 - VALIS.OpenAIProvider - INFO - OpenAI API connectivity verified
+2025-06-02 15:15:13,149 - VALIS.ProviderManager - WARNING - Provider OpenAIProvider failed: OpenAI API rate limit exceeded
+2025-06-02 15:15:13,149 - VALIS.ProviderManager - INFO - Attempting provider 4/4: HardcodedFallbackProvider
+2025-06-02 15:15:13,149 - VALIS.ProviderManager - INFO - SUCCESS with provider: HardcodedFallbackProvider
+2025-06-02 15:15:13,149 - VALIS.ProviderManager - INFO - [f418f0da] Request completed in 0.98s
+2025-06-02 15:15:13,149 - VALIS - INFO - Request req_3_advisor_alex completed via HardcodedFallbackProvider
+2025-06-02 15:15:13,169 - VALIS - INFO - Interaction stored in memory
+2025-06-02 15:15:13,175 - valis_api - DEBUG - Message history stored for session session_1748891654968_qpc99oei7
+2025-06-02 15:15:13,176 - valis_api - INFO - Response: 200 in 1.019s
+2025-06-02 15:15:15,137 - valis_api - INFO - Request: GET /sessions
+2025-06-02 15:15:15,137 - valis_api - DEBUG - Retrieving enhanced sessions
+2025-06-02 15:15:15,140 - valis_api - INFO - Response: 200 in 0.003s
+2025-06-02 15:15:15,962 - valis_api - INFO - Request: GET /health
+2025-06-02 15:15:15,962 - VALIS.DesktopCommanderMCPReal - ERROR - MCP test connection failed: 
+2025-06-02 15:15:16,608 - VALIS.OpenAIProvider - INFO - OpenAI API connectivity verified
+2025-06-02 15:15:16,631 - valis_api - INFO - Response: 200 in 0.670s
+2025-06-02 15:15:25,153 - valis_api - INFO - Request: GET /sessions
+2025-06-02 15:15:25,153 - valis_api - DEBUG - Retrieving enhanced sessions
+2025-06-02 15:15:25,155 - valis_api - INFO - Response: 200 in 0.002s
+2025-06-02 15:15:35,177 - valis_api - INFO - Request: GET /sessions
+2025-06-02 15:15:35,178 - valis_api - DEBUG - Retrieving enhanced sessions
+2025-06-02 15:15:35,180 - valis_api - INFO - Response: 200 in 0.002s
+2025-06-02 15:15:45,202 - valis_api - INFO - Request: GET /sessions
+2025-06-02 15:15:45,202 - valis_api - DEBUG - Retrieving enhanced sessions
+2025-06-02 15:15:45,204 - valis_api - INFO - Response: 200 in 0.002s
+2025-06-02 15:15:46,649 - valis_api - INFO - Request: GET /health
+2025-06-02 15:15:46,650 - VALIS.DesktopCommanderMCPReal - ERROR - MCP test connection failed: 
+2025-06-02 15:15:47,124 - VALIS.OpenAIProvider - INFO - OpenAI API connectivity verified
+2025-06-02 15:15:47,150 - valis_api - INFO - Response: 200 in 0.501s
+2025-06-02 15:17:01,849 - valis_api - INFO - Request: GET /sessions
+2025-06-02 15:17:01,849 - valis_api - DEBUG - Retrieving enhanced sessions
+2025-06-02 15:17:01,852 - valis_api - INFO - Response: 200 in 0.003s
+2025-06-02 15:17:31,870 - valis_api - INFO - Request: GET /sessions
+2025-06-02 15:17:31,870 - valis_api - DEBUG - Retrieving enhanced sessions
+2025-06-02 15:17:31,872 - valis_api - INFO - Response: 200 in 0.002s
+2025-06-02 15:17:41,895 - valis_api - INFO - Request: GET /sessions
+2025-06-02 15:17:41,896 - valis_api - DEBUG - Retrieving enhanced sessions
+2025-06-02 15:17:41,898 - valis_api - INFO - Response: 200 in 0.002s
+2025-06-02 15:17:47,174 - valis_api - INFO - Request: GET /health
+2025-06-02 15:17:47,174 - VALIS.DesktopCommanderMCPReal - ERROR - MCP test connection failed: 
+2025-06-02 15:17:47,702 - VALIS.OpenAIProvider - INFO - OpenAI API connectivity verified
+2025-06-02 15:17:47,703 - asyncio - ERROR - Future exception was never retrieved
+future: <Future finished exception=ClientConnectionError('Connection lost: [SSL: APPLICATION_DATA_AFTER_CLOSE_NOTIFY] application data after close notify (_ssl.c:2775)')>
+Traceback (most recent call last):
+  File "C:\Python313\Lib\asyncio\sslproto.py", line 651, in _do_shutdown
+    self._sslobj.unwrap()
+    ~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Python313\Lib\ssl.py", line 955, in unwrap
+    return self._sslobj.shutdown()
+           ~~~~~~~~~~~~~~~~~~~~~^^
+ssl.SSLError: [SSL: APPLICATION_DATA_AFTER_CLOSE_NOTIFY] application data after close notify (_ssl.c:2775)
+
+The above exception was the direct cause of the following exception:
+
+aiohttp.client_exceptions.ClientConnectionError: Connection lost: [SSL: APPLICATION_DATA_AFTER_CLOSE_NOTIFY] application data after close notify (_ssl.c:2775)
+2025-06-02 15:17:47,703 - valis_api - INFO - Response: 200 in 0.530s
+2025-06-02 15:17:52,132 - valis_api - INFO - Request: GET /sessions
+2025-06-02 15:17:52,132 - valis_api - DEBUG - Retrieving enhanced sessions
+2025-06-02 15:17:52,135 - valis_api - INFO - Response: 200 in 0.003s
+2025-06-02 15:47:23,851 - valis_api - INFO - Request: GET /health
+2025-06-02 15:47:23,851 - VALIS.DesktopCommanderMCPReal - ERROR - MCP test connection failed: 
+2025-06-02 15:47:23,858 - valis_api - INFO - Request: GET /sessions/session_1748891654968_qpc99oei7/history
+2025-06-02 15:47:23,858 - valis_api - INFO - Request: GET /sessions
+2025-06-02 15:47:23,858 - valis_api - INFO - Request: GET /personas
+2025-06-02 15:47:23,859 - valis_api - INFO - Retrieving history for session: session_1748891654968_qpc99oei7
+2025-06-02 15:47:23,860 - valis_api - DEBUG - Retrieving enhanced sessions
+2025-06-02 15:47:23,861 - valis_api - DEBUG - Retrieving personas
+2025-06-02 15:47:23,862 - valis_api - INFO - Response: 200 in 0.004s
+2025-06-02 15:47:23,862 - valis_api - INFO - Response: 200 in 0.004s
+2025-06-02 15:47:23,862 - valis_api - INFO - Response: 200 in 0.004s
+2025-06-02 15:47:24,370 - VALIS.OpenAIProvider - INFO - OpenAI API connectivity verified
+2025-06-02 15:47:24,371 - valis_api - INFO - Response: 200 in 0.520s
+2025-06-02 15:47:24,373 - asyncio - ERROR - Future exception was never retrieved
+future: <Future finished exception=ClientConnectionError('Connection lost: [SSL: APPLICATION_DATA_AFTER_CLOSE_NOTIFY] application data after close notify (_ssl.c:2775)')>
+Traceback (most recent call last):
+  File "C:\Python313\Lib\asyncio\sslproto.py", line 651, in _do_shutdown
+    self._sslobj.unwrap()
+    ~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Python313\Lib\ssl.py", line 955, in unwrap
+    return self._sslobj.shutdown()
+           ~~~~~~~~~~~~~~~~~~~~~^^
+ssl.SSLError: [SSL: APPLICATION_DATA_AFTER_CLOSE_NOTIFY] application data after close notify (_ssl.c:2775)
+
+The above exception was the direct cause of the following exception:
+
+aiohttp.client_exceptions.ClientConnectionError: Connection lost: [SSL: APPLICATION_DATA_AFTER_CLOSE_NOTIFY] application data after close notify (_ssl.c:2775)
+2025-06-02 17:05:54,039 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: cpu
+2025-06-02 17:05:54,039 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: sentence-transformers/all-MiniLM-L6-v2
+2025-06-02 17:05:54,989 - VALIS - INFO - Memory system connected successfully
+2025-06-02 17:05:54,990 - VALIS.NeuralHealth - INFO - Neural Matrix Health Monitor initialized
+2025-06-02 17:05:54,990 - VALIS - INFO - Neural Matrix Health Monitor initialized
+2025-06-02 17:05:54,991 - VALIS - INFO - Loaded persona: advisor_alex
+2025-06-02 17:05:54,991 - VALIS - INFO - Loaded persona: billy_corgan
+2025-06-02 17:05:54,991 - VALIS - INFO - Loaded persona: coach_emma
+2025-06-02 17:05:54,991 - VALIS - INFO - Loaded persona: guide_sam
+2025-06-02 17:05:54,992 - VALIS - INFO - Loaded persona: jane
+2025-06-02 17:05:54,992 - VALIS.ProviderManager - INFO - Successfully created provider: desktop_commander_mcp_real -> RealDesktopCommanderMCPProvider
+2025-06-02 17:05:54,992 - VALIS.ProviderManager - INFO - Initialized provider: desktop_commander_mcp_real
+2025-06-02 17:05:54,993 - VALIS.ProviderManager - INFO - Successfully created provider: anthropic_api -> AnthropicProvider
+2025-06-02 17:05:54,993 - VALIS.ProviderManager - INFO - Initialized provider: anthropic_api
+2025-06-02 17:05:54,993 - VALIS.ProviderManager - INFO - Successfully created provider: openai_api -> OpenAIProvider
+2025-06-02 17:05:54,993 - VALIS.ProviderManager - INFO - Initialized provider: openai_api
+2025-06-02 17:05:54,993 - VALIS.ProviderManager - INFO - Successfully created provider: hardcoded_fallback -> HardcodedFallbackProvider
+2025-06-02 17:05:54,993 - VALIS.ProviderManager - INFO - Initialized provider: hardcoded_fallback
+2025-06-02 17:05:54,993 - VALIS.ProviderManager - INFO - Temporal stabilization active with 4 providers
+2025-06-02 17:05:54,993 - VALIS - INFO - Initialized 4 providers
+2025-06-02 17:05:54,998 - valis_api - INFO - Message History Manager initialized with temporal safeguards
+2025-06-02 17:05:55,002 - VALIS - INFO - Memory system connected successfully
+2025-06-02 17:05:55,002 - VALIS.NeuralHealth - INFO - Neural Matrix Health Monitor initialized
+2025-06-02 17:05:55,002 - VALIS - INFO - Neural Matrix Health Monitor initialized
+2025-06-02 17:05:55,003 - VALIS - INFO - Loaded persona: advisor_alex
+2025-06-02 17:05:55,003 - VALIS - INFO - Loaded persona: billy_corgan
+2025-06-02 17:05:55,003 - VALIS - INFO - Loaded persona: coach_emma
+2025-06-02 17:05:55,003 - VALIS - INFO - Loaded persona: guide_sam
+2025-06-02 17:05:55,004 - VALIS - INFO - Loaded persona: jane
+2025-06-02 17:05:55,004 - VALIS.ProviderManager - INFO - Successfully created provider: desktop_commander_mcp_real -> RealDesktopCommanderMCPProvider
+2025-06-02 17:05:55,004 - VALIS.ProviderManager - INFO - Initialized provider: desktop_commander_mcp_real
+2025-06-02 17:05:55,004 - VALIS.ProviderManager - INFO - Successfully created provider: anthropic_api -> AnthropicProvider
+2025-06-02 17:05:55,004 - VALIS.ProviderManager - INFO - Initialized provider: anthropic_api
+2025-06-02 17:05:55,004 - VALIS.ProviderManager - INFO - Successfully created provider: openai_api -> OpenAIProvider
+2025-06-02 17:05:55,004 - VALIS.ProviderManager - INFO - Initialized provider: openai_api
+2025-06-02 17:05:55,004 - VALIS.ProviderManager - INFO - Successfully created provider: hardcoded_fallback -> HardcodedFallbackProvider
+2025-06-02 17:05:55,004 - VALIS.ProviderManager - INFO - Initialized provider: hardcoded_fallback
+2025-06-02 17:05:55,004 - VALIS.ProviderManager - INFO - Temporal stabilization active with 4 providers
+2025-06-02 17:05:55,005 - VALIS - INFO - Initialized 4 providers
+2025-06-02 17:05:55,049 - VALIS - INFO - Memory system connected successfully
+2025-06-02 17:05:55,049 - VALIS.NeuralHealth - INFO - Neural Matrix Health Monitor initialized
+2025-06-02 17:05:55,049 - VALIS - INFO - Neural Matrix Health Monitor initialized
+2025-06-02 17:05:55,050 - VALIS - INFO - Loaded persona: advisor_alex
+2025-06-02 17:05:55,050 - VALIS - INFO - Loaded persona: billy_corgan
+2025-06-02 17:05:55,050 - VALIS - INFO - Loaded persona: coach_emma
+2025-06-02 17:05:55,050 - VALIS - INFO - Loaded persona: guide_sam
+2025-06-02 17:05:55,050 - VALIS - INFO - Loaded persona: jane
+2025-06-02 17:05:55,051 - VALIS.ProviderManager - INFO - Successfully created provider: desktop_commander_mcp_real -> RealDesktopCommanderMCPProvider
+2025-06-02 17:05:55,051 - VALIS.ProviderManager - INFO - Initialized provider: desktop_commander_mcp_real
+2025-06-02 17:05:55,051 - VALIS.ProviderManager - INFO - Successfully created provider: anthropic_api -> AnthropicProvider
+2025-06-02 17:05:55,051 - VALIS.ProviderManager - INFO - Initialized provider: anthropic_api
+2025-06-02 17:05:55,051 - VALIS.ProviderManager - INFO - Successfully created provider: openai_api -> OpenAIProvider
+2025-06-02 17:05:55,051 - VALIS.ProviderManager - INFO - Initialized provider: openai_api
+2025-06-02 17:05:55,051 - VALIS.ProviderManager - INFO - Successfully created provider: hardcoded_fallback -> HardcodedFallbackProvider
+2025-06-02 17:05:55,051 - VALIS.ProviderManager - INFO - Initialized provider: hardcoded_fallback
+2025-06-02 17:05:55,051 - VALIS.ProviderManager - INFO - Temporal stabilization active with 4 providers
+2025-06-02 17:05:55,051 - VALIS - INFO - Initialized 4 providers
+2025-06-02 17:05:55,054 - valis_api - INFO - Message History Manager initialized with temporal safeguards
+2025-06-02 17:05:55,059 - VALIS - INFO - Memory system connected successfully
+2025-06-02 17:05:55,060 - VALIS.NeuralHealth - INFO - Neural Matrix Health Monitor initialized
+2025-06-02 17:05:55,060 - VALIS - INFO - Neural Matrix Health Monitor initialized
+2025-06-02 17:05:55,060 - VALIS - INFO - Loaded persona: advisor_alex
+2025-06-02 17:05:55,061 - VALIS - INFO - Loaded persona: billy_corgan
+2025-06-02 17:05:55,061 - VALIS - INFO - Loaded persona: coach_emma
+2025-06-02 17:05:55,062 - VALIS - INFO - Loaded persona: guide_sam
+2025-06-02 17:05:55,062 - VALIS - INFO - Loaded persona: jane
+2025-06-02 17:05:55,062 - VALIS.ProviderManager - INFO - Successfully created provider: desktop_commander_mcp_real -> RealDesktopCommanderMCPProvider
+2025-06-02 17:05:55,063 - VALIS.ProviderManager - INFO - Initialized provider: desktop_commander_mcp_real
+2025-06-02 17:05:55,063 - VALIS.ProviderManager - INFO - Successfully created provider: anthropic_api -> AnthropicProvider
+2025-06-02 17:05:55,063 - VALIS.ProviderManager - INFO - Initialized provider: anthropic_api
+2025-06-02 17:05:55,063 - VALIS.ProviderManager - INFO - Successfully created provider: openai_api -> OpenAIProvider
+2025-06-02 17:05:55,063 - VALIS.ProviderManager - INFO - Initialized provider: openai_api
+2025-06-02 17:05:55,063 - VALIS.ProviderManager - INFO - Successfully created provider: hardcoded_fallback -> HardcodedFallbackProvider
+2025-06-02 17:05:55,063 - VALIS.ProviderManager - INFO - Initialized provider: hardcoded_fallback
+2025-06-02 17:05:55,064 - VALIS.ProviderManager - INFO - Temporal stabilization active with 4 providers
+2025-06-02 17:05:55,064 - VALIS - INFO - Initialized 4 providers
+2025-06-02 17:05:55,069 - valis_api - INFO - VALIS API Enhanced Server Starting...
+2025-06-02 17:05:55,069 - valis_api - INFO - Temporal-Safe AI Democratization Service with Message History
+2025-06-02 17:05:55,069 - valis_api - INFO - Doc Brown's API-102 & API-103 Specifications Implemented
+2025-06-02 17:05:55,069 - valis_api - INFO - FastAPI + VALIS Engine + Message History Integration
+2025-06-02 17:05:55,069 - valis_api - INFO - Message History: Max 100 per session
+2025-06-02 17:05:55,069 - valis_api - INFO - Auto-cleanup: 24 hours
+2025-06-02 17:05:55,069 - valis_api - INFO - Enhanced CORS enabled for localhost:3000
+2025-06-02 17:05:55,070 - valis_api - INFO - Available endpoints: /chat, /personas, /sessions, /health, /config, /sessions/{id}/history, /admin/stats

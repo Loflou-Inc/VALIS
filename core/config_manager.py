@@ -16,7 +16,11 @@ import hashlib
 class ConfigurationManager:
     """Simple configuration manager for backward compatibility"""
     def __init__(self, config_path=None):
-        self.config_path = config_path or "C:/VALIS/config.json"
+        if config_path is None:
+            # Use cross-platform path resolution
+            from pathlib import Path
+            config_path = Path(__file__).parent.parent / "config.json"
+        self.config_path = config_path
     
     def load_config(self):
         """Load configuration and return as object with dict() method"""
@@ -34,7 +38,10 @@ class ConfigurationManager:
         return ConfigObject(config_data)
 
 class ConfigSnapshotManager:
-    def __init__(self, config_file_path: str = "C:/VALIS/config.json"):
+    def __init__(self, config_file_path: str = None):
+        if config_file_path is None:
+            # Use cross-platform path resolution
+            config_file_path = Path(__file__).parent.parent / "config.json"
         self.config_file = Path(config_file_path)
         self.snapshots_dir = self.config_file.parent / "config_snapshots"
         self.snapshots_dir.mkdir(exist_ok=True)
@@ -274,7 +281,8 @@ def get_config():
         import json
         from core.config_schema import VALISConfig
         
-        config_file = Path("C:/VALIS/config.json")
+        # Use cross-platform path resolution
+        config_file = Path(__file__).parent.parent / "config.json"
         if config_file.exists():
             with open(config_file, 'r') as f:
                 config_data = json.load(f)

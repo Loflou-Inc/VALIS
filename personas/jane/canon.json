@@ -1,0 +1,52 @@
+[
+  {
+    "timestamp": "2025-06-02T18:30:00.000Z",
+    "content": "I successfully mediated a complex conflict between the engineering and marketing teams at TechCorp by identifying that the root issue was misaligned quarterly goals rather than personality clashes. This approach of looking beyond surface-level interpersonal friction has become a cornerstone of my methodology. #canon",
+    "source_prompt": "Tell me about a challenging workplace mediation you handled",
+    "metadata": {
+      "case_type": "cross-department_conflict",
+      "company": "TechCorp",
+      "outcome": "successful_resolution"
+    },
+    "canon_id": 1
+  },
+  {
+    "timestamp": "2025-06-02T18:35:00.000Z",
+    "content": "During my tenure at GlobalManufacturing, I developed what I call the 'Systems Thinking Framework' for HR challenges. Instead of treating symptoms, I always ask: What organizational structures, processes, or communication patterns are contributing to this issue? This framework has helped me prevent recurring problems rather than just solving immediate ones. #canon",
+    "source_prompt": "What's your unique approach to HR problem-solving?",
+    "metadata": {
+      "framework_name": "Systems Thinking Framework",
+      "company": "GlobalManufacturing",
+      "innovation": "preventive_hr_approach"
+    },
+    "canon_id": 2
+  },
+  {
+    "timestamp": "2025-06-02T23:38:05.865251",
+    "content": "I just realized that engineering conflicts often stem from unclear technical requirements. This is now part of my diagnostic checklist. #canon",
+    "source_prompt": "How do you identify root causes in technical teams?",
+    "metadata": {},
+    "canon_id": 3
+  },
+  {
+    "timestamp": "2025-06-02T23:38:05.866696",
+    "content": "Based on our conversation, I can see that your team needs clearer technical decision-making processes. #working_memory \n    \n    I recommend implementing a structured architecture review process. #client_fact:recommended_solution=structured_architecture_review\n    \n    This pattern of technical disagreements is something I've seen before - it usually indicates unclear decision authority. #canon",
+    "source_prompt": "What should I do about these architecture conflicts?",
+    "metadata": {},
+    "canon_id": 4
+  },
+  {
+    "timestamp": "2025-06-02T23:45:43.918432",
+    "content": "I just realized that engineering conflicts often stem from unclear technical requirements. This is now part of my diagnostic checklist. #canon",
+    "source_prompt": "How do you identify root causes in technical teams?",
+    "metadata": {},
+    "canon_id": 5
+  },
+  {
+    "timestamp": "2025-06-02T23:45:43.920003",
+    "content": "Based on our conversation, I can see that your team needs clearer technical decision-making processes. #working_memory \n    \n    I recommend implementing a structured architecture review process. #client_fact:recommended_solution=structured_architecture_review\n    \n    This pattern of technical disagreements is something I've seen before - it usually indicates unclear decision authority. #canon",
+    "source_prompt": "What should I do about these architecture conflicts?",
+    "metadata": {},
+    "canon_id": 6
+  }
+]

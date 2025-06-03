@@ -1,5 +1,5 @@
 {
-    "providers": ["desktop_commander_mcp_real", "anthropic_api", "openai_api", "hardcoded_fallback"],
+    "providers": ["desktop_commander_mcp_persistent", "anthropic_api", "openai_api", "hardcoded_fallback"],
     "logging_level": "INFO",
     "enable_memory": true,
     

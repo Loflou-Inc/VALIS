@@ -1,10 +1,13 @@
 """
 VALIS Providers Module
 AI Provider implementations for VALIS
+
+Sprint 2 Cleanup: Only active, tested providers are imported.
+Legacy providers moved to providers/legacy/
 """
 
-from .desktop_commander_provider import DesktopCommanderProvider
-from .desktop_commander_mcp_real import RealDesktopCommanderMCPProvider
+# Import only active providers
+from .desktop_commander_mcp_persistent import PersistentDesktopCommanderMCPProvider
 from .hardcoded_fallback import HardcodedFallbackProvider
 
 # Import API providers with graceful degradation
@@ -22,10 +25,10 @@ except ImportError as e:
     OpenAIProvider = None
     OPENAI_AVAILABLE = False
 
+# Clean registry - only active providers
 __all__ = [
-    "DesktopCommanderProvider", 
-    "RealDesktopCommanderMCPProvider",
-    "HardcodedFallbackProvider",
-    "AnthropicProvider",
-    "OpenAIProvider"
+    "PersistentDesktopCommanderMCPProvider",  # Claude integration (persistent)
+    "HardcodedFallbackProvider",              # Fallback provider
+    "AnthropicProvider",                      # Anthropic API
+    "OpenAIProvider"                          # OpenAI API
 ]

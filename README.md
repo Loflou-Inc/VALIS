@@ -206,6 +206,29 @@ VALIS democratizes AI by making intelligent personas accessible to everyone:
 
 *"The junkie under the High Level Bridge doesn't have an API key but can still get AI help."*
 
+## 🗂️ **Deprecations** 
+
+**Sprint 2 & 3 Provider System Cleanup**: The following components have been deprecated and moved:
+
+### Deprecated Providers (Moved to `providers/legacy/`)
+- `desktop_commander_provider.py` → **Replaced by** `desktop_commander_mcp_persistent.py`
+- `desktop_commander_mcp_real.py` → **Replaced by** `desktop_commander_mcp_persistent.py`  
+- `desktop_commander_provider_fixed.py` → **Replaced by** `desktop_commander_mcp_persistent.py`
+- `desktop_commander_mcp_proper.py` → **Replaced by** `desktop_commander_mcp_persistent.py`
+- `real_desktop_commander_mcp.py` → **Replaced by** `desktop_commander_mcp_persistent.py`
+
+### Deprecated Documentation (Moved to `docs/archives/`)
+- Legacy completion logs and sprint artifacts
+- Old Claude setup instructions  
+- Historical test reports
+
+### Deprecated Test Scripts
+- `sprint1_qa_test_suite.py` → **Use** `test_mcp_connection.py`
+- `test_mcp_direct.py` → **Use** `test_mcp_connection.py`
+- `test_real_providers.py` → **Use** `validate_providers.py`
+
+**Current Architecture**: All Claude integration now uses the persistent MCP approach from Sprint 1.
+
 ## 📜 **License**
 
 MIT License - Free for any use, including commercial applications.

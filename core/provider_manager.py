@@ -99,7 +99,9 @@ class ProviderManager:
         # Import all providers to ensure they're registered
         # This triggers the @register_provider decorators
         try:
-            from providers import desktop_commander_provider
+            # DEPRECATED: desktop_commander_provider moved to providers/legacy/
+            # Now using desktop_commander_mcp_persistent from Sprint 1
+            from providers import desktop_commander_mcp_persistent  # Sprint 1 replacement
             from providers import anthropic_provider  
             from providers import openai_provider
             from providers import hardcoded_fallback

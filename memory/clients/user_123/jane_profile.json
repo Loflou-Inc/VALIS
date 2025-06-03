@@ -1,0 +1,62 @@
+{
+  "facts": {
+    "role": "Software Engineering Manager",
+    "company": "StartupInc",
+    "team_size": "8 engineers",
+    "main_challenge": "team communication and conflict resolution",
+    "communication_style": "direct but supportive",
+    "previous_experience": "first-time manager, promoted from senior engineer role",
+    "conflict_pattern": "architecture_disagreements",
+    "recommended_solution": "structured_architecture_review"
+  },
+  "metadata": {
+    "role": {
+      "timestamp": "2025-06-02T18:10:00.000Z",
+      "metadata": {
+        "source": "initial_consultation"
+      }
+    },
+    "company": {
+      "timestamp": "2025-06-02T18:10:00.000Z",
+      "metadata": {
+        "source": "initial_consultation"
+      }
+    },
+    "team_size": {
+      "timestamp": "2025-06-02T18:15:00.000Z",
+      "metadata": {
+        "source": "follow_up_question"
+      }
+    },
+    "main_challenge": {
+      "timestamp": "2025-06-02T18:20:00.000Z",
+      "metadata": {
+        "source": "needs_assessment"
+      }
+    },
+    "communication_style": {
+      "timestamp": "2025-06-02T18:25:00.000Z",
+      "metadata": {
+        "source": "behavioral_observation"
+      }
+    },
+    "previous_experience": {
+      "timestamp": "2025-06-02T18:30:00.000Z",
+      "metadata": {
+        "source": "background_discussion"
+      }
+    },
+    "conflict_pattern": {
+      "timestamp": "2025-06-02T23:45:43.918998",
+      "metadata": {
+        "confidence": "high",
+        "frequency": "recurring"
+      }
+    },
+    "recommended_solution": {
+      "timestamp": "2025-06-02T23:45:43.921089",
+      "metadata": {}
+    }
+  },
+  "last_updated": "2025-06-02T23:45:43.921093"
+}

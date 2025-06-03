@@ -32,7 +32,8 @@ class SnapshotRequest(BaseModel):
 async def get_current_config():
     """Get current active configuration"""
     try:
-        config_file = Path("C:/VALIS/config.json")
+        # Use cross-platform path resolution
+        config_file = Path(__file__).parent.parent / "config.json"
         if config_file.exists():
             with open(config_file, 'r') as f:
                 config_data = json.load(f)
@@ -53,7 +54,8 @@ async def get_current_config():
 async def get_ui_config():
     """Get UI editing configuration (.valis_config.json)"""
     try:
-        ui_config_file = Path("C:/VALIS/.valis_config.json")
+        # Use cross-platform path resolution
+        ui_config_file = Path(__file__).parent.parent / ".valis_config.json"
         if ui_config_file.exists():
             with open(ui_config_file, 'r') as f:
                 config_data = json.load(f)
