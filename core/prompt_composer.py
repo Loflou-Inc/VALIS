@@ -312,13 +312,11 @@ class PromptComposer:
             logger.warning("Generated prompt is very long, may hit token limits")
             # Could implement truncation logic here if needed
         
-        # Add final instruction to respond
+        # Add proper assistant instruction
         if not prompt.endswith('\n'):
             prompt += '\n'
         
-        current_message = memory_payload.get('message', '')
-        if current_message:
-            prompt += f"\nUser: {current_message}\n\nRespond as your persona:"
+        prompt += "\nAssistant:"
         
         return prompt
     

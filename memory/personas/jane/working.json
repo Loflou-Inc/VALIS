@@ -1,81 +1,62 @@
 [
   {
-    "timestamp": "2025-06-02T18:20:00.000Z",
-    "content": "Noticed an increase in workplace conflict cases involving remote team members. Pattern suggests communication gaps in virtual environments.",
+    "timestamp": "2025-06-02T10:15:00.000Z",
+    "content": "Client shows pattern of technical team conflicts - may need architecture decision-making framework",
+    "type": "strategic_insight",
+    "metadata": {}
+  },
+  {
+    "timestamp": "2025-06-02T11:30:00.000Z",
+    "content": "Engineering teams respond well to structured communication protocols",
     "type": "observation",
-    "metadata": {
-      "pattern_type": "remote_work_conflicts"
-    }
-  },
-  {
-    "timestamp": "2025-06-02T18:25:00.000Z",
-    "content": "Successfully applied active listening technique in client session. Client seemed more willing to explore root causes after feeling heard.",
-    "type": "session_reflection",
-    "metadata": {
-      "technique": "active_listening",
-      "outcome": "positive"
-    }
-  },
-  {
-    "timestamp": "2025-06-02T18:28:00.000Z",
-    "content": "Considering adapting the Systems Thinking Framework to include virtual team dynamics as a core assessment dimension.",
-    "type": "strategic_thinking",
-    "metadata": {
-      "framework_evolution": "virtual_team_integration"
-    }
-  },
-  {
-    "timestamp": "2025-06-02T23:38:05.866259",
-    "content": "Client shows pattern of technical team conflicts - may need architecture decision-making framework",
-    "type": "strategic_insight",
     "metadata": {}
   },
   {
-    "timestamp": "2025-06-02T23:38:05.867144",
-    "content": "Canonized: Based on our conversation, I can see that your team needs clearer technical decision-making processe...",
-    "type": "canon",
+    "timestamp": "2025-06-02T14:20:00.000Z",
+    "content": "First-time managers need explicit guidance on delegation vs micromanagement",
+    "type": "pattern_recognition",
     "metadata": {}
   },
   {
-    "timestamp": "2025-06-02T23:38:05.868205",
-    "content": "Based on our conversation, I can see that your team needs clearer technical decision-making processes.  \n    \n    I recommend implementing a structured architecture review process. #client_fact:recommended_solution=structured_architecture_review\n    \n    This pattern of technical disagreements is something I've seen before - it usually indicates unclear decision authority. #canon",
-    "type": "tagged_memory",
+    "timestamp": "2025-06-03T09:00:00.000Z",
+    "content": "Remote teams require more frequent check-ins for conflict prevention",
+    "type": "best_practice",
     "metadata": {}
   },
   {
-    "timestamp": "2025-06-02T23:38:51.064403",
-    "content": "Discussed: My engineers keep having heated arguments about microservices vs monolith architecture",
-    "type": "conversation_topic",
+    "timestamp": "2025-06-03T13:31:35.167394",
+    "content": "Client shows signs of imposter syndrome - needs confidence building",
+    "type": "observation",
     "metadata": {}
   },
   {
-    "timestamp": "2025-06-02T23:45:43.919489",
-    "content": "Client shows pattern of technical team conflicts - may need architecture decision-making framework",
-    "type": "strategic_insight",
+    "timestamp": "2025-06-03T13:31:35.167934",
+    "content": "Team dynamics suggest need for structured 1-on-1 meetings",
+    "type": "observation",
     "metadata": {}
   },
   {
-    "timestamp": "2025-06-02T23:45:43.920480",
-    "content": "Canonized: Based on our conversation, I can see that your team needs clearer technical decision-making processe...",
-    "type": "canon",
+    "timestamp": "2025-06-03T13:31:35.168452",
+    "content": "Performance issues may be communication-related rather than technical",
+    "type": "observation",
     "metadata": {}
   },
   {
-    "timestamp": "2025-06-02T23:45:43.921567",
-    "content": "Based on our conversation, I can see that your team needs clearer technical decision-making processes.  \n    \n    I recommend implementing a structured architecture review process. #client_fact:recommended_solution=structured_architecture_review\n    \n    This pattern of technical disagreements is something I've seen before - it usually indicates unclear decision authority. #canon",
-    "type": "tagged_memory",
+    "timestamp": "2025-06-03T13:32:36.154399",
+    "content": "Client shows signs of imposter syndrome - needs confidence building",
+    "type": "observation",
     "metadata": {}
   },
   {
-    "timestamp": "2025-06-03T11:12:37.428543",
-    "content": "Canonized: I successfully helped resolve the engineering conflict #canon This should be remembered...",
-    "type": "canon",
+    "timestamp": "2025-06-03T13:32:36.155116",
+    "content": "Team dynamics suggest need for structured 1-on-1 meetings",
+    "type": "observation",
     "metadata": {}
   },
   {
-    "timestamp": "2025-06-03T11:12:37.429812",
-    "content": "Client seems stressed about team dynamics",
-    "type": "tagged_memory",
+    "timestamp": "2025-06-03T13:32:36.155817",
+    "content": "Performance issues may be communication-related rather than technical",
+    "type": "observation",
     "metadata": {}
   }
 ]

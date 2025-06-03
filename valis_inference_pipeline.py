@@ -83,24 +83,47 @@ class VALISInferencePipeline:
         start_time = datetime.now()
         
         try:
-            loop = asyncio.new_event_loop()
-            asyncio.set_event_loop(loop)
+            try:
+                loop = asyncio.get_running_loop()
+            except RuntimeError:
+                loop = asyncio.new_event_loop()
+                asyncio.set_event_loop(loop)
             
-            response_data = loop.run_until_complete(
-                self.valis_engine.get_persona_response(
-                    persona_id=persona_id,
-                    message=enriched_prompt,
-                    session_id=session_id or f"dev_{client_id}",
-                    context={
-                        "client_id": client_id,
-                        "memory_enhanced": True,
-                        "session_history": session_history
-                    }
+            if loop.is_running():
+                # We're in an async context, use asyncio.run() in a new thread
+                import concurrent.futures
+                with concurrent.futures.ThreadPoolExecutor() as executor:
+                    future = executor.submit(
+                        asyncio.run,
+                        self.valis_engine.get_persona_response(
+                            persona_id=persona_id,
+                            message=enriched_prompt,
+                            session_id=session_id or f"dev_{client_id}",
+                            context={
+                                "client_id": client_id,
+                                "memory_enhanced": True,
+                                "session_history": session_history
+                            }
+                        )
+                    )
+                    response_data = future.result()
+            else:
+                response_data = loop.run_until_complete(
+                    self.valis_engine.get_persona_response(
+                        persona_id=persona_id,
+                        message=enriched_prompt,
+                        session_id=session_id or f"dev_{client_id}",
+                        context={
+                            "client_id": client_id,
+                            "memory_enhanced": True,
+                            "session_history": session_history
+                        }
+                    )
                 )
-            )
-            
-        finally:
-            loop.close()
+                
+        except Exception as e:
+            print(f"Error in inference pipeline: {e}")
+            response_data = {"error": str(e), "status": "failed"}
             
         processing_time = (datetime.now() - start_time).total_seconds()
         

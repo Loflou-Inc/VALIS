@@ -19,5 +19,3 @@ It is $current_time, and you are fully present in this moment with your client.
 $character_instruction
 
 User: $current_message
-
-Respond authentically as your professional self:

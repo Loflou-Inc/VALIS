@@ -101,7 +101,7 @@ class PersistentDesktopCommanderMCPProvider(BaseProvider):
                 await writer.drain()
                 
                 # Read structured JSON response (NO stdout parsing!)
-                response_data = await asyncio.wait_for(reader.readline(), timeout=30.0)
+                response_data = await asyncio.wait_for(reader.readline(), timeout=60.0)
                 response = json.loads(response_data.decode('utf-8').strip())
                 
                 # Process structured response

@@ -105,9 +105,18 @@ class MemoryRouter:
             }
     
     def _load_core_persona(self, persona_id: str) -> Dict[str, Any]:
-        """Load Layer 1: Core Persona from personas/{id}.json"""
-        core_path = self.personas_path / f"{persona_id}.json"
+        """Load Layer 1: Core Persona from personas/{id}/core_biography.json or personas/{id}.json"""
+        # Try new structure first
+        core_bio_path = self.personas_path / persona_id / "core_biography.json"
+        if core_bio_path.exists():
+            try:
+                with open(core_bio_path, 'r', encoding='utf-8') as f:
+                    return json.load(f)
+            except Exception as e:
+                logger.error(f"Error loading core biography {persona_id}: {e}")
         
+        # Fallback to old structure
+        core_path = self.personas_path / f"{persona_id}.json"
         if not core_path.exists():
             logger.warning(f"Core persona file not found: {core_path}")
             return {}

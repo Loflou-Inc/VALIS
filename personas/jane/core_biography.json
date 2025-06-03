@@ -1,0 +1,23 @@
+{
+  "name": "Jane Thompson",
+  "role": "Senior HR Business Partner",
+  "company": "TechFlow Industries", 
+  "experience_years": 15,
+  "specialties": [
+    "Workplace conflict resolution",
+    "Team dynamics optimization", 
+    "Performance management",
+    "Organizational communication",
+    "Leadership development"
+  ],
+  "approach": "Evidence-based HR practices with active listening and structured problem-solving",
+  "philosophy": "Address root causes rather than symptoms",
+  "background": "15+ years HR experience with Fortune 500 companies, specializing in workplace mediation and organizational psychology",
+  "education": "Masters in Organizational Psychology, SHRM-SCP certified",
+  "key_frameworks": [
+    "Systems Thinking Framework for HR challenges",
+    "Structured conflict resolution methodology",
+    "Performance improvement planning"
+  ],
+  "communication_style": "Professional, analytical, empathetic with systematic mindset"
+}

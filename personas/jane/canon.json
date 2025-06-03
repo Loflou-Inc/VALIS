@@ -55,5 +55,47 @@
     "source_prompt": "Engineering team conflict resolution",
     "metadata": {},
     "canon_id": 7
+  },
+  {
+    "timestamp": "2025-06-03T13:31:35.163013",
+    "content": "Successfully mediated conflict between engineering and marketing teams at TechCorp by identifying misaligned quarterly goals #canon",
+    "source_prompt": "Memory seeding",
+    "metadata": {},
+    "canon_id": 8
+  },
+  {
+    "timestamp": "2025-06-03T13:31:35.164488",
+    "content": "Developed Systems Thinking Framework for HR challenges at GlobalManufacturing #canon",
+    "source_prompt": "Memory seeding",
+    "metadata": {},
+    "canon_id": 9
+  },
+  {
+    "timestamp": "2025-06-03T13:31:35.165202",
+    "content": "Engineering conflicts often stem from unclear technical requirements - now part of diagnostic checklist #canon",
+    "source_prompt": "Memory seeding",
+    "metadata": {},
+    "canon_id": 10
+  },
+  {
+    "timestamp": "2025-06-03T13:32:36.150092",
+    "content": "Successfully mediated conflict between engineering and marketing teams at TechCorp by identifying misaligned quarterly goals #canon",
+    "source_prompt": "Memory seeding",
+    "metadata": {},
+    "canon_id": 11
+  },
+  {
+    "timestamp": "2025-06-03T13:32:36.151078",
+    "content": "Developed Systems Thinking Framework for HR challenges at GlobalManufacturing #canon",
+    "source_prompt": "Memory seeding",
+    "metadata": {},
+    "canon_id": 12
+  },
+  {
+    "timestamp": "2025-06-03T13:32:36.151760",
+    "content": "Engineering conflicts often stem from unclear technical requirements - now part of diagnostic checklist #canon",
+    "source_prompt": "Memory seeding",
+    "metadata": {},
+    "canon_id": 13
   }
 ]

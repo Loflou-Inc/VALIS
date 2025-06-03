@@ -1,15 +1,23 @@
 {
   "facts": {
     "role": "engineering_manager",
-    "team_size": "8 developers",
-    "main_challenge": "Cross-team communication"
+    "team_size": "8_engineers",
+    "main_challenge": "team_communication"
   },
   "preferences": {},
   "metadata": {
     "role": {
-      "timestamp": "2025-06-03T11:12:37.429309",
+      "timestamp": "2025-06-03T13:32:36.152438",
+      "metadata": {}
+    },
+    "team_size": {
+      "timestamp": "2025-06-03T13:32:36.153148",
+      "metadata": {}
+    },
+    "main_challenge": {
+      "timestamp": "2025-06-03T13:32:36.153690",
       "metadata": {}
     }
   },
-  "last_updated": "2025-06-03T11:12:37.429315"
+  "last_updated": "2025-06-03T13:32:36.153695"
 }
