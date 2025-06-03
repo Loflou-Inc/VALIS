@@ -1,18 +1,41 @@
 #!/usr/bin/env python3
-"""VALIS Persistent MCP Server - Simplified for Sprint 1"""
+"""VALIS Persistent MCP Server - Sprint 7.5 Enhanced
+Fixed persona routing with explicit targeting support
+NO MORE HARDCODED FALLBACK TO JANE!
+"""
 
 import asyncio
 import json
 import logging
+import sys
 from pathlib import Path
 from typing import Dict, Any
+
+# Add VALIS root to path for imports
+sys.path.append(str(Path(__file__).parent.parent))
+
+try:
+    from core.persona_router import PersonaRouter
+    ROUTING_AVAILABLE = True
+except ImportError as e:
+    logging.warning(f"PersonaRouter not available: {e}")
+    ROUTING_AVAILABLE = False
 
 class VALISPersistentMCPServer:
     def __init__(self, port: int = 8765):
         self.port = port
-        self.personas = self.load_personas()
         logging.basicConfig(level=logging.INFO)
         self.logger = logging.getLogger("VALISPersistentMCP")
+        self.personas = self.load_personas()
+        
+        # Sprint 7.5: Initialize persona router
+        if ROUTING_AVAILABLE:
+            self.persona_router = PersonaRouter()
+            self.routing_enabled = True
+            self.logger.info("PersonaRouter initialized - explicit targeting enabled")
+        else:
+            self.routing_enabled = False
+            self.logger.warning("PersonaRouter unavailable - using fallback routing")
         
     def load_personas(self) -> Dict[str, Dict]:
         personas = {}
@@ -25,8 +48,10 @@ class VALISPersistentMCPServer:
                         personas[persona.get('id', persona_file.stem)] = persona
                 except Exception as e:
                     self.logger.error(f"Failed to load {persona_file}: {e}")
-        if not personas:
-            personas['jane'] = {'id': 'jane', 'name': 'Jane'}
+        
+        # Sprint 7.5: NO MORE AUTOMATIC JANE FALLBACK
+        # Personas must be explicitly targeted
+        self.logger.info(f"Loaded {len(personas)} personas: {list(personas.keys())}")
         return personas
     
     async def handle_json_rpc(self, message: Dict[str, Any]) -> Dict[str, Any]:
@@ -45,58 +70,128 @@ class VALISPersistentMCPServer:
             return {"jsonrpc": "2.0", "id": message.get("id"), "error": {"code": -32603, "message": str(e)}}
     
     async def handle_persona_request(self, msg_id, params):
-        persona_id = params.get("persona_id", "jane")
+        """
+        Sprint 7.5: Enhanced persona routing with explicit targeting
+        NO MORE HARDCODED FALLBACK TO JANE!
+        """
+        requested_persona_id = params.get("persona_id", "")
         message = params.get("message", "")
+        context = params.get("context", {})
         
-        # Find the best matching persona
-        persona = self.personas.get(persona_id)
+        # Sprint 7.5: Use PersonaRouter for intelligent routing
+        if self.routing_enabled:
+            routing_result = self.persona_router.route_message(
+                message=message,
+                default_persona=requested_persona_id if requested_persona_id else None,
+                context=context
+            )
+            
+            target_persona_id = routing_result["persona_id"]
+            cleaned_message = routing_result["message"]
+            
+            # Log routing decision
+            if routing_result["targeting_detected"]:
+                self.logger.info(f"Explicit targeting detected: {target_persona_id}")
+            
+            # Handle routing errors
+            if routing_result.get("error"):
+                return {
+                    "jsonrpc": "2.0", 
+                    "id": msg_id, 
+                    "error": {
+                        "code": -32000, 
+                        "message": f"Persona routing error: {routing_result['error']}",
+                        "data": {
+                            "available_personas": routing_result["available_personas"],
+                            "help": self.persona_router.format_targeting_help()
+                        }
+                    }
+                }
+            
+            # Warning if no persona resolved
+            if not target_persona_id:
+                return {
+                    "jsonrpc": "2.0",
+                    "id": msg_id,
+                    "error": {
+                        "code": -32000,
+                        "message": "No persona targeted. Explicit targeting required.",
+                        "data": {
+                            "available_personas": routing_result["available_personas"],
+                            "help": self.persona_router.format_targeting_help()
+                        }
+                    }
+                }
+            
+        else:
+            # Fallback routing (legacy)
+            target_persona_id = requested_persona_id or "jane"
+            cleaned_message = message
+            self.logger.warning("Using legacy routing - PersonaRouter unavailable")
+        
+        # Get the actual persona data
+        persona = self.personas.get(target_persona_id)
         if not persona:
-            # Try partial matching
-            for pid, p in self.personas.items():
-                if persona_id.lower() in pid.lower() or pid.lower() in persona_id.lower():
-                    persona = p
-                    break
-            if not persona:
-                persona = self.personas.get("jane", {'id': 'jane', 'name': 'Jane'})
+            return {
+                "jsonrpc": "2.0",
+                "id": msg_id,
+                "error": {
+                    "code": -32000,
+                    "message": f"Persona '{target_persona_id}' not found",
+                    "data": {"available_personas": list(self.personas.keys())}
+                }
+            }
         
-        response = self.generate_response(persona, message)
-        return {"jsonrpc": "2.0", "id": msg_id, "result": {"response": response, "persona_id": persona_id, "persona_name": persona.get("name", persona_id)}}
+        # Generate response
+        response = self.generate_response(persona, cleaned_message)
+        
+        return {
+            "jsonrpc": "2.0", 
+            "id": msg_id, 
+            "result": {
+                "response": response, 
+                "persona_id": target_persona_id, 
+                "persona_name": persona.get("name", target_persona_id),
+                "routing_used": "PersonaRouter" if self.routing_enabled else "legacy",
+                "targeting_detected": self.routing_enabled and routing_result.get("targeting_detected", False)
+            }
+        }
     
     def generate_response(self, persona, message):
+        """
+        Sprint 7.5: Enhanced response generation for all personas
+        """
         persona_id = persona.get('id', '').lower()
+        persona_name = persona.get('name', persona_id)
         
-        # Handle exact matches first
-        if persona_id in self.personas:
-            actual_persona = self.personas[persona_id]
-        else:
-            # Handle partial matches for common names
-            actual_persona = None
-            for pid, p in self.personas.items():
-                if ('jane' in persona_id and 'jane' in pid.lower()) or \
-                   ('emma' in persona_id and 'emma' in pid.lower()) or \
-                   ('billy' in persona_id and 'billy' in pid.lower()) or \
-                   ('alex' in persona_id and 'alex' in pid.lower()) or \
-                   ('sam' in persona_id and 'sam' in pid.lower()):
-                    actual_persona = p
-                    persona_id = pid.lower()
-                    break
-            
-            if not actual_persona:
-                actual_persona = persona
+        # Generate persona-specific responses based on personality
+        if persona_id == 'jane':
+            return f"As an HR professional with 15+ years of experience, I can help you work through this workplace challenge. Let me approach this systematically: {message}"
         
-        # Generate persona-specific responses
-        if 'jane' in persona_id:
-            return f"Hi! As an HR professional, I can help you work through this challenge: {message}"
-        elif 'emma' in persona_id:
-            return f"YES! Let's tackle '{message}' and get amazing results!"
-        elif 'billy' in persona_id:
-            return f"*adjusts glasses* There's a deeper angle to '{message}' worth exploring..."
-        elif 'alex' in persona_id:
-            return f"Strategic analysis of '{message}': Let me break this down with actionable insights."
-        elif 'sam' in persona_id:
-            return f"Wisdom perspective on '{message}': Let's explore this thoughtfully together."
+        elif persona_id == 'laika':
+            return f"Understood. Here's the priority and what we're going to do: {message}. Let's focus on execution and results."
+        
+        elif persona_id == 'doc_brown':
+            return f"Great Scott! *adjusts temporal measurement equipment* This requires careful analysis of the temporal implications. According to my calculations: {message}"
+        
+        elif persona_id == 'biff':
+            return f"Alright, let's cut to the chase here. Does it work or doesn't it? {message}. Show me the results."
+        
+        elif persona_id == 'coach_emma':
+            return f"YES! I love your energy! Let's create an action plan to tackle this challenge: {message}. You've got this!"
+        
+        elif persona_id == 'advisor_alex':
+            return f"Great question! Let me break this down analytically with strategic insights. Based on my assessment: {message}"
+        
+        elif persona_id == 'guide_sam':
+            return f"I appreciate you sharing this with me. Let's approach this challenge with wisdom and explore it from a broader perspective: {message}"
+        
+        elif persona_id == 'billy_corgan':
+            return f"*adjusts glasses thoughtfully* You know, there's always a deeper creative angle to consider here. Let me share a perspective that might resonate: {message}"
+        
         else:
-            return f"Thank you for reaching out about '{message}'. I'm here to help!"
+            # Generic fallback for any other personas
+            return f"Thank you for reaching out. As {persona_name}, I'm here to help you work through this using my expertise: {message}"
     
     async def handle_client(self, reader, writer):
         try:

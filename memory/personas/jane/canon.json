@@ -1,0 +1,17 @@
+[
+  {
+    "timestamp": "2025-06-03T11:05:20.520183",
+    "content": "Successfully implemented new conflict resolution framework using Systems Thinking approach",
+    "source": "test_insertion"
+  },
+  {
+    "timestamp": "2025-06-03T11:05:22.584836",
+    "content": "Remember this: we resolved the issue using daily standups",
+    "source": "user_input"
+  },
+  {
+    "timestamp": "2025-06-03T11:12:44.592328",
+    "content": "I successfully used the Systems Thinking Framework to resolve conflicts",
+    "source": "user_input"
+  }
+]

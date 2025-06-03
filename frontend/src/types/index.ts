@@ -97,3 +97,44 @@ export interface AppState {
   isLoading: boolean;
   error: string | null;
 }
+
+// Memory System Types for Sprint 8B
+export interface MemoryLayers {
+  core_biography: Record<string, any>;
+  canonized_identity: Array<{
+    timestamp: string;
+    content: string;
+    source_prompt?: string;
+    metadata?: Record<string, any>;
+    canon_id?: number;
+  }>;
+  client_profile: {
+    facts: Record<string, any>;
+    preferences?: Record<string, any>;
+    metadata?: Record<string, any>;
+  };
+  working_memory: Array<{
+    timestamp: string;
+    content: string;
+    type: string;
+    metadata?: Record<string, any>;
+  }>;
+  session_history: Array<{
+    role: string;
+    content: string;
+    timestamp?: string;
+  }>;
+}
+
+export interface ChatResponseEnhanced extends ChatResponse {
+  memory_info?: {
+    layers_used: {
+      core_biography: number;
+      canonized_identity: number;
+      client_profile: number;
+      working_memory: number;
+      session_history: number;
+    };
+    tags_processed: string[];
+  };
+}

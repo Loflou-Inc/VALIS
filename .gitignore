@@ -1,0 +1,88 @@
+# Build outputs
+/frontend/dist/
+/frontend/node_modules/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Archives and backups
+backup/
+archives/
+*.zip
+*.tar.gz
+*.bak
+
+# Test artifacts
+test_results/
+coverage/
+.coverage
+.pytest_cache/
+.tox/
+
+# Memory system temp files
+memory/temp/
+*.memory.tmp
+
+# Legacy test files
+tests/legacy/
+dev_scripts/cascade_test_results.json
+dev_scripts/simple_qa_validation_results.json
+
+# Large PDFs and docs
+*.pdf
+docs/archived/
+
+# Simple frontend fallback
+simple_frontend.html

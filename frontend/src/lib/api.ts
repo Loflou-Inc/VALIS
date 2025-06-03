@@ -98,5 +98,21 @@ export const valisApi = {
   async updateConfig(config: any): Promise<{ status: string; message: string }> {
     const response = await api.post('/config', config);
     return response.data;
+  },
+
+  // Memory System - Sprint 8B
+  async getMemoryData(personaId: string, sessionId: string): Promise<any> {
+    const response = await api.get(`/memory/${personaId}?session=${sessionId}`);
+    return response.data;
+  },
+
+  async addCanonMemory(personaId: string, content: string): Promise<{ success: boolean }> {
+    const response = await api.post('/memory/canon', { persona_id: personaId, content });
+    return response.data;
+  },
+
+  async addClientFact(personaId: string, clientId: string, key: string, value: string): Promise<{ success: boolean }> {
+    const response = await api.post('/memory/client-fact', { persona_id: personaId, client_id: clientId, key, value });
+    return response.data;
   }
 };

@@ -1,0 +1,18 @@
+graph TD
+  Registry[Provider Registry]
+  Claude[Claude MCP]
+  OpenAI[OpenAI API]
+  Local[Local LLM (e.g., Ollama)]
+  Cascade[Cascade Provider]
+
+  Registry --> Claude
+  Registry --> OpenAI
+  Registry --> Local
+  Registry --> Cascade
+
+  subgraph ClaudeMCP
+    Subproc[Persistent MCP Process]
+    Bridge[JSON-RPC Bridge Layer]
+    Subproc --> Bridge
+    Bridge --> Claude
+  end

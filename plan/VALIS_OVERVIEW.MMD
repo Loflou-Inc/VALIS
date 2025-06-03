@@ -1,0 +1,18 @@
+graph TD
+  UI[User Interface / Chat UI]
+  API[VALIS API Server (future FastAPI)]
+  Engine[VALISEngine]
+  Memory[MemoryRouter]
+  Provider[Provider Registry]
+  Model[LLM Provider (Claude/OpenAI/etc)]
+
+  UI -->|Chat| API
+  API --> Engine
+  Engine --> Memory
+  Engine --> Provider
+  Provider --> Model
+  Memory -->|Memory Payload| Provider
+  Model -->|Response| Provider
+  Provider --> Engine
+  Engine -->|Final Message| API
+  API --> UI

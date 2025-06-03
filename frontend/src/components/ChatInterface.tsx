@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
+import { DevTools } from '@/components/DevTools';
 import { 
   Send, 
   User, 
@@ -15,7 +16,7 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { valisApi } from '@/lib/api';
-import type { PersonaInfo, UIMessage, ChatMessage } from '@/types';
+import type { PersonaInfo, UIMessage, ChatMessage, ChatResponseEnhanced } from '@/types';
 import { format } from 'date-fns';
 
 interface ChatInterfaceProps {
@@ -26,6 +27,9 @@ interface ChatInterfaceProps {
 export function ChatInterface({ selectedPersona, sessionId }: ChatInterfaceProps) {
   const [messages, setMessages] = useState<UIMessage[]>([]);
   const [inputValue, setInputValue] = useState('');
+  const [forceCanon, setForceCanon] = useState(false);
+  const [mockMode, setMockMode] = useState(false);
+  const [lastTagsProcessed, setLastTagsProcessed] = useState<string[]>([]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -102,7 +106,7 @@ export function ChatInterface({ selectedPersona, sessionId }: ChatInterfaceProps
       
       return { userMessage, loadingMessage };
     },
-    onSuccess: (response, variables, context) => {
+    onSuccess: (response, _variables, context) => {
       // Replace loading message with actual response
       setMessages(prev => 
         prev.map(msg => 
@@ -117,8 +121,14 @@ export function ChatInterface({ selectedPersona, sessionId }: ChatInterfaceProps
             : msg
         )
       );
+      
+      // Track memory tags from enhanced response
+      const enhancedResponse = response as ChatResponseEnhanced;
+      if (enhancedResponse.memory_info?.tags_processed) {
+        setLastTagsProcessed(enhancedResponse.memory_info.tags_processed);
+      }
     },
-    onError: (error, variables, context) => {
+    onError: (error, _variables, context) => {
       // Replace loading message with error
       setMessages(prev => 
         prev.map(msg => 
@@ -146,10 +156,19 @@ export function ChatInterface({ selectedPersona, sessionId }: ChatInterfaceProps
       return;
     }
 
+    // Process message with dev tools
+    let finalMessage = inputValue.trim();
+    
+    // Add #canon tag if forced
+    if (forceCanon && !finalMessage.includes('#canon')) {
+      finalMessage += ' #canon';
+      setForceCanon(false); // Reset after use
+    }
+
     sendMessageMutation.mutate({
       session_id: sessionId,
       persona_id: selectedPersona.id,
-      message: inputValue.trim(),
+      message: finalMessage,
     });
   };
 
@@ -158,6 +177,26 @@ export function ChatInterface({ selectedPersona, sessionId }: ChatInterfaceProps
       e.preventDefault();
       handleSendMessage(e);
     }
+  };
+
+  // Dev Tools Handlers
+  const handleForceCanon = () => {
+    setForceCanon(true);
+  };
+
+  const handleInsertTestPrompt = () => {
+    const testPrompts = [
+      'I successfully resolved the team conflict using structured communication #canon',
+      'The client prefers direct communication #client_fact',
+      'Team shows signs of burnout - need to address workload #working_memory'
+    ];
+    const randomPrompt = testPrompts[Math.floor(Math.random() * testPrompts.length)];
+    setInputValue(randomPrompt);
+    inputRef.current?.focus();
+  };
+
+  const handleToggleMockMode = () => {
+    setMockMode(!mockMode);
   };
 
   if (!selectedPersona) {
@@ -210,7 +249,16 @@ export function ChatInterface({ selectedPersona, sessionId }: ChatInterfaceProps
       </div>
 
       {/* Input Area */}
-      <div className="border-t p-4">
+      <div className="border-t space-y-3 p-4">
+        {/* Dev Tools */}
+        <DevTools
+          onForceCanon={handleForceCanon}
+          onInsertTestPrompt={handleInsertTestPrompt}
+          onToggleMockMode={handleToggleMockMode}
+          mockMode={mockMode}
+          lastTagsProcessed={lastTagsProcessed}
+        />
+        
         <form onSubmit={handleSendMessage} className="flex space-x-2">
           <Input
             ref={inputRef}
@@ -218,24 +266,35 @@ export function ChatInterface({ selectedPersona, sessionId }: ChatInterfaceProps
             onChange={(e) => setInputValue(e.target.value)}
             onKeyPress={handleKeyPress}
             placeholder={`Message ${selectedPersona.name}...`}
-            disabled={sendMessageMutation.isLoading}
-            className="flex-1"
+            disabled={sendMessageMutation.isPending}
+            className={cn(
+              "flex-1",
+              forceCanon && "border-yellow-500 bg-yellow-50"
+            )}
             maxLength={1000}
           />
           <Button 
             type="submit" 
-            disabled={!inputValue.trim() || sendMessageMutation.isLoading}
+            disabled={!inputValue.trim() || sendMessageMutation.isPending}
             size="icon"
           >
-            {sendMessageMutation.isLoading ? (
+            {sendMessageMutation.isPending ? (
               <Loader2 className="h-4 w-4 animate-spin" />
             ) : (
               <Send className="h-4 w-4" />
             )}
           </Button>
         </form>
-        <div className="flex justify-between items-center mt-2 text-xs text-muted-foreground">
-          <span>Press Enter to send, Shift+Enter for new line</span>
+        
+        <div className="flex justify-between items-center text-xs text-muted-foreground">
+          <div className="flex items-center space-x-2">
+            <span>Press Enter to send, Shift+Enter for new line</span>
+            {forceCanon && (
+              <Badge variant="secondary" className="text-xs">
+                Next: #canon
+              </Badge>
+            )}
+          </div>
           <span>{inputValue.length}/1000</span>
         </div>
       </div>
@@ -260,19 +319,6 @@ function MessageBubble({ message }: MessageBubbleProps) {
         return <Bot className="h-3 w-3" />;
       default:
         return <Bot className="h-3 w-3" />;
-    }
-  };
-
-  const getProviderColor = (provider?: string) => {
-    switch (provider?.toLowerCase()) {
-      case 'desktop commander mcp':
-        return 'bg-blue-500';
-      case 'openai api':
-        return 'bg-green-500';
-      case 'anthropic api':
-        return 'bg-purple-500';
-      default:
-        return 'bg-gray-500';
     }
   };
 

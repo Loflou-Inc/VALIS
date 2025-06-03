@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { Header } from './Header';
 import { Sidebar } from './Sidebar';
 import { ChatInterface } from './ChatInterface';
+import { MemoryDiagnostics } from './MemoryDiagnostics';
 import { SystemDiagnostics } from './SystemDiagnostics';
 import { ConfigurationViewer } from './ConfigurationViewer';
 import { valisApi } from '@/lib/api';
@@ -73,16 +74,33 @@ export function MainLayout() {
         />
 
         {/* Main Content */}
-        <main className="flex-1 flex flex-col overflow-hidden">
+        <main className="flex-1 flex overflow-hidden">
           {viewMode === 'chat' ? (
-            <ChatInterface
-              selectedPersona={selectedPersona}
-              sessionId={currentSession}
-            />
-          ) : viewMode === 'diagnostics' ? (
-            <SystemDiagnostics />
+            <>
+              {/* Chat Interface */}
+              <div className="flex-1 flex flex-col">
+                <ChatInterface
+                  selectedPersona={selectedPersona}
+                  sessionId={currentSession}
+                />
+              </div>
+              
+              {/* Memory Diagnostics Panel */}
+              <div className="w-80 border-l bg-muted/30">
+                <MemoryDiagnostics
+                  selectedPersona={selectedPersona}
+                  sessionId={currentSession}
+                  className="h-full border-0"
+                />
+              </div>
+            </>
           ) : (
-            <ConfigurationViewer />
+            <div className="flex-1 p-8">
+              <div className="text-center">
+                <h2 className="text-2xl font-bold mb-4">Feature Unavailable</h2>
+                <p className="text-muted-foreground">This feature is under development.</p>
+              </div>
+            </div>
           )}
         </main>
       </div>

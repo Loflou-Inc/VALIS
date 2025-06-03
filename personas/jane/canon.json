@@ -48,5 +48,12 @@
     "source_prompt": "What should I do about these architecture conflicts?",
     "metadata": {},
     "canon_id": 6
+  },
+  {
+    "timestamp": "2025-06-03T11:12:37.427274",
+    "content": "I successfully helped resolve the engineering conflict #canon This should be remembered",
+    "source_prompt": "Engineering team conflict resolution",
+    "metadata": {},
+    "canon_id": 7
   }
 ]

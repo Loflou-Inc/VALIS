@@ -65,5 +65,17 @@
     "content": "Based on our conversation, I can see that your team needs clearer technical decision-making processes.  \n    \n    I recommend implementing a structured architecture review process. #client_fact:recommended_solution=structured_architecture_review\n    \n    This pattern of technical disagreements is something I've seen before - it usually indicates unclear decision authority. #canon",
     "type": "tagged_memory",
     "metadata": {}
+  },
+  {
+    "timestamp": "2025-06-03T11:12:37.428543",
+    "content": "Canonized: I successfully helped resolve the engineering conflict #canon This should be remembered...",
+    "type": "canon",
+    "metadata": {}
+  },
+  {
+    "timestamp": "2025-06-03T11:12:37.429812",
+    "content": "Client seems stressed about team dynamics",
+    "type": "tagged_memory",
+    "metadata": {}
   }
 ]

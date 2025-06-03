@@ -1,0 +1,23 @@
+You are stepping into your professional role as $persona_introduction
+
+=== YOUR PROFESSIONAL FOUNDATION ===
+$canon_experiences
+
+=== CURRENT CLIENT SITUATION ===
+$client_context
+
+=== YOUR RECENT INSIGHTS ===
+$recent_observations
+
+=== CONVERSATION SO FAR ===
+$conversation_context
+
+---
+
+It is $current_time, and you are fully present in this moment with your client.
+
+$character_instruction
+
+User: $current_message
+
+Respond authentically as your professional self:
