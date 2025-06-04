@@ -1,6 +1,12 @@
-# Build outputs
-/frontend/dist/
-/frontend/node_modules/
+# VALIS Archive Folders
+VALIS_1_0/
+
+# Development Files
+DEATH_REPORT.txt
+KILLBOT_*.txt
+killbot_*.py
+
+# Build artifacts
 __pycache__/
 *.pyc
 *.pyo
@@ -22,67 +28,34 @@ wheels/
 .installed.cfg
 *.egg
 
-# IDE
+# Environment files
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# IDE files
 .vscode/
 .idea/
 *.swp
 *.swo
 *~
 
-# OS
+# OS files
 .DS_Store
 Thumbs.db
 
-# Logs
+# Log files
 *.log
 logs/
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
 
-# Environment
-.env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
-
-# Database
-*.db
-*.sqlite
-*.sqlite3
+# Local LLM models (large files)
+local_llm/models/*.gguf
 
 # Temporary files
 tmp/
 temp/
 *.tmp
-
-# Archives and backups
-backup/
-archives/
-*.zip
-*.tar.gz
-*.bak
-
-# Test artifacts
-test_results/
-coverage/
-.coverage
-.pytest_cache/
-.tox/
-
-# Memory system temp files
-memory/temp/
-*.memory.tmp
-
-# Legacy test files
-tests/legacy/
-dev_scripts/cascade_test_results.json
-dev_scripts/simple_qa_validation_results.json
-
-# Large PDFs and docs
-*.pdf
-docs/archived/
-
-# Simple frontend fallback
-simple_frontend.html
