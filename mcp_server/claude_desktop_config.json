@@ -1,9 +1,0 @@
-{
-  "mcpServers": {
-    "valis-persona-server": {
-      "command": "python",
-      "args": ["./mcp_server/valis_persona_mcp_server.py"],
-      "env": {}
-    }
-  }
-}

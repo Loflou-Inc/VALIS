@@ -1,10 +1,13 @@
 # VALIS Archive Folders
 VALIS_1_0/
 
-# Development Files
-DEATH_REPORT.txt
-KILLBOT_*.txt
-killbot_*.py
+# Test and debug files (prevent confusion)
+test_*.py
+debug_*.py
+*_test.py
+*_debug.py
+tests/
+__pycache__/
 
 # Build artifacts
 __pycache__/

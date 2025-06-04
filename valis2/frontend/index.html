@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VALIS - Public Chat</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        background: 'hsl(222.2, 84%, 4.9%)',
+                        foreground: 'hsl(210, 40%, 98%)',
+                        card: 'hsl(222.2, 84%, 4.9%)',
+                        'card-foreground': 'hsl(210, 40%, 98%)',
+                        primary: 'hsl(217.2, 91.2%, 59.8%)',
+                        'primary-foreground': 'hsl(222.2, 84%, 4.9%)',
+                        secondary: 'hsl(217.2, 32.6%, 17.5%)',
+                        'secondary-foreground': 'hsl(210, 40%, 98%)',
+                        muted: 'hsl(217.2, 32.6%, 17.5%)',
+                        'muted-foreground': 'hsl(215, 20.2%, 65.1%)',
+                        accent: 'hsl(217.2, 32.6%, 17.5%)',
+                        'accent-foreground': 'hsl(210, 40%, 98%)',
+                        border: 'hsl(217.2, 32.6%, 17.5%)',
+                        input: 'hsl(217.2, 32.6%, 17.5%)',
+                        destructive: 'hsl(0, 62.8%, 30.6%)',
+                        'destructive-foreground': 'hsl(210, 40%, 98%)',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: hsl(222.2, 84%, 4.9%);
+            color: hsl(210, 40%, 98%);
+        }
+        .card {
+            background-color: hsl(222.2, 84%, 4.9%);
+            border: 1px solid hsl(217.2, 32.6%, 17.5%);
+        }
+        .btn-primary {
+            background-color: hsl(217.2, 91.2%, 59.8%);
+            color: hsl(222.2, 84%, 4.9%);
+        }
+        .btn-primary:hover {
+            background-color: hsl(217.2, 91.2%, 65%);
+        }
+        .badge {
+            background-color: hsl(217.2, 32.6%, 17.5%);
+            color: hsl(210, 40%, 98%);
+        }
+        .input {
+            background-color: hsl(217.2, 32.6%, 17.5%);
+            border: 1px solid hsl(217.2, 32.6%, 17.5%);
+            color: hsl(210, 40%, 98%);
+        }
+        .input:focus {
+            border-color: hsl(217.2, 91.2%, 59.8%);
+            outline: none;
+            box-shadow: 0 0 0 2px hsl(217.2, 91.2%, 59.8%, 0.2);
+        }
+        .message-user {
+            background-color: hsl(217.2, 91.2%, 59.8%);
+            color: hsl(222.2, 84%, 4.9%);
+        }
+        .message-assistant {
+            background-color: hsl(222.2, 84%, 4.9%);
+            border: 1px solid hsl(217.2, 32.6%, 17.5%);
+        }
+        .message-error {
+            background-color: hsl(0, 62.8%, 30.6%, 0.1);
+            border: 1px solid hsl(0, 62.8%, 30.6%, 0.2);
+            color: hsl(0, 62.8%, 60%);
+        }
+        .animate-spin {
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-background text-foreground">
+    <!-- VALIS Public Chat Interface -->
+    <div class="h-screen flex flex-col">
+        
+        <!-- Header -->
+        <div class="border-b border-border px-6 py-4 bg-muted bg-opacity-50">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 rounded-full bg-primary bg-opacity-10 flex items-center justify-center">
+                        <svg class="h-5 w-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <h2 class="font-semibold" id="persona-name">VALIS</h2>
+                        <p class="text-sm text-muted-foreground" id="persona-role">AI Assistant</p>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-3">
+                    <span class="badge text-xs px-2 py-1 rounded-full" id="session-badge">Connecting...</span>
+                    <div class="w-2 h-2 rounded-full bg-green-500" id="status-indicator"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Messages Area -->
+        <div class="flex-1 overflow-auto p-6 space-y-4" id="messages-container">
+            <div class="text-center text-muted-foreground" id="welcome-message">
+                <svg class="h-8 w-8 mx-auto mb-2 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-3.582 8-8 8a8.959 8.959 0 01-4.906-1.456L3 21l2.544-5.094A8.959 8.959 0 013 12c0-4.418 3.582-8 8-8s8 3.582 8 8z"/>
+                </svg>
+                <p>Initializing VALIS connection...</p>
+            </div>
+        </div>
+
+        <!-- Input Area -->
+        <div class="border-t border-border space-y-3 p-4">
+            <form id="chat-form" class="flex space-x-2">
+                <input 
+                    type="text" 
+                    id="message-input" 
+                    class="input flex-1 px-3 py-2 rounded-md"
+                    placeholder="Message VALIS..." 
+                    disabled
+                    maxlength="1000"
+                />
+                <button 
+                    type="submit" 
+                    id="send-button"
+                    class="btn-primary px-4 py-2 rounded-md disabled:opacity-50"
+                    disabled
+                >
+                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
+                    </svg>
+                </button>
+            </form>
+            
+            <div class="flex justify-between items-center text-xs text-muted-foreground">
+                <span>Press Enter to send</span>
+                <span id="char-counter">0/1000</span>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        // VALIS Public Chat JavaScript
+        class ValisChat {
+            constructor() {
+                this.clientId = localStorage.getItem('valis_client_id');
+                this.personaId = null;
+                this.personaName = null;
+                this.isConnected = false;
+                this.apiBase = 'http://localhost:3001';
+                
+                this.initializeElements();
+                this.initializeSession();
+            }
+            
+            initializeElements() {
+                this.form = document.getElementById('chat-form');
+                this.input = document.getElementById('message-input');
+                this.sendButton = document.getElementById('send-button');
+                this.messagesContainer = document.getElementById('messages-container');
+                this.personaNameEl = document.getElementById('persona-name');
+                this.personaRoleEl = document.getElementById('persona-role');
+                this.sessionBadge = document.getElementById('session-badge');
+                this.statusIndicator = document.getElementById('status-indicator');
+                this.charCounter = document.getElementById('char-counter');
+                this.welcomeMessage = document.getElementById('welcome-message');
+                
+                // Event listeners
+                this.form.addEventListener('submit', (e) => this.handleSubmit(e));
+                this.input.addEventListener('input', () => this.updateCharCounter());
+                this.input.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                        e.preventDefault();
+                        this.handleSubmit(e);
+                    }
+                });
+            }
+            
+            async initializeSession() {
+                try {
+                    const response = await fetch(`${this.apiBase}/api/init_session`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            client_id: this.clientId
+                        })
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (data.success) {
+                        this.clientId = data.client_id;
+                        this.personaId = data.persona_id;
+                        this.personaName = data.persona_name;
+                        
+                        // Save client_id for persistence
+                        localStorage.setItem('valis_client_id', this.clientId);
+                        
+                        // Update UI
+                        this.personaNameEl.textContent = data.persona_name;
+                        this.personaRoleEl.textContent = data.persona_role;
+                        this.sessionBadge.textContent = `${this.clientId.slice(-8)} • ${data.existing_session ? 'Restored' : 'New'}`;
+                        this.statusIndicator.className = 'w-2 h-2 rounded-full bg-green-500';
+                        
+                        // Enable input
+                        this.input.disabled = false;
+                        this.sendButton.disabled = false;
+                        this.input.placeholder = `Message ${data.persona_name}...`;
+                        this.input.focus();
+                        
+                        // Update welcome message
+                        this.welcomeMessage.innerHTML = `
+                            <svg class="h-8 w-8 mx-auto mb-2 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                            </svg>
+                            <p>Start a conversation with ${data.persona_name}</p>
+                        `;
+                        
+                        this.isConnected = true;
+                        console.log('VALIS session initialized:', data);
+                        
+                    } else {
+                        throw new Error(data.error || 'Failed to initialize session');
+                    }
+                    
+                } catch (error) {
+                    console.error('Session initialization failed:', error);
+                    this.statusIndicator.className = 'w-2 h-2 rounded-full bg-red-500';
+                    this.sessionBadge.textContent = 'Connection Failed';
+                    this.welcomeMessage.innerHTML = `
+                        <p class="text-destructive">Failed to connect to VALIS. Please refresh and try again.</p>
+                    `;
+                }
+            }
+            
+            async handleSubmit(e) {
+                e.preventDefault();
+                
+                const message = this.input.value.trim();
+                if (!message || !this.isConnected) return;
+                
+                // Add user message to UI
+                this.addMessage('user', message);
+                
+                // Clear input
+                this.input.value = '';
+                this.updateCharCounter();
+                
+                // Add loading message
+                const loadingId = this.addMessage('assistant', '', true);
+                
+                try {
+                    const response = await fetch(`${this.apiBase}/api/chat`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            message: message,
+                            client_id: this.clientId,
+                            persona_id: this.personaId
+                        })
+                    });
+                    
+                    const data = await response.json();
+                    
+                    // Remove loading message
+                    this.removeMessage(loadingId);
+                    
+                    if (data.success) {
+                        this.addMessage('assistant', data.response, false, data.provider_used);
+                    } else {
+                        this.addMessage('assistant', data.error || 'Failed to get response', false, null, true);
+                    }
+                    
+                } catch (error) {
+                    console.error('Chat request failed:', error);
+                    this.removeMessage(loadingId);
+                    this.addMessage('assistant', 'Network error. Please try again.', false, null, true);
+                }
+                
+                // Focus input for next message
+                this.input.focus();
+            }
+            
+            addMessage(type, content, isLoading = false, provider = null, isError = false) {
+                const messageId = `msg-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+                const timestamp = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                
+                const messageDiv = document.createElement('div');
+                messageDiv.id = messageId;
+                messageDiv.className = `flex space-x-3 ${type === 'user' ? 'justify-end' : 'justify-start'}`;
+                
+                if (type === 'user') {
+                    messageDiv.innerHTML = `
+                        <div class="max-w-[70%] space-y-1 items-end">
+                            <div class="message-user p-3 rounded-lg">
+                                <p class="text-sm whitespace-pre-wrap">${this.escapeHtml(content)}</p>
+                            </div>
+                            <div class="flex items-center space-x-2 text-xs text-muted-foreground justify-end">
+                                <svg class="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                                <span>${timestamp}</span>
+                            </div>
+                        </div>
+                        <div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center flex-shrink-0">
+                            <svg class="h-4 w-4 text-primary-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                            </svg>
+                        </div>
+                    `;
+                } else {
+                    const messageClass = isError ? 'message-error' : 'message-assistant';
+                    messageDiv.innerHTML = `
+                        <div class="w-8 h-8 rounded-full bg-primary bg-opacity-10 flex items-center justify-center flex-shrink-0">
+                            <svg class="h-4 w-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                            </svg>
+                        </div>
+                        <div class="max-w-[70%] space-y-1 items-start">
+                            <div class="${messageClass} p-3 rounded-lg">
+                                ${isLoading ? `
+                                    <div class="flex items-center space-x-2">
+                                        <div class="animate-spin h-4 w-4 border-2 border-primary border-t-transparent rounded-full"></div>
+                                        <span class="text-sm">Thinking...</span>
+                                    </div>
+                                ` : `
+                                    <p class="text-sm whitespace-pre-wrap">${this.escapeHtml(content)}</p>
+                                `}
+                            </div>
+                            <div class="flex items-center space-x-2 text-xs text-muted-foreground justify-start">
+                                <svg class="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                                <span>${timestamp}</span>
+                                ${provider && !isLoading && !isError ? `
+                                    <span>•</span>
+                                    <span>${provider}</span>
+                                ` : ''}
+                            </div>
+                        </div>
+                    `;
+                }
+                
+                // Remove welcome message on first message
+                if (this.welcomeMessage.style.display !== 'none') {
+                    this.welcomeMessage.style.display = 'none';
+                }
+                
+                this.messagesContainer.appendChild(messageDiv);
+                this.scrollToBottom();
+                
+                return messageId;
+            }
+            
+            removeMessage(messageId) {
+                const message = document.getElementById(messageId);
+                if (message) {
+                    message.remove();
+                }
+            }
+            
+            updateCharCounter() {
+                const length = this.input.value.length;
+                this.charCounter.textContent = `${length}/1000`;
+                
+                if (length > 900) {
+                    this.charCounter.className = 'text-destructive';
+                } else if (length > 800) {
+                    this.charCounter.className = 'text-yellow-500';
+                } else {
+                    this.charCounter.className = 'text-muted-foreground';
+                }
+            }
+            
+            scrollToBottom() {
+                this.messagesContainer.scrollTop = this.messagesContainer.scrollHeight;
+            }
+            
+            escapeHtml(text) {
+                const div = document.createElement('div');
+                div.textContent = text;
+                return div.innerHTML;
+            }
+        }
+        
+        // Initialize VALIS Chat when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            window.valisChat = new ValisChat();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VALIS Admin Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        background: 'hsl(222.2, 84%, 4.9%)',
+                        foreground: 'hsl(210, 40%, 98%)',
+                        card: 'hsl(222.2, 84%, 4.9%)',
+                        'card-foreground': 'hsl(210, 40%, 98%)',
+                        primary: 'hsl(217.2, 91.2%, 59.8%)',
+                        'primary-foreground': 'hsl(222.2, 84%, 4.9%)',
+                        secondary: 'hsl(217.2, 32.6%, 17.5%)',
+                        'secondary-foreground': 'hsl(210, 40%, 98%)',
+                        muted: 'hsl(217.2, 32.6%, 17.5%)',
+                        'muted-foreground': 'hsl(215, 20.2%, 65.1%)',
+                        accent: 'hsl(217.2, 32.6%, 17.5%)',
+                        'accent-foreground': 'hsl(210, 40%, 98%)',
+                        border: 'hsl(217.2, 32.6%, 17.5%)',
+                        input: 'hsl(217.2, 32.6%, 17.5%)',
+                        destructive: 'hsl(0, 62.8%, 30.6%)',
+                        'destructive-foreground': 'hsl(210, 40%, 98%)',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: hsl(222.2, 84%, 4.9%);
+            color: hsl(210, 40%, 98%);
+        }
+        .card {
+            background-color: hsl(222.2, 84%, 4.9%);
+            border: 1px solid hsl(217.2, 32.6%, 17.5%);
+        }
+        .btn-primary {
+            background-color: hsl(217.2, 91.2%, 59.8%);
+            color: hsl(222.2, 84%, 4.9%);
+        }
+        .btn-primary:hover {
+            background-color: hsl(217.2, 91.2%, 65%);
+        }
+        .btn-secondary {
+            background-color: hsl(217.2, 32.6%, 17.5%);
+            color: hsl(210, 40%, 98%);
+            border: 1px solid hsl(217.2, 32.6%, 17.5%);
+        }
+        .btn-secondary:hover {
+            background-color: hsl(217.2, 32.6%, 22%);
+        }
+        .badge {
+            background-color: hsl(217.2, 32.6%, 17.5%);
+            color: hsl(210, 40%, 98%);
+        }
+        .badge-success {
+            background-color: hsl(142, 76%, 36%);
+            color: hsl(210, 40%, 98%);
+        }
+        .badge-warning {
+            background-color: hsl(32, 95%, 44%);
+            color: hsl(222.2, 84%, 4.9%);
+        }
+        .badge-error {
+            background-color: hsl(0, 62.8%, 30.6%);
+            color: hsl(210, 40%, 98%);
+        }
+        .input {
+            background-color: hsl(217.2, 32.6%, 17.5%);
+            border: 1px solid hsl(217.2, 32.6%, 17.5%);
+            color: hsl(210, 40%, 98%);
+        }
+        .input:focus {
+            border-color: hsl(217.2, 91.2%, 59.8%);
+            outline: none;
+            box-shadow: 0 0 0 2px hsl(217.2, 91.2%, 59.8%, 0.2);
+        }
+        .nav-tab {
+            padding: 0.5rem 1rem;
+            border-bottom: 2px solid transparent;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .nav-tab:hover {
+            background-color: hsl(217.2, 32.6%, 17.5%);
+        }
+        .nav-tab.active {
+            border-bottom-color: hsl(217.2, 91.2%, 59.8%);
+            color: hsl(217.2, 91.2%, 59.8%);
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-background text-foreground">
+    <!-- VALIS Admin Dashboard -->
+    <div class="h-screen flex flex-col">
+        
+        <!-- Header -->
+        <div class="border-b border-border px-6 py-4 bg-muted bg-opacity-50">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 rounded-full bg-primary bg-opacity-10 flex items-center justify-center">
+                        <svg class="h-5 w-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <h1 class="font-bold text-lg">VALIS Admin Dashboard</h1>
+                        <p class="text-sm text-muted-foreground">System Control & Monitoring</p>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-3">
+                    <div class="badge text-xs px-2 py-1 rounded-full" id="system-status">Connecting...</div>
+                    <div class="w-2 h-2 rounded-full bg-yellow-500" id="status-indicator"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <div class="border-b border-border">
+            <div class="px-6">
+                <div class="flex space-x-0">
+                    <div class="nav-tab active" data-tab="overview">Overview</div>
+                    <div class="nav-tab" data-tab="sessions">Sessions</div>
+                    <div class="nav-tab" data-tab="personas">Personas</div>
+                    <div class="nav-tab" data-tab="memory">Memory</div>
+                    <div class="nav-tab" data-tab="logs">Logs</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="flex-1 overflow-auto p-6">
+            <!-- Overview Tab -->
+            <div id="overview-tab" class="tab-content">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+                    <div class="card p-4 rounded-lg">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-10 h-10 rounded-full bg-blue-500 bg-opacity-10 flex items-center justify-center">
+                                <svg class="h-5 w-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <p class="text-sm text-muted-foreground">Total Sessions</p>
+                                <p class="text-2xl font-bold" id="total-sessions">-</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card p-4 rounded-lg">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-10 h-10 rounded-full bg-green-500 bg-opacity-10 flex items-center justify-center">
+                                <svg class="h-5 w-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <p class="text-sm text-muted-foreground">Active Personas</p>
+                                <p class="text-2xl font-bold" id="total-personas">-</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card p-4 rounded-lg">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-10 h-10 rounded-full bg-purple-500 bg-opacity-10 flex items-center justify-center">
+                                <svg class="h-5 w-5 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <p class="text-sm text-muted-foreground">Working Memories</p>
+                                <p class="text-2xl font-bold" id="working-memories">-</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card p-4 rounded-lg">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-10 h-10 rounded-full bg-orange-500 bg-opacity-10 flex items-center justify-center">
+                                <svg class="h-5 w-5 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <p class="text-sm text-muted-foreground">Canon Memories</p>
+                                <p class="text-2xl font-bold" id="canon-memories">-</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card p-4 rounded-lg">
+                    <h3 class="font-semibold mb-4">System Status</h3>
+                    <div class="space-y-2" id="system-info">
+                        <p class="text-sm text-muted-foreground">Loading system information...</p>
+                    </div>
+                </div>
+            </div>
