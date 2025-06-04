@@ -56,10 +56,7 @@ logs/
 local_llm/models/*.gguf
 local_llm/models/*.bin
 local_llm/models/*.safetensors
-local_llm/llama.cpp/build/
-local_llm/llama.cpp/.git/
-local_llm/llama.cpp/bin/
-local_llm/llama.cpp/*.exe
+local_llm/llama.cpp/
 
 # Temporary files
 tmp/
