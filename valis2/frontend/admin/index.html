@@ -131,6 +131,7 @@
                     <div class="nav-tab" data-tab="personas">Personas</div>
                     <div class="nav-tab" data-tab="memory">Memory</div>
                     <div class="nav-tab" data-tab="logs">Logs</div>
+                    <div class="nav-tab" data-tab="executions">Executions</div>
                 </div>
             </div>
         </div>
@@ -204,3 +205,285 @@
                     </div>
                 </div>
             </div>
+
+            
+            <!-- Executions Tab -->
+            <div id="executions-tab" class="tab-content hidden">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                    <!-- Test Command Panel -->
+                    <div class="card p-4 rounded-lg">
+                        <h3 class="font-semibold mb-4">Test Command Execution</h3>
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium mb-2">Command</label>
+                                <input type="text" 
+                                       class="input w-full p-2 rounded border"
+                                       id="test-command"
+                                       placeholder="list files in C:\VALIS"
+                                       value="list files in C:\VALIS">
+                            </div>
+                            <button class="btn-primary px-4 py-2 rounded" onclick="testExecution()">
+                                Execute Test Command
+                            </button>
+                            <div id="test-result" class="text-sm text-muted-foreground hidden">
+                                <div class="bg-muted p-3 rounded mt-2">
+                                    <pre id="test-output"></pre>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Execution Statistics -->
+                    <div class="card p-4 rounded-lg">
+                        <h3 class="font-semibold mb-4">Execution Statistics</h3>
+                        <div class="space-y-3">
+                            <div class="flex justify-between">
+                                <span class="text-sm text-muted-foreground">Total Executions</span>
+                                <span class="font-medium" id="total-executions">-</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-sm text-muted-foreground">Success Rate</span>
+                                <span class="font-medium" id="success-rate">-</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-sm text-muted-foreground">Avg Execution Time</span>
+                                <span class="font-medium" id="avg-execution-time">-</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-sm text-muted-foreground">Most Used Intent</span>
+                                <span class="font-medium" id="top-intent">-</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Recent Executions -->
+                <div class="card p-4 rounded-lg">
+                    <h3 class="font-semibold mb-4">Recent Command Executions</h3>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-sm">
+                            <thead>
+                                <tr class="border-b border-border">
+                                    <th class="text-left py-2">ID</th>
+                                    <th class="text-left py-2">Client</th>
+                                    <th class="text-left py-2">Persona</th>
+                                    <th class="text-left py-2">Intent</th>
+                                    <th class="text-left py-2">Function</th>
+                                    <th class="text-left py-2">Status</th>
+                                    <th class="text-left py-2">Time</th>
+                                    <th class="text-left py-2">Created</th>
+                                </tr>
+                            </thead>
+                            <tbody id="executions-table">
+                                <tr>
+                                    <td colspan="8" class="py-4 text-center text-muted-foreground">
+                                        Loading executions...
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+
+    <!-- JavaScript for Admin Dashboard -->
+    <script>
+        const API_BASE = 'http://127.0.0.1:3001/api';
+        const ADMIN_KEY = 'valis_admin_2025';
+        
+        // Tab management
+        function initTabs() {
+            const tabs = document.querySelectorAll('.nav-tab');
+            const tabContents = document.querySelectorAll('.tab-content');
+            
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    // Remove active class from all tabs
+                    tabs.forEach(t => t.classList.remove('active'));
+                    // Add active class to clicked tab
+                    tab.classList.add('active');
+                    
+                    // Hide all tab contents
+                    tabContents.forEach(content => content.classList.add('hidden'));
+                    // Show selected tab content
+                    const targetTab = tab.getAttribute('data-tab');
+                    const targetContent = document.getElementById(targetTab + '-tab');
+                    if (targetContent) {
+                        targetContent.classList.remove('hidden');
+                        
+                        // Load data for specific tabs
+                        if (targetTab === 'executions') {
+                            loadExecutions();
+                        }
+                    }
+                });
+            });
+        }
+        
+        // Test execution function
+        async function testExecution() {
+            const command = document.getElementById('test-command').value;
+            const resultDiv = document.getElementById('test-result');
+            const outputPre = document.getElementById('test-output');
+            
+            if (!command.trim()) {
+                alert('Please enter a command to test');
+                return;
+            }
+            
+            try {
+                outputPre.textContent = 'Executing command...';
+                resultDiv.classList.remove('hidden');
+                
+                const response = await fetch(`${API_BASE}/admin/test_execution`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Admin-Key': ADMIN_KEY
+                    },
+                    body: JSON.stringify({ command: command })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    outputPre.textContent = JSON.stringify(data.result, null, 2);
+                } else {
+                    outputPre.textContent = 'Error: ' + data.error;
+                }
+                
+                // Refresh executions list after test
+                setTimeout(loadExecutions, 1000);
+                
+            } catch (error) {
+                outputPre.textContent = 'Network Error: ' + error.message;
+            }
+        }
+        
+        // Load executions list
+        async function loadExecutions() {
+            try {
+                const response = await fetch(`${API_BASE}/admin/executions`, {
+                    headers: { 'X-Admin-Key': ADMIN_KEY }
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    updateExecutionsTable(data.executions);
+                    updateExecutionStats(data.executions);
+                } else {
+                    console.error('Failed to load executions:', data.error);
+                }
+                
+            } catch (error) {
+                console.error('Error loading executions:', error);
+            }
+        }
+        
+        // Update executions table
+        function updateExecutionsTable(executions) {
+            const tbody = document.getElementById('executions-table');
+            
+            if (executions.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="8" class="py-4 text-center text-muted-foreground">
+                            No executions found
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            tbody.innerHTML = executions.map(exec => `
+                <tr class="border-b border-border hover:bg-muted hover:bg-opacity-30">
+                    <td class="py-2 font-mono text-xs">${exec.execution_id}</td>
+                    <td class="py-2">${exec.client_name}</td>
+                    <td class="py-2">${exec.persona_name}</td>
+                    <td class="py-2">
+                        <span class="badge text-xs px-2 py-1 rounded">${exec.intent}</span>
+                    </td>
+                    <td class="py-2 font-mono text-xs">${exec.function_name}</td>
+                    <td class="py-2">
+                        <span class="badge ${exec.success ? 'badge-success' : 'badge-error'} text-xs px-2 py-1 rounded">
+                            ${exec.success ? 'Success' : 'Failed'}
+                        </span>
+                    </td>
+                    <td class="py-2">${exec.execution_time ? exec.execution_time.toFixed(2) + 's' : '-'}</td>
+                    <td class="py-2 text-xs text-muted-foreground">
+                        ${new Date(exec.created_at).toLocaleString()}
+                    </td>
+                </tr>
+            `).join('');
+        }
+        
+        // Update execution statistics
+        function updateExecutionStats(executions) {
+            const totalExecs = executions.length;
+            const successCount = executions.filter(e => e.success).length;
+            const successRate = totalExecs > 0 ? ((successCount / totalExecs) * 100).toFixed(1) + '%' : '-';
+            
+            const avgTime = executions.length > 0 
+                ? (executions.reduce((sum, e) => sum + (e.execution_time || 0), 0) / executions.length).toFixed(2) + 's'
+                : '-';
+            
+            // Find most common intent
+            const intentCounts = {};
+            executions.forEach(e => {
+                intentCounts[e.intent] = (intentCounts[e.intent] || 0) + 1;
+            });
+            const topIntent = Object.keys(intentCounts).length > 0 
+                ? Object.keys(intentCounts).reduce((a, b) => intentCounts[a] > intentCounts[b] ? a : b)
+                : '-';
+            
+            document.getElementById('total-executions').textContent = totalExecs;
+            document.getElementById('success-rate').textContent = successRate;
+            document.getElementById('avg-execution-time').textContent = avgTime;
+            document.getElementById('top-intent').textContent = topIntent;
+        }
+        
+        // Load overview data
+        async function loadOverview() {
+            try {
+                // Load basic stats
+                const [sessionsRes, personasRes] = await Promise.all([
+                    fetch(`${API_BASE}/admin/sessions`, { headers: { 'X-Admin-Key': ADMIN_KEY } }),
+                    fetch(`${API_BASE}/admin/personas`, { headers: { 'X-Admin-Key': ADMIN_KEY } })
+                ]);
+                
+                const [sessionsData, personasData] = await Promise.all([
+                    sessionsRes.json(),
+                    personasRes.json()
+                ]);
+                
+                if (sessionsData.success) {
+                    document.getElementById('total-sessions').textContent = sessionsData.total;
+                }
+                
+                if (personasData.success) {
+                    document.getElementById('total-personas').textContent = personasData.total;
+                }
+                
+                // Update system status
+                document.getElementById('system-status').textContent = 'Operational';
+                document.getElementById('system-status').className = 'badge-success text-xs px-2 py-1 rounded-full';
+                document.getElementById('status-indicator').className = 'w-2 h-2 rounded-full bg-green-500';
+                
+            } catch (error) {
+                console.error('Error loading overview:', error);
+                document.getElementById('system-status').textContent = 'Error';
+                document.getElementById('system-status').className = 'badge-error text-xs px-2 py-1 rounded-full';
+                document.getElementById('status-indicator').className = 'w-2 h-2 rounded-full bg-red-500';
+            }
+        }
+        
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', () => {
+            initTabs();
+            loadOverview();
+        });
+    </script>
+</body>
+</html>

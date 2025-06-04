@@ -124,9 +124,11 @@ class ProviderManager:
             # Import providers dynamically
             from providers.mcp_provider import MCPProvider
             from providers.local_mistral import LocalMistralProvider
+            from providers.mcp_execution_provider import MCPExecutionProvider
             
             self.providers["mcp"] = MCPProvider()
             self.providers["local_mistral"] = LocalMistralProvider()
+            self.providers["mcp_execution"] = MCPExecutionProvider()
             
             logger.info(f"Initialized providers: {list(self.providers.keys())}")
             

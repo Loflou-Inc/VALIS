@@ -419,3 +419,116 @@ def get_inference_logs(client_id):
     except Exception as e:
         logger.error(f"Failed to get inference logs: {e}")
         return jsonify({'success': False, 'error': str(e)}), 500
+
+@admin_bp.route('/api/admin/executions', methods=['GET'])
+@require_admin_auth
+def list_executions():
+    """List recent command executions"""
+    try:
+        limit = request.args.get('limit', 50, type=int)
+        
+        executions = db.query("""
+            SELECT el.*, pp.name as persona_name, cp.name as client_name
+            FROM execution_logs el
+            LEFT JOIN persona_profiles pp ON el.persona_id = pp.id
+            LEFT JOIN client_profiles cp ON el.client_id = cp.id
+            ORDER BY el.created_at DESC
+            LIMIT %s
+        """, (limit,))
+        
+        execution_list = []
+        for exec in executions:
+            execution_list.append({
+                'execution_id': exec['execution_id'],
+                'client_name': exec['client_name'] or 'Anonymous',
+                'persona_name': exec['persona_name'],
+                'intent': exec['intent'],
+                'function_name': exec['function_name'],
+                'success': exec['success'],
+                'execution_time': exec['execution_time'],
+                'result_preview': exec['result_preview'],
+                'created_at': exec['created_at'].isoformat() if exec['created_at'] else None
+            })
+        
+        return jsonify({
+            'success': True,
+            'executions': execution_list,
+            'total': len(execution_list)
+        })
+        
+    except Exception as e:
+        logger.error(f"Failed to list executions: {e}")
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
+@admin_bp.route('/api/admin/execution/<execution_id>', methods=['GET'])
+@require_admin_auth
+def get_execution_detail(execution_id):
+    """Get detailed execution information"""
+    try:
+        execution = db.query("""
+            SELECT el.*, pp.name as persona_name, cp.name as client_name
+            FROM execution_logs el
+            LEFT JOIN persona_profiles pp ON el.persona_id = pp.id
+            LEFT JOIN client_profiles cp ON el.client_id = cp.id
+            WHERE el.execution_id = %s
+        """, (execution_id,))
+        
+        if not execution:
+            return jsonify({'success': False, 'error': 'Execution not found'}), 404
+        
+        exec = execution[0]
+        
+        # Parse parameters if they exist
+        parameters = exec['parameters']
+        if isinstance(parameters, str):
+            try:
+                parameters = json.loads(parameters)
+            except:
+                parameters = {}
+        
+        return jsonify({
+            'success': True,
+            'execution': {
+                'execution_id': exec['execution_id'],
+                'client_name': exec['client_name'] or 'Anonymous',
+                'persona_name': exec['persona_name'],
+                'intent': exec['intent'],
+                'function_name': exec['function_name'],
+                'parameters': parameters,
+                'command_text': exec['command_text'],
+                'success': exec['success'],
+                'result_preview': exec['result_preview'],
+                'execution_time': exec['execution_time'],
+                'created_at': exec['created_at'].isoformat() if exec['created_at'] else None
+            }
+        })
+        
+    except Exception as e:
+        logger.error(f"Failed to get execution detail: {e}")
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
+@admin_bp.route('/api/admin/test_execution', methods=['POST'])
+@require_admin_auth  
+def test_execution():
+    """Test execution capabilities from admin interface"""
+    try:
+        data = request.get_json()
+        command = data.get('command', 'list files in C:\\VALIS')
+        
+        # Import and test execution provider
+        from providers.mcp_execution_provider import MCPExecutionProvider
+        
+        provider = MCPExecutionProvider()
+        result = provider.ask(command, 'admin_test', 'admin')
+        
+        return jsonify({
+            'success': True,
+            'test_command': command,
+            'result': result
+        })
+        
+    except Exception as e:
+        logger.error(f"Failed to test execution: {e}")
+        return jsonify({'success': False, 'error': str(e)}), 500
