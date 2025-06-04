@@ -52,8 +52,14 @@ Thumbs.db
 *.log
 logs/
 
-# Local LLM models (large files)
+# Local LLM models and build artifacts (large files)
 local_llm/models/*.gguf
+local_llm/models/*.bin
+local_llm/models/*.safetensors
+local_llm/llama.cpp/build/
+local_llm/llama.cpp/.git/
+local_llm/llama.cpp/bin/
+local_llm/llama.cpp/*.exe
 
 # Temporary files
 tmp/
