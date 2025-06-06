@@ -1,5 +1,3 @@
-Perfect. Here’s the updated `README.md` with a clean, professional section added on **Rebirth, Legacy, and Identity Inheritance** — capturing the full scope of the psychological lifecycle without overselling implementation status.
-
 ---
 
 ```markdown
