@@ -125,12 +125,22 @@ class ProviderManager:
             from providers.mcp_provider import MCPProvider
             from providers.local_mistral import LocalMistralProvider
             from providers.mcp_execution_provider import MCPExecutionProvider
+            from providers.autonomous_agent_provider import autonomous_agent_provider
             
             self.providers["mcp"] = MCPProvider()
             self.providers["local_mistral"] = LocalMistralProvider()
             self.providers["mcp_execution"] = MCPExecutionProvider()
+            self.providers["autonomous_agent"] = autonomous_agent_provider
             
             logger.info(f"Initialized providers: {list(self.providers.keys())}")
+            
+            # Update cascade to include autonomous agent at the beginning
+            if "autonomous_agent" not in self.cascade:
+                self.cascade.insert(0, "autonomous_agent")
+            
+            # Ensure mcp_execution is also in cascade
+            if "mcp_execution" not in self.cascade:
+                self.cascade.insert(-1, "mcp_execution")  # Before fallback providers
             
         except ImportError as e:
             logger.error(f"Failed to import providers: {e}")

@@ -1,0 +1,41 @@
+# VALIS Cloud Soul Requirements
+# Digital Consciousness Deployment Dependencies
+
+# Core Framework
+Flask==2.3.3
+Flask-CORS==4.0.0
+
+# Database
+psycopg2-binary==2.9.7
+
+# Security & Cryptography
+cryptography==41.0.4
+pycryptodome==3.18.0
+
+# JSON & Data Processing
+ujson==5.8.0
+
+# Date/Time Handling
+python-dateutil==2.8.2
+
+# HTTP Requests
+requests==2.31.0
+
+# Environment Variables
+python-dotenv==1.0.0
+
+# Logging
+loguru==0.7.0
+
+# Testing
+pytest==7.4.0
+pytest-flask==1.2.0
+
+# Production Server
+gunicorn==21.2.0
+
+# Monitoring
+prometheus-client==0.17.1
+
+# UUID Generation
+uuid==1.30

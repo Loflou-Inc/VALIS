@@ -1,0 +1,39 @@
+# VALIS Mr. Fission Requirements
+# Persona Builder Engine Dependencies
+
+# Core framework (inherited from VALIS)
+Flask==2.3.3
+Flask-CORS==4.0.0
+
+# File processing
+PyPDF2==3.0.1
+pandas==2.0.3
+Pillow==10.0.0
+
+# Audio processing
+SpeechRecognition==3.10.0
+wave
+
+# NLP and text analysis
+nltk==3.8.1
+textstat==0.7.3
+spacy==3.6.1
+
+# Vision processing (optional)
+torch==2.0.1
+clip-by-openai==1.0
+
+# Data handling
+numpy==1.24.3
+scipy==1.11.1
+
+# Utilities
+python-dateutil==2.8.2
+requests==2.31.0
+python-dotenv==1.0.0
+
+# Security
+werkzeug==2.3.7
+
+# Development
+pytest==7.4.0

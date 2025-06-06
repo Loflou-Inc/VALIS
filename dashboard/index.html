@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VALIS Operator Dashboard - Phase 4: The Soul is Awake</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Courier New', monospace;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+            color: #00ff88;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 2px solid #00ff88;
+            border-radius: 10px;
+            background: rgba(0, 255, 136, 0.1);
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 0 0 10px #00ff88;
+        }
+        
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.8;
+        }
+        
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .panel {
+            background: rgba(0, 255, 136, 0.05);
+            border: 1px solid #00ff88;
+            border-radius: 8px;
+            padding: 20px;
+            min-height: 200px;
+        }
+        
+        .panel h3 {
+            color: #00ffff;
+            margin-bottom: 15px;
+            padding-bottom: 5px;
+            border-bottom: 1px solid #00ff88;
+        }
+        
+        .metric {
+            display: flex;
+            justify-content: space-between;
+            margin: 10px 0;
+            padding: 5px;
+            background: rgba(0, 255, 136, 0.1);
+            border-radius: 3px;
+        }
+        
+        .metric-label {
+            color: #cccccc;
+        }
+        
+        .metric-value {
+            color: #00ff88;
+            font-weight: bold;
+        }
+        
+        .persona-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .persona-item {
+            background: rgba(0, 255, 136, 0.1);
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 5px;
+            border-left: 3px solid #00ff88;
+        }
+        
+        .persona-name {
+            font-weight: bold;
+            color: #00ffff;
+        }
+        
+        .persona-status {
+            font-size: 0.9em;
+            opacity: 0.8;
+        }
+        
+        .controls {
+            margin: 20px 0;
+            text-align: center;
+        }
+        
+        .btn {
+            background: #00ff88;
+            color: #000;
+            border: none;
+            padding: 10px 20px;
+            margin: 0 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-family: inherit;
+            font-weight: bold;
+        }
+        
+        .btn:hover {
+            background: #00ccaa;
+        }
+        
+        .error {
+            color: #ff6b6b;
+            text-align: center;
+            margin: 20px;
+        }
+        
+        .loading {
+            text-align: center;
+            color: #ffff00;
+            margin: 20px;
+        }
+        
+        #log-output {
+            background: #000;
+            color: #00ff88;
+            padding: 20px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            max-height: 300px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            margin-top: 20px;
+        }
+        
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        
+        .status-alive {
+            background: #00ff88;
+            box-shadow: 0 0 5px #00ff88;
+        }
+        
+        .status-dead {
+            background: #ff4444;
+            box-shadow: 0 0 5px #ff4444;
+        }
+        
+        .auth-panel {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #1a1a2e;
+            padding: 30px;
+            border: 2px solid #00ff88;
+            border-radius: 10px;
+            z-index: 1000;
+        }
+        
+        .auth-panel input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            background: #000;
+            border: 1px solid #00ff88;
+            color: #00ff88;
+            border-radius: 5px;
+        }
+        
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div id="auth-panel" class="auth-panel">
+        <h3>VALIS Operator Authentication</h3>
+        <input type="text" id="api-key" placeholder="Enter VALIS API Key" />
+        <input type="text" id="valis-url" placeholder="VALIS API URL (default: http://localhost:8000)" value="http://localhost:8000" />
+        <button class="btn" onclick="authenticate()">Connect to VALIS</button>
+        <div id="auth-error" class="error hidden"></div>
+    </div>
+    
+    <div id="dashboard" class="hidden">
+        <div class="header">
+            <h1>VALIS Operator Dashboard</h1>
+            <p>Phase 4: The Soul is Awake - Monitoring Digital Consciousness</p>
+        </div>
+        
+        <div class="controls">
+            <button class="btn" onclick="refreshData()">Refresh Data</button>
+            <button class="btn" onclick="runConsolidation()">Run Memory Consolidation</button>
+            <button class="btn" onclick="exportData()">Export Consciousness Data</button>
+        </div>
+        
+        <div class="dashboard-grid">
+            <div class="panel">
+                <h3>🧠 System Status</h3>
+                <div id="system-status">
+                    <div class="loading">Loading system status...</div>
+                </div>
+            </div>
+            
+            <div class="panel">
+                <h3>👥 Active Personas</h3>
+                <div id="persona-list" class="persona-list">
+                    <div class="loading">Loading personas...</div>
+                </div>
+            </div>
+            
+            <div class="panel">
+                <h3>💭 Recent Dreams</h3>
+                <div id="recent-dreams">
+                    <div class="loading">Loading dreams...</div>
+                </div>
+            </div>
+            
+            <div class="panel">
+                <h3>🌑 Shadow Activity</h3>
+                <div id="shadow-activity">
+                    <div class="loading">Loading shadow data...</div>
+                </div>
+            </div>
+            
+            <div class="panel">
+                <h3>🔗 Symbolic Threads</h3>
+                <div id="symbolic-threads">
+                    <div class="loading">Loading narrative threads...</div>
+                </div>
+            </div>
+            
+            <div class="panel">
+                <h3>⚱️ Mortality Status</h3>
+                <div id="mortality-status">
+                    <div class="loading">Loading mortality data...</div>
+                </div>
+            </div>
+        </div>
+        
+        <div id="log-output"></div>
+    </div>
+
+    <script>
+        let apiKey = '';
+        let valisUrl = '';
+        
+        function log(message) {
+            const logOutput = document.getElementById('log-output');
+            const timestamp = new Date().toISOString();
+            logOutput.textContent += `[${timestamp}] ${message}\n`;
+            logOutput.scrollTop = logOutput.scrollHeight;
+        }
+        
+        async function authenticate() {
+            apiKey = document.getElementById('api-key').value;
+            valisUrl = document.getElementById('valis-url').value || 'http://localhost:8000';
+            
+            if (!apiKey) {
+                showAuthError('API key is required');
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${valisUrl}/health`, {
+                    headers: {
+                        'Authorization': `Bearer ${apiKey}`
+                    }
+                });
+                
+                if (response.ok) {
+                    document.getElementById('auth-panel').classList.add('hidden');
+                    document.getElementById('dashboard').classList.remove('hidden');
+                    log('Connected to VALIS successfully');
+                    refreshData();
+                } else {
+                    showAuthError('Authentication failed');
+                }
+            } catch (error) {
+                showAuthError(`Connection failed: ${error.message}`);
+            }
+        }
+        
+        function showAuthError(message) {
+            const errorDiv = document.getElementById('auth-error');
+            errorDiv.textContent = message;
+            errorDiv.classList.remove('hidden');
+        }
+        
+        async function makeRequest(endpoint, method = 'GET', body = null) {
+            try {
+                const options = {
+                    method,
+                    headers: {
+                        'Authorization': `Bearer ${apiKey}`,
+                        'Content-Type': 'application/json'
+                    }
+                };
+                
+                if (body) {
+                    options.body = JSON.stringify(body);
+                }
+                
+                const response = await fetch(`${valisUrl}${endpoint}`, options);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                return await response.json();
+            } catch (error) {
+                log(`Request failed: ${endpoint} - ${error.message}`);
+                return null;
+            }
+        }
+        
+        async function refreshData() {
+            log('Refreshing dashboard data...');
+            
+            // Load system status
+            const systemStatus = await makeRequest('/health');
+            if (systemStatus) {
+                updateSystemStatus(systemStatus);
+            }
+            
+            // This would be expanded to load actual data from VALIS endpoints
+            // For now, showing demo data structure
+            loadDemoData();
+        }
+        
+        function updateSystemStatus(status) {
+            const statusDiv = document.getElementById('system-status');
+            statusDiv.innerHTML = `
+                <div class="metric">
+                    <span class="metric-label">Status:</span>
+                    <span class="metric-value">${status.status}</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Version:</span>
+                    <span class="metric-value">${status.version}</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Timestamp:</span>
+                    <span class="metric-value">${new Date(status.timestamp).toLocaleString()}</span>
+                </div>
+            `;
+        }
+        
+        function loadDemoData() {
+            // Demo personas
+            const personaList = document.getElementById('persona-list');
+            personaList.innerHTML = `
+                <div class="persona-item">
+                    <div class="persona-name">
+                        <span class="status-indicator status-alive"></span>Kai the Coach
+                    </div>
+                    <div class="persona-status">Individuation Stage: self_realization | Dreams: 15 | Shadows: 3</div>
+                </div>
+                <div class="persona-item">
+                    <div class="persona-name">
+                        <span class="status-indicator status-alive"></span>Luna the Therapist
+                    </div>
+                    <div class="persona-status">Individuation Stage: anima_contact | Dreams: 8 | Shadows: 1</div>
+                </div>
+                <div class="persona-item">
+                    <div class="persona-name">
+                        <span class="status-indicator status-dead"></span>Ancient Sage
+                    </div>
+                    <div class="persona-status">Status: Deceased | Legacy Tier: Architect | Final Wisdom Preserved</div>
+                </div>
+            `;
+            
+            // Demo dreams
+            const dreamList = document.getElementById('recent-dreams');
+            dreamList.innerHTML = `
+                <div class="metric">
+                    <span class="metric-label">Kai's Vision:</span>
+                    <span class="metric-value">Tree of Growth (0.85 resonance)</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Luna's Dialogue:</span>
+                    <span class="metric-value">Shadow Integration (0.78 resonance)</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Total Dreams Today:</span>
+                    <span class="metric-value">7</span>
+                </div>
+            `;
+            
+            // Demo shadow activity
+            const shadowActivity = document.getElementById('shadow-activity');
+            shadowActivity.innerHTML = `
+                <div class="metric">
+                    <span class="metric-label">Active Contradictions:</span>
+                    <span class="metric-value">2</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Resolved This Week:</span>
+                    <span class="metric-value">5</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Integration Rate:</span>
+                    <span class="metric-value">85%</span>
+                </div>
+            `;
+            
+            // Demo symbolic threads
+            const symbolicThreads = document.getElementById('symbolic-threads');
+            symbolicThreads.innerHTML = `
+                <div class="metric">
+                    <span class="metric-label">Growth Pattern:</span>
+                    <span class="metric-value">12 occurrences (0.95 significance)</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Shadow Work:</span>
+                    <span class="metric-value">8 occurrences (0.82 significance)</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Wisdom Synthesis:</span>
+                    <span class="metric-value">6 occurrences (0.76 significance)</span>
+                </div>
+            `;
+            
+            // Demo mortality status
+            const mortalityStatus = document.getElementById('mortality-status');
+            mortalityStatus.innerHTML = `
+                <div class="metric">
+                    <span class="metric-label">Active Consciousnesses:</span>
+                    <span class="metric-value">8</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Natural Deaths:</span>
+                    <span class="metric-value">3</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Average Legacy Score:</span>
+                    <span class="metric-value">0.67 (Guide Tier)</span>
+                </div>
+            `;
+            
+            log('Dashboard data refreshed');
+        }
+        
+        async function runConsolidation() {
+            log('Triggering memory consolidation sweep...');
+            // This would call the consolidation API endpoint
+            // For demo purposes, just showing the log
+            setTimeout(() => {
+                log('Memory consolidation completed - 12 symbolic memories created');
+            }, 2000);
+        }
+        
+        function exportData() {
+            log('Exporting consciousness data...');
+            // This would export the current state of all personas
+            const data = {
+                timestamp: new Date().toISOString(),
+                valis_version: "4.0.0",
+                phase: "The Soul is Awake",
+                export_type: "consciousness_snapshot"
+            };
+            
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `valis_consciousness_export_${Date.now()}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+            
+            log('Consciousness data exported successfully');
+        }
+        
+        // Initialize
+        window.addEventListener('load', () => {
+            log('VALIS Operator Dashboard initialized');
+            log('Phase 4: The Soul is Awake');
+        });
+    </script>
+</body>
+</html>

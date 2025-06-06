@@ -29,6 +29,10 @@ def require_admin_auth(f):
     """Decorator to require admin authentication"""
     @wraps(f)
     def decorated_function(*args, **kwargs):
+        # Allow OPTIONS requests for CORS preflight
+        if request.method == 'OPTIONS':
+            return f(*args, **kwargs)
+            
         # Check for API key in header or query parameter
         api_key = request.headers.get('X-Admin-Key') or request.args.get('admin_key')
         
@@ -377,12 +381,12 @@ def override_provider():
         return jsonify({'success': False, 'error': str(e)}), 500
 
 
-@admin_bp.route('/api/admin/logs/<client_id>', methods=['GET'])
+@admin_bp.route('/api/admin/logs', methods=['GET'])
 @require_admin_auth
-def get_inference_logs(client_id):
-    """Get inference logs for a specific client"""
+def get_all_logs():
+    """Get all inference logs across all clients"""
     try:
-        # Get inference logs from session_logs with metadata
+        # Get all inference logs from session_logs with metadata
         logs = db.query("""
             SELECT sl.*, pp.name as persona_name,
                    CASE 
@@ -392,27 +396,70 @@ def get_inference_logs(client_id):
                    END as provider_used
             FROM session_logs sl
             LEFT JOIN persona_profiles pp ON sl.persona_id = pp.id
+            ORDER BY sl.created_at DESC
+            LIMIT 100
+        """)
+        
+        # Convert timestamps to strings for JSON serialization
+        for log in logs:
+            if log.get('created_at'):
+                log['created_at'] = str(log['created_at'])
+        
+        return jsonify({
+            'success': True, 
+            'logs': logs,
+            'total_count': len(logs)
+        })
+        
+    except Exception as e:
+        logger.error(f"Failed to get all logs: {e}")
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
+@admin_bp.route('/api/admin/logs/<client_id>', methods=['GET'])
+@require_admin_auth
+def get_inference_logs(client_id):
+    """Get inference logs for a specific client"""
+    try:
+        logger.info(f"Getting inference logs for client: {client_id}")
+        
+        # Get inference logs from session_logs - simplified query without CASE
+        logs = db.query("""
+            SELECT sl.*, pp.name as persona_name
+            FROM session_logs sl
+            LEFT JOIN persona_profiles pp ON sl.persona_id = pp.id
             WHERE sl.client_id = %s 
             ORDER BY sl.created_at DESC
             LIMIT 100
         """, (client_id,))
         
+        logger.info(f"Query returned {len(logs)} logs")
+        
         formatted_logs = []
-        for log in logs:
+        for i, log in enumerate(logs):
+            logger.info(f"Processing log {i}: {type(log)}")
+            # Safely access log fields with defaults
             formatted_logs.append({
-                'id': str(log['id']),
-                'persona_name': log['persona_name'],
-                'provider_used': log['provider_used'],
-                'user_input': log['user_input'],
-                'assistant_reply': log['assistant_reply'],
-                'tokens_estimated': len(log['user_input'].split()) + len(log['assistant_reply'].split()) if log['assistant_reply'] else 0,
-                'created_at': log['created_at'].isoformat() if log['created_at'] else None
+                'id': str(log.get('id', '')),
+                'persona_name': log.get('persona_name', 'Unknown'),
+                'provider_used': log.get('provider_used', 'unknown'),
+                'user_input': log.get('user_input', ''),
+                'assistant_reply': log.get('assistant_reply', ''),
+                'tokens_estimated': (
+                    len(str(log.get('user_input', '')).split()) + 
+                    len(str(log.get('assistant_reply', '')).split())
+                ),
+                'created_at': (
+                    log['created_at'].isoformat() 
+                    if log.get('created_at') and hasattr(log['created_at'], 'isoformat')
+                    else str(log.get('created_at', ''))
+                )
             })
         
         return jsonify({
             'success': True,
             'client_id': client_id,
-            'inference_logs': formatted_logs,
+            'logs': formatted_logs,  # Changed from 'inference_logs' to 'logs'
             'total': len(formatted_logs)
         })
         
@@ -532,3 +579,10 @@ def test_execution():
     except Exception as e:
         logger.error(f"Failed to test execution: {e}")
         return jsonify({'success': False, 'error': str(e)}), 500
+
+
+# Add explicit OPTIONS handler for CORS preflight
+@admin_bp.route('/api/admin/<path:path>', methods=['OPTIONS'])
+def admin_options(path):
+    """Handle CORS preflight for all admin routes"""
+    return '', 200

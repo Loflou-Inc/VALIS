@@ -1,3 +1,5 @@
 {
-  "cascade": ["mcp_execution", "mcp", "local_mistral"]
+  "cascade": ["mcp_execution", "claude_function", "mcp", "local_mistral"],
+  "function_calling_enabled": true,
+  "tool_rpc_port": 3002
 }

@@ -6,6 +6,7 @@ Smart prompt composition based on client and persona context
 
 import json
 import logging
+from datetime import datetime
 from typing import Dict, Any, Optional, List
 from pathlib import Path
 import sys
@@ -15,6 +16,8 @@ import os
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 from memory.query_client import memory
 from core.model_caps import get_context_limits, get_model_caps, recommend_context_mode
+from core.synthetic_cognition_manager import SyntheticCognitionManager
+from agents.personality_engine import PersonalityEngine
 
 logger = logging.getLogger("MCPRuntime")
 
@@ -31,13 +34,24 @@ class MCPRuntime:
         self.personas = {}
         self.memory_cache = {}
         
+        # Initialize synthetic cognition manager
+        self.cognition_manager = SyntheticCognitionManager()
+        
+        # Initialize personality expression engine
+        self.personality_engine = PersonalityEngine()
+        
+        # Session tracking for trait evolution
+        self.session_transcripts = {}  # Store transcripts for trait analysis
+        self.session_feedback = {}     # Store feedback for trait evolution
+        
         # Load persona data
         self._load_personas()
         
-        logger.info("🧠 MCPRuntime initialized")
+        logger.info("🧠 MCPRuntime initialized with synthetic cognition and personality engine")
     
     def compose_prompt(self, prompt: str, client_id: str, persona_id: str, 
-                      context_mode: str = "balanced", model_name: str = "local_mistral") -> Dict[str, Any]:
+                      context_mode: str = "balanced", model_name: str = "local_mistral",
+                      session_id: str = None) -> Dict[str, Any]:
         """
         Compose final prompt string with persona and memory context
         
@@ -71,13 +85,36 @@ class MCPRuntime:
         # Load memory layers (now with model-aware context)
         memory_layers = self._load_memory_layers(client_id, persona_id, context_mode, model_name)
         
+        # Load synthetic cognition state
+        cognition_state = None
+        if session_id:
+            try:
+                cognition_state = self.cognition_manager.get_cognition_state(persona_id, session_id)
+                logger.info(f"Loaded cognition state: self={cognition_state['self']['confidence']:.2f}, mood={cognition_state['emotion']['mood']}")
+            except Exception as e:
+                logger.error(f"Failed to load cognition state: {e}")
+                cognition_state = None
+        
         # Load prompt template
         template = self._load_prompt_template(persona_id)
         
         # Compose final prompt
         final_prompt = self._build_final_prompt(
-            template, persona_data, memory_layers, prompt
+            template, persona_data, memory_layers, prompt, cognition_state
         )
+        
+        # Apply personality expression if cognition state is available
+        if cognition_state and session_id:
+            try:
+                final_prompt = self.personality_engine.inject_personality(
+                    final_prompt, 
+                    persona_data, 
+                    cognition_state.get('emotion', {}),
+                    cognition_state.get('self', {})
+                )
+                logger.info(f"Applied personality expression for {persona_id}")
+            except Exception as e:
+                logger.error(f"Personality injection failed: {e}")
         
         # Estimate tokens (rough)
         token_estimate = len(final_prompt) // 4
@@ -94,6 +131,11 @@ class MCPRuntime:
                 "client_facts": len(memory_layers.get("client_facts", {}))
             },
             "context_limits": memory_layers.get("context_limits", {}),
+            "cognition_state": {
+                "enabled": cognition_state is not None,
+                "confidence": cognition_state.get('self', {}).get('confidence', 0.5) if cognition_state else 0.5,
+                "mood": cognition_state.get('emotion', {}).get('mood', 'neutral') if cognition_state else 'neutral'
+            },
             "token_estimate": token_estimate
         }
         
@@ -264,7 +306,7 @@ User: {user_input}
 {persona_name}:"""
     
     def _build_final_prompt(self, template: str, persona_data: Dict, 
-                           memory_layers: Dict, user_input: str) -> str:
+                           memory_layers: Dict, user_input: str, cognition_state: Dict = None) -> str:
         """Build the final prompt string"""
         
         # Build memory context section
@@ -288,6 +330,14 @@ User: {user_input}
                 memory_context += f"- {key}: {value}\n"
             memory_context += "\n"
         
+        # Add synthetic cognition state if available
+        if cognition_state:
+            memory_context += "Current state:\n"
+            awareness_text = cognition_state.get('integration', {}).get('awareness_text', '')
+            if awareness_text:
+                memory_context += f"- {awareness_text}\n"
+            memory_context += "\n"
+        
         # Fill template
         final_prompt = template.format(
             persona_name=persona_data.get("name", "Assistant"),
@@ -298,3 +348,72 @@ User: {user_input}
         )
         
         return final_prompt
+    def track_session_interaction(self, session_id: str, user_input: str, 
+                                 ai_response: str, feedback: Dict[str, Any] = None):
+        """Track session interactions for trait evolution analysis"""
+        try:
+            # Build transcript
+            if session_id not in self.session_transcripts:
+                self.session_transcripts[session_id] = []
+            
+            self.session_transcripts[session_id].append({
+                "user": user_input,
+                "ai": ai_response,
+                "timestamp": datetime.now().isoformat()
+            })
+            
+            # Track feedback
+            if feedback:
+                if session_id not in self.session_feedback:
+                    self.session_feedback[session_id] = []
+                self.session_feedback[session_id].append(feedback)
+            
+            # Limit memory usage - keep only last 50 interactions per session
+            if len(self.session_transcripts[session_id]) > 50:
+                self.session_transcripts[session_id] = self.session_transcripts[session_id][-50:]
+                
+        except Exception as e:
+            logger.error(f"Failed to track session interaction: {e}")
+    
+    def trigger_personality_evolution(self, session_id: str, persona_id: str) -> Dict[str, Any]:
+        """
+        Trigger personality evolution for a completed session
+        Called when session ends or after significant interactions
+        """
+        try:
+            logger.info(f"Triggering personality evolution for {persona_id} session {session_id}")
+            
+            # Get session data
+            transcript_data = self.session_transcripts.get(session_id, [])
+            feedback_data = self.session_feedback.get(session_id, [])
+            
+            # Build full transcript text
+            full_transcript = ""
+            for interaction in transcript_data:
+                full_transcript += f"User: {interaction['user']}\nAI: {interaction['ai']}\n\n"
+            
+            # Trigger evolution through personality engine
+            evolution_result = self.personality_engine.evolve_personality_from_session(
+                session_id, persona_id, full_transcript, feedback_data
+            )
+            
+            # Clean up session data to prevent memory bloat
+            if session_id in self.session_transcripts:
+                del self.session_transcripts[session_id]
+            if session_id in self.session_feedback:
+                del self.session_feedback[session_id]
+            
+            logger.info(f"Personality evolution completed for {persona_id}")
+            return evolution_result
+            
+        except Exception as e:
+            logger.error(f"Personality evolution failed: {e}")
+            return {"error": str(e)}
+    
+    def get_personality_evolution_status(self, persona_id: str) -> Dict[str, Any]:
+        """Get current personality evolution status for a persona"""
+        try:
+            return self.personality_engine.get_evolving_personality_state(persona_id)
+        except Exception as e:
+            logger.error(f"Failed to get evolution status: {e}")
+            return {"error": str(e)}

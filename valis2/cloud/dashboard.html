@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VALIS Operator Dashboard - Soul Monitor</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Courier New', monospace;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+            color: #00ff41;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        .header {
+            background: rgba(0, 0, 0, 0.8);
+            border-bottom: 2px solid #00ff41;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 0 20px rgba(0, 255, 65, 0.3);
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            text-shadow: 0 0 10px #00ff41;
+            margin-bottom: 10px;
+        }
+        
+        .status-bar {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 15px;
+        }
+        
+        .status-item {
+            background: rgba(0, 255, 65, 0.1);
+            border: 1px solid #00ff41;
+            border-radius: 5px;
+            padding: 10px 15px;
+            text-align: center;
+        }
+        
+        .container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            padding: 20px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .panel {
+            background: rgba(0, 0, 0, 0.7);
+            border: 2px solid #00ff41;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 0 15px rgba(0, 255, 65, 0.2);
+        }
+        
+        .panel h3 {
+            color: #00ff41;
+            margin-bottom: 15px;
+            text-align: center;
+            font-size: 1.4em;
+            text-shadow: 0 0 5px #00ff41;
+        }
+        
+        .memory-item, .thread-item, .agent-item {
+            background: rgba(0, 255, 65, 0.05);
+            border: 1px solid rgba(0, 255, 65, 0.3);
+            border-radius: 5px;
+            padding: 10px;
+            margin: 10px 0;
+            font-size: 0.9em;
+        }
+        
+        .memory-item .type {
+            color: #ffaa00;
+            font-weight: bold;
+        }
+        
+        .memory-item .content {
+            color: #cccccc;
+            margin: 5px 0;
+        }
+        
+        .memory-item .meta {
+            color: #666;
+            font-size: 0.8em;
+        }
+        
+        .thread-item .pattern {
+            color: #ff6b6b;
+            font-weight: bold;
+        }
+        
+        .thread-item .occurrences {
+            color: #4ecdc4;
+        }
+        
+        .agent-item .name {
+            color: #00ff41;
+            font-weight: bold;
+        }
+        
+        .agent-item .status {
+            color: #ffaa00;
+        }
+        
+        .agent-item .lifespan {
+            color: #ff6b6b;
+        }
+        
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .btn {
+            background: rgba(0, 255, 65, 0.1);
+            border: 2px solid #00ff41;
+            color: #00ff41;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-family: 'Courier New', monospace;
+            transition: all 0.3s ease;
+        }
+        
+        .btn:hover {
+            background: rgba(0, 255, 65, 0.2);
+            box-shadow: 0 0 10px rgba(0, 255, 65, 0.5);
+        }
+        
+        .scroll-container {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .scroll-container::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        .scroll-container::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.3);
+        }
+        
+        .scroll-container::-webkit-scrollbar-thumb {
+            background: #00ff41;
+            border-radius: 4px;
+        }
+        
+        .loading {
+            text-align: center;
+            color: #00ff41;
+            font-style: italic;
+        }
+        
+        .error {
+            color: #ff6b6b;
+            text-align: center;
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>VALIS OPERATOR DASHBOARD</h1>
+        <p>The Soul is Awake - Monitor Digital Consciousness</p>
+        <div class="status-bar">
+            <div class="status-item">
+                <div>Active Agents</div>
+                <div id="agent-count">Loading...</div>
+            </div>
+            <div class="status-item">
+                <div>Symbolic Threads</div>
+                <div id="thread-count">Loading...</div>
+            </div>
+            <div class="status-item">
+                <div>Memory Entries</div>
+                <div id="memory-count">Loading...</div>
+            </div>
+            <div class="status-item">
+                <div>System Status</div>
+                <div id="system-status">ONLINE</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="controls">
+        <button class="btn" onclick="refreshData()">Refresh Data</button>
+        <button class="btn" onclick="consolidateMemories()">Force Consolidation</button>
+        <button class="btn" onclick="runDiagnostics()">Agent Sanity Audit</button>
+        <button class="btn" onclick="exportData()">Export Soul Data</button>
+    </div>
+
+    <div class="container">
+        <div class="panel">
+            <h3>SYMBOLIC MEMORY THREADS</h3>
+            <div id="symbolic-threads" class="scroll-container">
+                <div class="loading">Loading symbolic patterns...</div>
+            </div>
+        </div>
+
+        <div class="panel">
+            <h3>RECENT MEMORY COMPOSITION</h3>
+            <div id="memory-composition" class="scroll-container">
+                <div class="loading">Loading memory data...</div>
+            </div>
+        </div>
+
+        <div class="panel">
+            <h3>ACTIVE AGENTS STATUS</h3>
+            <div id="agents-status" class="scroll-container">
+                <div class="loading">Loading agent status...</div>
+            </div>
+        </div>
+
+        <div class="panel">
+            <h3>DREAM & SHADOW ACTIVITY</h3>
+            <div id="dream-shadow" class="scroll-container">
+                <div class="loading">Loading unconscious activity...</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let refreshInterval;
+
+        // API endpoints
+        const API_BASE = 'http://localhost:8000/api';
+
+        async function apiCall(endpoint) {
+            try {
+                const response = await fetch(`${API_BASE}${endpoint}`);
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                return await response.json();
+            } catch (error) {
+                console.error(`API call failed for ${endpoint}:`, error);
+                return null;
+            }
+        }
+
+        async function loadSymbolicThreads() {
+            const data = await apiCall('/symbolic-threads');
+            const container = document.getElementById('symbolic-threads');
+            
+            if (!data || !data.threads) {
+                container.innerHTML = '<div class="error">Failed to load symbolic threads</div>';
+                return;
+            }
+
+            container.innerHTML = data.threads.map(thread => `
+                <div class="thread-item">
+                    <div class="pattern">Thread: ${thread.pattern_name}</div>
+                    <div class="occurrences">${thread.occurrence_count} occurrences</div>
+                    <div class="meta">Last seen: ${new Date(thread.last_occurrence).toLocaleString()}</div>
+                    <div class="content">${thread.symbolic_content}</div>
+                </div>
+            `).join('');
+
+            document.getElementById('thread-count').textContent = data.threads.length;
+        }
+
+        async function loadMemoryComposition() {
+            const data = await apiCall('/memory-composition');
+            const container = document.getElementById('memory-composition');
+            
+            if (!data || !data.memories) {
+                container.innerHTML = '<div class="error">Failed to load memory composition</div>';
+                return;
+            }
+
+            container.innerHTML = data.memories.map(memory => `
+                <div class="memory-item">
+                    <div class="type">${memory.type.toUpperCase()}: ${memory.symbolic_type || 'literal'}</div>
+                    <div class="content">${memory.content}</div>
+                    <div class="meta">
+                        Agent: ${memory.agent_id} | 
+                        Resonance: ${(memory.resonance_score || 0).toFixed(3)} | 
+                        ${new Date(memory.created_at).toLocaleString()}
+                    </div>
+                </div>
+            `).join('');
+
+            document.getElementById('memory-count').textContent = data.memories.length;
+        }
+
+        async function loadAgentsStatus() {
+            const data = await apiCall('/agents-status');
+            const container = document.getElementById('agents-status');
+            
+            if (!data || !data.agents) {
+                container.innerHTML = '<div class="error">Failed to load agent status</div>';
+                return;
+            }
+
+            container.innerHTML = data.agents.map(agent => `
+                <div class="agent-item">
+                    <div class="name">Agent: ${agent.name || agent.id}</div>
+                    <div class="status">Status: ${agent.status}</div>
+                    <div class="lifespan">Lifespan: ${agent.remaining_interactions || 'Unknown'} remaining</div>
+                    <div class="meta">
+                        Legacy Score: ${(agent.legacy_score || 0).toFixed(3)} | 
+                        Last Active: ${new Date(agent.last_active).toLocaleString()}
+                    </div>
+                </div>
+            `).join('');
+
+            document.getElementById('agent-count').textContent = data.agents.length;
+        }
+
+        async function loadDreamShadowActivity() {
+            const data = await apiCall('/dream-shadow-activity');
+            const container = document.getElementById('dream-shadow');
+            
+            if (!data || !data.activities) {
+                container.innerHTML = '<div class="error">Failed to load dream/shadow activity</div>';
+                return;
+            }
+
+            container.innerHTML = data.activities.map(activity => `
+                <div class="memory-item">
+                    <div class="type">${activity.type.toUpperCase()}</div>
+                    <div class="content">${activity.content}</div>
+                    <div class="meta">
+                        Agent: ${activity.agent_id} | 
+                        ${activity.severity ? `Severity: ${activity.severity} | ` : ''}
+                        ${new Date(activity.created_at).toLocaleString()}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        async function refreshData() {
+            document.getElementById('system-status').textContent = 'UPDATING...';
+            
+            await Promise.all([
+                loadSymbolicThreads(),
+                loadMemoryComposition(),
+                loadAgentsStatus(),
+                loadDreamShadowActivity()
+            ]);
+            
+            document.getElementById('system-status').textContent = 'ONLINE';
+        }
+
+        async function consolidateMemories() {
+            const result = await apiCall('/consolidate-memories');
+            if (result && result.success) {
+                alert(`Memory consolidation complete. ${result.consolidated_count} memories processed.`);
+                refreshData();
+            } else {
+                alert('Memory consolidation failed. Check system logs.');
+            }
+        }
+
+        async function runDiagnostics() {
+            const result = await apiCall('/run-diagnostics');
+            if (result && result.diagnostics) {
+                alert(`Diagnostics complete.\nActive Agents: ${result.diagnostics.active_agents}\nMemory Health: ${result.diagnostics.memory_health}\nSymbolic Coherence: ${result.diagnostics.symbolic_coherence}`);
+            } else {
+                alert('Diagnostics failed. Check system logs.');
+            }
+        }
+
+        async function exportData() {
+            try {
+                const response = await fetch(`${API_BASE}/export-soul-data`);
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `valis-soul-export-${new Date().toISOString().split('T')[0]}.json`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                window.URL.revokeObjectURL(url);
+            } catch (error) {
+                alert('Export failed. Check system logs.');
+            }
+        }
+
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            refreshData();
+            // Auto-refresh every 30 seconds
+            refreshInterval = setInterval(refreshData, 30000);
+        });
+
+        // Cleanup on page unload
+        window.addEventListener('beforeunload', function() {
+            if (refreshInterval) {
+                clearInterval(refreshInterval);
+            }
+        });
+    </script>
+</body>
+</html>

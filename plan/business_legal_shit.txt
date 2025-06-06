@@ -1,0 +1,78 @@
+# 🛡️ VALIS IP Protection + Loflou LLC Formation Plan
+
+## 1. VALIS IP Ownership Statement (Smart Steps Protection)
+
+**Ownership & License Restriction Notice – VALIS Cognitive System**
+
+This statement serves to affirm and clarify that:
+
+1. **Loflou Inc.** (hereafter *Creator*), a software research and development entity founded by **Thomas Wilson** and **Marc Sepeda**, is the **sole creator, owner, and rights holder** of the software system known as **VALIS** (the **Virtual Adaptive Layered Intelligence System**), including all source code, architecture, schema, and unique functional elements comprising:
+
+   - The **MCPServer**, **VALIS Core API**, and any derivative server-client implementations  
+   - All persona models, reflection engines, symbolic memory systems, mortality frameworks, and emotional/self-model components  
+   - Related naming, design concepts, workflows, and cognitive simulation mechanisms
+
+2. **VALIS is not part of**, nor is it to be considered as contributed intellectual property to, any third-party software platform including, but not limited to, the application known as **Smart Steps**, even if said application is designed to **interact with** or be **powered by** the VALIS system via exposed interfaces (e.g., APIs or remote procedure calls).
+
+3. **Smart Steps, its operators, developers, investors, or affiliated entities receive no license, assignment, joint ownership, or derivative rights to VALIS** or any of its internal modules, components, or systems. Use of VALIS is strictly **limited to runtime access via defined interfaces**, as governed by service-level terms (to be formalized as necessary).
+
+4. Any access granted to VALIS is **non-transferable**, **non-exclusive**, and **revocable at the sole discretion of the Creator**, and **does not** constitute transfer of trade secret, copyright, patentable method, or architectural design.
+
+5. This provision **survives any broader integration, commercial use, or collaboration** involving VALIS, Smart Steps, or any other party.
+
+**Signed:**  
+Loflou Inc.  
+By: Thomas Wilson & Marc Sepeda  
+Founders, Loflou Inc.  
+[Date]
+
+---
+
+## 2. LLC Formation – Best Option for Loflou Right Now
+
+### ✅ LLC is ideal because:
+- Low cost
+- Easy to form in Ohio
+- Protects personal assets
+- Flexible taxes
+- Works well for IP holding and early-stage software dev
+
+### 💰 Cost Breakdown (Ohio)
+
+| Item                        | Cost     |
+|-----------------------------|----------|
+| Ohio LLC Filing Fee         | $99      |
+| EIN from IRS                | Free     |
+| Registered Agent (DIY)      | Free     |
+| Operating Agreement         | Free     |
+| **Total**                   | **~$99** |
+
+*You can be your own registered agent and use your own address.*
+
+---
+
+## 3. Should We Form in Delaware, Wyoming, etc.?
+
+**No — not right now.**
+
+If we form the LLC *outside of Ohio*, we’d have to register it as a **foreign LLC** in Ohio, which:
+- Adds extra fees and paperwork
+- Still makes us pay taxes in Ohio anyway
+
+So for now, we:
+
+✅ Register **Loflou Inc. in Ohio**  
+✅ Keep costs down  
+✅ Stay fully protected and compliant
+
+If we grow or raise money later, we can **convert to a Delaware C-Corp** easily.
+
+---
+
+## 4. Next Steps
+
+- [ ] File LLC with Ohio Secretary of State: https://bsportal.ohiosos.gov/
+- [ ] Draft & sign Operating Agreement (I have a template)
+- [ ] Apply for EIN (IRS.gov)
+- [ ] Set up VALIS Core as a service-only API
+- [ ] Finalize cloud deployment plan + watermarking (Sprint 18)

@@ -11,22 +11,22 @@
             theme: {
                 extend: {
                     colors: {
-                        background: 'hsl(222.2, 84%, 4.9%)',
-                        foreground: 'hsl(210, 40%, 98%)',
-                        card: 'hsl(222.2, 84%, 4.9%)',
-                        'card-foreground': 'hsl(210, 40%, 98%)',
-                        primary: 'hsl(217.2, 91.2%, 59.8%)',
-                        'primary-foreground': 'hsl(222.2, 84%, 4.9%)',
-                        secondary: 'hsl(217.2, 32.6%, 17.5%)',
-                        'secondary-foreground': 'hsl(210, 40%, 98%)',
-                        muted: 'hsl(217.2, 32.6%, 17.5%)',
-                        'muted-foreground': 'hsl(215, 20.2%, 65.1%)',
-                        accent: 'hsl(217.2, 32.6%, 17.5%)',
-                        'accent-foreground': 'hsl(210, 40%, 98%)',
-                        border: 'hsl(217.2, 32.6%, 17.5%)',
-                        input: 'hsl(217.2, 32.6%, 17.5%)',
+                        background: 'hsl(0, 0%, 5%)',
+                        foreground: 'hsl(300, 20%, 95%)',
+                        card: 'hsl(0, 0%, 8%)',
+                        'card-foreground': 'hsl(300, 20%, 95%)',
+                        primary: 'hsl(300, 100%, 60%)',
+                        'primary-foreground': 'hsl(0, 0%, 5%)',
+                        secondary: 'hsl(300, 30%, 15%)',
+                        'secondary-foreground': 'hsl(300, 20%, 95%)',
+                        muted: 'hsl(300, 20%, 12%)',
+                        'muted-foreground': 'hsl(300, 15%, 65%)',
+                        accent: 'hsl(300, 50%, 20%)',
+                        'accent-foreground': 'hsl(300, 20%, 95%)',
+                        border: 'hsl(300, 30%, 18%)',
+                        input: 'hsl(300, 20%, 12%)',
                         destructive: 'hsl(0, 62.8%, 30.6%)',
-                        'destructive-foreground': 'hsl(210, 40%, 98%)',
+                        'destructive-foreground': 'hsl(300, 20%, 95%)',
                     }
                 }
             }
@@ -34,53 +34,53 @@
     </script>
     <style>
         body {
-            background-color: hsl(222.2, 84%, 4.9%);
-            color: hsl(210, 40%, 98%);
+            background-color: hsl(0, 0%, 5%);
+            color: hsl(300, 20%, 95%);
         }
         .card {
-            background-color: hsl(222.2, 84%, 4.9%);
-            border: 1px solid hsl(217.2, 32.6%, 17.5%);
+            background-color: hsl(0, 0%, 8%);
+            border: 1px solid hsl(300, 30%, 18%);
         }
         .btn-primary {
-            background-color: hsl(217.2, 91.2%, 59.8%);
-            color: hsl(222.2, 84%, 4.9%);
+            background-color: hsl(300, 100%, 60%);
+            color: hsl(0, 0%, 5%);
         }
         .btn-primary:hover {
-            background-color: hsl(217.2, 91.2%, 65%);
+            background-color: hsl(300, 100%, 70%);
         }
         .btn-secondary {
-            background-color: hsl(217.2, 32.6%, 17.5%);
-            color: hsl(210, 40%, 98%);
-            border: 1px solid hsl(217.2, 32.6%, 17.5%);
+            background-color: hsl(300, 30%, 15%);
+            color: hsl(300, 20%, 95%);
+            border: 1px solid hsl(300, 30%, 18%);
         }
         .btn-secondary:hover {
-            background-color: hsl(217.2, 32.6%, 22%);
+            background-color: hsl(300, 30%, 20%);
         }
         .badge {
-            background-color: hsl(217.2, 32.6%, 17.5%);
-            color: hsl(210, 40%, 98%);
+            background-color: hsl(300, 30%, 15%);
+            color: hsl(300, 20%, 95%);
         }
         .badge-success {
             background-color: hsl(142, 76%, 36%);
-            color: hsl(210, 40%, 98%);
+            color: hsl(300, 20%, 95%);
         }
         .badge-warning {
             background-color: hsl(32, 95%, 44%);
-            color: hsl(222.2, 84%, 4.9%);
+            color: hsl(0, 0%, 5%);
         }
         .badge-error {
             background-color: hsl(0, 62.8%, 30.6%);
-            color: hsl(210, 40%, 98%);
+            color: hsl(300, 20%, 95%);
         }
         .input {
-            background-color: hsl(217.2, 32.6%, 17.5%);
-            border: 1px solid hsl(217.2, 32.6%, 17.5%);
-            color: hsl(210, 40%, 98%);
+            background-color: hsl(300, 20%, 12%);
+            border: 1px solid hsl(300, 30%, 18%);
+            color: hsl(300, 20%, 95%);
         }
         .input:focus {
-            border-color: hsl(217.2, 91.2%, 59.8%);
+            border-color: hsl(300, 100%, 60%);
             outline: none;
-            box-shadow: 0 0 0 2px hsl(217.2, 91.2%, 59.8%, 0.2);
+            box-shadow: 0 0 0 2px hsl(300, 100%, 60%, 0.2);
         }
         .nav-tab {
             padding: 0.5rem 1rem;
@@ -89,11 +89,11 @@
             transition: all 0.2s;
         }
         .nav-tab:hover {
-            background-color: hsl(217.2, 32.6%, 17.5%);
+            background-color: hsl(300, 30%, 15%);
         }
         .nav-tab.active {
-            border-bottom-color: hsl(217.2, 91.2%, 59.8%);
-            color: hsl(217.2, 91.2%, 59.8%);
+            border-bottom-color: hsl(300, 100%, 60%);
+            color: hsl(300, 100%, 60%);
         }
     </style>
 </head>
@@ -206,6 +206,138 @@
                 </div>
             </div>
 
+            <!-- Sessions Tab -->
+            <div id="sessions-tab" class="tab-content hidden">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-xl font-semibold">Active Sessions</h2>
+                    <button class="btn-secondary px-4 py-2 rounded" onclick="loadSessions()">
+                        Refresh
+                    </button>
+                </div>
+                
+                <div class="card p-4 rounded-lg">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-sm">
+                            <thead>
+                                <tr class="border-b border-border">
+                                    <th class="text-left py-2">Client ID</th>
+                                    <th class="text-left py-2">Name</th>
+                                    <th class="text-left py-2">Messages</th>
+                                    <th class="text-left py-2">Session Type</th>
+                                    <th class="text-left py-2">Last Activity</th>
+                                    <th class="text-left py-2">Created</th>
+                                    <th class="text-left py-2">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="sessions-table">
+                                <tr>
+                                    <td colspan="7" class="py-4 text-center text-muted-foreground">
+                                        Loading sessions...
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Personas Tab -->
+            <div id="personas-tab" class="tab-content hidden">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-xl font-semibold">Personas</h2>
+                    <button class="btn-secondary px-4 py-2 rounded" onclick="loadPersonas()">
+                        Refresh
+                    </button>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="personas-grid">
+                    <div class="card p-4 rounded-lg">
+                        <div class="text-center text-muted-foreground">
+                            Loading personas...
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Memory Tab -->
+            <div id="memory-tab" class="tab-content hidden">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-xl font-semibold">Memory Inspector</h2>
+                    <div class="flex space-x-2">
+                        <select class="input px-3 py-2 rounded" id="memory-client-select">
+                            <option value="">Select a client...</option>
+                        </select>
+                        <button class="btn-secondary px-4 py-2 rounded" onclick="loadMemoryForClient()">
+                            Load Memory
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- Canon Memories -->
+                    <div class="card p-4 rounded-lg">
+                        <h3 class="font-semibold mb-4">Canon Memories</h3>
+                        <div id="canon-memories-list" class="space-y-2">
+                            <p class="text-sm text-muted-foreground">Select a client to view memories</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Working Memory -->
+                    <div class="card p-4 rounded-lg">
+                        <h3 class="font-semibold mb-4">Working Memory</h3>
+                        <div id="working-memory-list" class="space-y-2">
+                            <p class="text-sm text-muted-foreground">Select a client to view memories</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Session History -->
+                <div class="card p-4 rounded-lg mt-6">
+                    <h3 class="font-semibold mb-4">Session History</h3>
+                    <div id="session-history-list" class="space-y-3">
+                        <p class="text-sm text-muted-foreground">Select a client to view history</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Logs Tab -->
+            <div id="logs-tab" class="tab-content hidden">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-xl font-semibold">System Logs</h2>
+                    <div class="flex space-x-2">
+                        <select class="input px-3 py-2 rounded" id="logs-client-filter">
+                            <option value="">All clients</option>
+                        </select>
+                        <button class="btn-secondary px-4 py-2 rounded" onclick="loadLogs()">
+                            Refresh
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="card p-4 rounded-lg">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-sm">
+                            <thead>
+                                <tr class="border-b border-border">
+                                    <th class="text-left py-2">Timestamp</th>
+                                    <th class="text-left py-2">Client</th>
+                                    <th class="text-left py-2">Persona</th>
+                                    <th class="text-left py-2">Action</th>
+                                    <th class="text-left py-2">Status</th>
+                                    <th class="text-left py-2">Details</th>
+                                </tr>
+                            </thead>
+                            <tbody id="logs-table">
+                                <tr>
+                                    <td colspan="6" class="py-4 text-center text-muted-foreground">
+                                        Loading logs...
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
             
             <!-- Executions Tab -->
             <div id="executions-tab" class="tab-content hidden">
@@ -313,12 +445,64 @@
                         targetContent.classList.remove('hidden');
                         
                         // Load data for specific tabs
-                        if (targetTab === 'executions') {
+                        if (targetTab === 'sessions') {
+                            loadSessions();
+                        } else if (targetTab === 'personas') {
+                            loadPersonas();
+                        } else if (targetTab === 'memory') {
+                            loadMemoryClients();
+                        } else if (targetTab === 'logs') {
+                            loadLogsClients();
+                            loadLogs();
+                        } else if (targetTab === 'executions') {
                             loadExecutions();
                         }
                     }
                 });
             });
+        }
+        
+        // Load clients for memory and logs dropdowns
+        async function loadMemoryClients() {
+            try {
+                const response = await fetch(`${API_BASE}/admin/sessions`, {
+                    headers: { 'X-Admin-Key': ADMIN_KEY }
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    const select = document.getElementById('memory-client-select');
+                    select.innerHTML = '<option value="">Select a client...</option>' +
+                        data.sessions.map(session => 
+                            `<option value="${session.client_id}">${session.name} (${session.client_id.substring(0, 8)}...)</option>`
+                        ).join('');
+                }
+                
+            } catch (error) {
+                console.error('Error loading clients for memory:', error);
+            }
+        }
+        
+        async function loadLogsClients() {
+            try {
+                const response = await fetch(`${API_BASE}/admin/sessions`, {
+                    headers: { 'X-Admin-Key': ADMIN_KEY }
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    const select = document.getElementById('logs-client-filter');
+                    select.innerHTML = '<option value="">All clients</option>' +
+                        data.sessions.map(session => 
+                            `<option value="${session.client_id}">${session.name} (${session.client_id.substring(0, 8)}...)</option>`
+                        ).join('');
+                }
+                
+            } catch (error) {
+                console.error('Error loading clients for logs:', error);
+            }
         }
         
         // Test execution function
@@ -444,6 +628,280 @@
             document.getElementById('top-intent').textContent = topIntent;
         }
         
+        // Load sessions data
+        async function loadSessions() {
+            try {
+                const response = await fetch(`${API_BASE}/admin/sessions`, {
+                    headers: { 'X-Admin-Key': ADMIN_KEY }
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    updateSessionsTable(data.sessions);
+                } else {
+                    console.error('Failed to load sessions:', data.error);
+                }
+                
+            } catch (error) {
+                console.error('Error loading sessions:', error);
+            }
+        }
+        
+        // Update sessions table
+        function updateSessionsTable(sessions) {
+            const tbody = document.getElementById('sessions-table');
+            
+            if (sessions.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="7" class="py-4 text-center text-muted-foreground">
+                            No sessions found
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            tbody.innerHTML = sessions.map(session => `
+                <tr class="border-b border-border hover:bg-muted hover:bg-opacity-30">
+                    <td class="py-2 font-mono text-xs">${session.client_id.substring(0, 8)}...</td>
+                    <td class="py-2">${session.name}</td>
+                    <td class="py-2">${session.message_count}</td>
+                    <td class="py-2">
+                        <span class="badge text-xs px-2 py-1 rounded">
+                            ${session.traits?.session_type || 'unknown'}
+                        </span>
+                    </td>
+                    <td class="py-2 text-xs text-muted-foreground">
+                        ${session.last_message ? new Date(session.last_message).toLocaleString() : 'Never'}
+                    </td>
+                    <td class="py-2 text-xs text-muted-foreground">
+                        ${new Date(session.created_at).toLocaleString()}
+                    </td>
+                    <td class="py-2">
+                        <button class="btn-secondary text-xs px-2 py-1 rounded" onclick="viewSessionDetail('${session.client_id}')">
+                            View
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+        
+        // Load personas data
+        async function loadPersonas() {
+            try {
+                const response = await fetch(`${API_BASE}/admin/personas`, {
+                    headers: { 'X-Admin-Key': ADMIN_KEY }
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    updatePersonasGrid(data.personas);
+                } else {
+                    console.error('Failed to load personas:', data.error);
+                }
+                
+            } catch (error) {
+                console.error('Error loading personas:', error);
+            }
+        }
+        
+        // Update personas grid
+        function updatePersonasGrid(personas) {
+            const grid = document.getElementById('personas-grid');
+            
+            if (personas.length === 0) {
+                grid.innerHTML = `
+                    <div class="card p-4 rounded-lg">
+                        <div class="text-center text-muted-foreground">
+                            No personas found
+                        </div>
+                    </div>
+                `;
+                return;
+            }
+            
+            grid.innerHTML = personas.map(persona => `
+                <div class="card p-4 rounded-lg hover:border-primary transition-colors">
+                    <div class="flex items-center space-x-3 mb-3">
+                        <div class="w-10 h-10 rounded-full bg-primary bg-opacity-10 flex items-center justify-center">
+                            <span class="text-primary font-semibold">${persona.name.charAt(0)}</span>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold">${persona.name}</h4>
+                            <p class="text-sm text-muted-foreground">${persona.role}</p>
+                        </div>
+                    </div>
+                    <p class="text-sm text-muted-foreground mb-3">${persona.bio}</p>
+                    <div class="flex justify-between items-center">
+                        <span class="badge text-xs px-2 py-1 rounded">${persona.default_context_mode}</span>
+                        <button class="btn-secondary text-xs px-2 py-1 rounded" onclick="viewPersonaDetail('${persona.id}')">
+                            Details
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        // Load memory for selected client
+        async function loadMemoryForClient() {
+            const clientId = document.getElementById('memory-client-select').value;
+            if (!clientId) {
+                alert('Please select a client first');
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_BASE}/admin/memory/${clientId}`, {
+                    headers: { 'X-Admin-Key': ADMIN_KEY }
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    updateMemoryDisplay(data);
+                } else {
+                    console.error('Failed to load memory:', data.error);
+                }
+                
+            } catch (error) {
+                console.error('Error loading memory:', error);
+            }
+        }
+        
+        // Update memory display
+        function updateMemoryDisplay(memoryData) {
+            // Canon memories
+            const canonList = document.getElementById('canon-memories-list');
+            const canonMemories = memoryData.canon_memories || [];
+            
+            if (canonMemories.length === 0) {
+                canonList.innerHTML = '<p class="text-sm text-muted-foreground">No canon memories found</p>';
+            } else {
+                canonList.innerHTML = canonMemories.map(memory => `
+                    <div class="border border-border p-3 rounded">
+                        <p class="text-sm">${memory.content}</p>
+                        <div class="flex justify-between mt-2 text-xs text-muted-foreground">
+                            <span>Importance: ${memory.importance}</span>
+                            <span>${new Date(memory.created_at).toLocaleDateString()}</span>
+                        </div>
+                    </div>
+                `).join('');
+            }
+            
+            // Working memory
+            const workingList = document.getElementById('working-memory-list');
+            const workingMemories = memoryData.working_memory || [];
+            
+            if (workingMemories.length === 0) {
+                workingList.innerHTML = '<p class="text-sm text-muted-foreground">No working memories found</p>';
+            } else {
+                workingList.innerHTML = workingMemories.map(memory => `
+                    <div class="border border-border p-3 rounded">
+                        <p class="text-sm">${memory.content}</p>
+                        <div class="flex justify-between mt-2 text-xs text-muted-foreground">
+                            <span>Importance: ${memory.importance}</span>
+                            <span>${new Date(memory.created_at).toLocaleDateString()}</span>
+                        </div>
+                    </div>
+                `).join('');
+            }
+            
+            // Session history
+            const historyList = document.getElementById('session-history-list');
+            const sessionLogs = memoryData.session_logs || [];
+            
+            if (sessionLogs.length === 0) {
+                historyList.innerHTML = '<p class="text-sm text-muted-foreground">No session history found</p>';
+            } else {
+                historyList.innerHTML = sessionLogs.map(log => `
+                    <div class="border border-border p-3 rounded">
+                        <div class="text-sm font-medium mb-1">User: ${log.user_input}</div>
+                        <div class="text-sm text-muted-foreground mb-2">Assistant: ${log.assistant_reply}</div>
+                        <div class="text-xs text-muted-foreground">
+                            ${new Date(log.created_at).toLocaleString()}
+                        </div>
+                    </div>
+                `).join('');
+            }
+        }
+        
+        // Load logs data  
+        async function loadLogs() {
+            try {
+                const clientFilter = document.getElementById('logs-client-filter').value;
+                let url = `${API_BASE}/admin/logs`;
+                if (clientFilter) {
+                    url += `/${clientFilter}`;
+                }
+                
+                const response = await fetch(url, {
+                    headers: { 'X-Admin-Key': ADMIN_KEY }
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    updateLogsTable(data.logs || []);
+                } else {
+                    console.error('Failed to load logs:', data.error);
+                }
+                
+            } catch (error) {
+                console.error('Error loading logs:', error);
+            }
+        }
+        
+        // Update logs table
+        function updateLogsTable(logs) {
+            const tbody = document.getElementById('logs-table');
+            
+            if (logs.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="6" class="py-4 text-center text-muted-foreground">
+                            No logs found
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            tbody.innerHTML = logs.map(log => `
+                <tr class="border-b border-border hover:bg-muted hover:bg-opacity-30">
+                    <td class="py-2 text-xs text-muted-foreground">
+                        ${new Date(log.created_at).toLocaleString()}
+                    </td>
+                    <td class="py-2 font-mono text-xs">${log.client_name || 'Unknown'}</td>
+                    <td class="py-2">${log.persona_name || 'Unknown'}</td>
+                    <td class="py-2">
+                        <span class="badge text-xs px-2 py-1 rounded">${log.intent || log.action}</span>
+                    </td>
+                    <td class="py-2">
+                        <span class="badge ${log.success ? 'badge-success' : 'badge-error'} text-xs px-2 py-1 rounded">
+                            ${log.success ? 'Success' : 'Failed'}
+                        </span>
+                    </td>
+                    <td class="py-2 text-xs text-muted-foreground max-w-xs truncate">
+                        ${log.result_preview || log.error || '-'}
+                    </td>
+                </tr>
+            `).join('');
+        }
+        
+        // Helper functions for detail views
+        async function viewSessionDetail(clientId) {
+            // Could open a modal or redirect to detail page
+            alert(`Session detail for client: ${clientId}`);
+        }
+        
+        async function viewPersonaDetail(personaId) {
+            // Could open a modal or redirect to detail page  
+            alert(`Persona detail for: ${personaId}`);
+        }
+
         // Load overview data
         async function loadOverview() {
             try {

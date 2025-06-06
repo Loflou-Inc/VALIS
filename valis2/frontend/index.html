@@ -11,22 +11,22 @@
             theme: {
                 extend: {
                     colors: {
-                        background: 'hsl(222.2, 84%, 4.9%)',
-                        foreground: 'hsl(210, 40%, 98%)',
-                        card: 'hsl(222.2, 84%, 4.9%)',
-                        'card-foreground': 'hsl(210, 40%, 98%)',
-                        primary: 'hsl(217.2, 91.2%, 59.8%)',
-                        'primary-foreground': 'hsl(222.2, 84%, 4.9%)',
-                        secondary: 'hsl(217.2, 32.6%, 17.5%)',
-                        'secondary-foreground': 'hsl(210, 40%, 98%)',
-                        muted: 'hsl(217.2, 32.6%, 17.5%)',
-                        'muted-foreground': 'hsl(215, 20.2%, 65.1%)',
-                        accent: 'hsl(217.2, 32.6%, 17.5%)',
-                        'accent-foreground': 'hsl(210, 40%, 98%)',
-                        border: 'hsl(217.2, 32.6%, 17.5%)',
-                        input: 'hsl(217.2, 32.6%, 17.5%)',
+                        background: 'hsl(0, 0%, 5%)',
+                        foreground: 'hsl(300, 20%, 95%)',
+                        card: 'hsl(0, 0%, 8%)',
+                        'card-foreground': 'hsl(300, 20%, 95%)',
+                        primary: 'hsl(300, 100%, 60%)',
+                        'primary-foreground': 'hsl(0, 0%, 5%)',
+                        secondary: 'hsl(300, 30%, 15%)',
+                        'secondary-foreground': 'hsl(300, 20%, 95%)',
+                        muted: 'hsl(300, 20%, 12%)',
+                        'muted-foreground': 'hsl(300, 15%, 65%)',
+                        accent: 'hsl(300, 50%, 20%)',
+                        'accent-foreground': 'hsl(300, 20%, 95%)',
+                        border: 'hsl(300, 30%, 18%)',
+                        input: 'hsl(300, 20%, 12%)',
                         destructive: 'hsl(0, 62.8%, 30.6%)',
-                        'destructive-foreground': 'hsl(210, 40%, 98%)',
+                        'destructive-foreground': 'hsl(300, 20%, 95%)',
                     }
                 }
             }
@@ -34,41 +34,41 @@
     </script>
     <style>
         body {
-            background-color: hsl(222.2, 84%, 4.9%);
-            color: hsl(210, 40%, 98%);
+            background-color: hsl(0, 0%, 5%);
+            color: hsl(300, 20%, 95%);
         }
         .card {
-            background-color: hsl(222.2, 84%, 4.9%);
-            border: 1px solid hsl(217.2, 32.6%, 17.5%);
+            background-color: hsl(0, 0%, 8%);
+            border: 1px solid hsl(300, 30%, 18%);
         }
         .btn-primary {
-            background-color: hsl(217.2, 91.2%, 59.8%);
-            color: hsl(222.2, 84%, 4.9%);
+            background-color: hsl(300, 100%, 60%);
+            color: hsl(0, 0%, 5%);
         }
         .btn-primary:hover {
-            background-color: hsl(217.2, 91.2%, 65%);
+            background-color: hsl(300, 100%, 70%);
         }
         .badge {
-            background-color: hsl(217.2, 32.6%, 17.5%);
-            color: hsl(210, 40%, 98%);
+            background-color: hsl(300, 30%, 15%);
+            color: hsl(300, 20%, 95%);
         }
         .input {
-            background-color: hsl(217.2, 32.6%, 17.5%);
-            border: 1px solid hsl(217.2, 32.6%, 17.5%);
-            color: hsl(210, 40%, 98%);
+            background-color: hsl(300, 20%, 12%);
+            border: 1px solid hsl(300, 30%, 18%);
+            color: hsl(300, 20%, 95%);
         }
         .input:focus {
-            border-color: hsl(217.2, 91.2%, 59.8%);
+            border-color: hsl(300, 100%, 60%);
             outline: none;
-            box-shadow: 0 0 0 2px hsl(217.2, 91.2%, 59.8%, 0.2);
+            box-shadow: 0 0 0 2px hsl(300, 100%, 60%, 0.2);
         }
         .message-user {
-            background-color: hsl(217.2, 91.2%, 59.8%);
-            color: hsl(222.2, 84%, 4.9%);
+            background-color: hsl(300, 100%, 60%);
+            color: hsl(0, 0%, 5%);
         }
         .message-assistant {
-            background-color: hsl(222.2, 84%, 4.9%);
-            border: 1px solid hsl(217.2, 32.6%, 17.5%);
+            background-color: hsl(0, 0%, 8%);
+            border: 1px solid hsl(300, 30%, 18%);
         }
         .message-error {
             background-color: hsl(0, 62.8%, 30.6%, 0.1);
