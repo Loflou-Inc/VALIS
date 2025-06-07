@@ -42,7 +42,7 @@ echo [PHASE 2] STARTING MAIN VALIS SYSTEM
 echo.
 
 echo Starting MAIN VALIS SERVER (Chat + Dashboard) on port 3001...
-start "VALIS Main Server" cmd /k "cd valis2 && echo Starting Main VALIS... && python server.py"
+start "VALIS Main Server" cmd /k "echo Starting Main VALIS... && python server.py"
 timeout /t 3 >nul
 
 echo.
@@ -50,7 +50,7 @@ echo [PHASE 3] STARTING SOUL FACTORY SERVICES
 echo.
 
 echo Starting Mr. Fission (Persona Creation) on port 8001...
-start "Mr. Fission" cmd /k "cd valis2\fission && echo Starting Soul Blender... && python api.py"
+start "Mr. Fission" cmd /k "cd fission && echo Starting Soul Blender... && python api.py"
 timeout /t 2 >nul
 
 echo Starting Garden Gate (Persona Management) on port 8002...
@@ -58,7 +58,7 @@ start "Garden Gate" cmd /k "cd vault && echo Starting Persona Vault... && python
 timeout /t 2 >nul
 
 echo Starting Cloud Soul (Protected API) on port 8000...
-start "Cloud Soul" cmd /k "cd valis2\cloud && echo Starting Protected API... && python api_gateway.py"
+start "Cloud Soul" cmd /k "cd cloud && echo Starting Protected API... && python api_gateway.py"
 timeout /t 2 >nul
 
 echo.
@@ -125,15 +125,13 @@ echo LOCAL MODEL:
 echo   Mistral 7B:         http://localhost:8080 (if running)
 echo.
 echo PERSONAS AVAILABLE:
-cd valis2
 python -c "from memory.db import db; personas = db.query('SELECT name, role FROM persona_profiles ORDER BY name'); print('\\n'.join([f'  - {p[\"name\"]} ({p[\"role\"]})' for p in personas]))" 2>nul
-cd ..
 
 echo.
 echo QUICK TESTS:
 echo   Chat with Jane:     curl -X POST http://localhost:3001/api/chat
 echo   List Vault:         cd vault && python operator_tools.py list
-echo   Check Personas:     cd valis2 && python check_personas.py
+echo   Check Personas:     python check_personas.py
 echo.
 echo ================================================================
 echo THE COMPLETE VALIS CONSCIOUSNESS SYSTEM IS READY
