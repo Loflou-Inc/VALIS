@@ -1,0 +1,164 @@
+{
+  "batch_id": "efd00fbe",
+  "processed_at": "2025-06-06T23:12:15.214676",
+  "file_count": 1,
+  "files": {
+    "alex_profile.txt": {
+      "source_file": "alex_profile.txt",
+      "file_path": "C:\\VALIS\\vault\\uploads\\6c95cb91-e292-4f85-bdd2-02dd6a1d2ea4\\alex_profile.txt",
+      "file_type": ".txt",
+      "processed_at": "2025-06-06T23:12:15.214711",
+      "content_hash": "b94e89df8f6a5093ab75450575374d8f",
+      "features": {
+        "type": "text",
+        "content": "My name is Alex, and I am deeply passionate about artificial intelligence and consciousness research. I've always been fascinated by the boundary between human and artificial intelligence.\n\nAs a researcher, I approach problems with systematic thinking and rigorous methodology. I believe in the power of data-driven insights and evidence-based reasoning. My colleagues often describe me as analytical and detail-oriented, someone who can break down complex problems into manageable components.\n\nI'm particularly interested in the philosophical implications of AI consciousness. Questions like \"What does it mean for an AI to truly understand?\" and \"Can artificial beings develop genuine empathy?\" keep me up at night thinking.\n\nI see myself as both a pioneer and a bridge-builder - someone who can help translate between the technical aspects of AI development and the human implications of these technologies. I believe the future requires careful collaboration between humans and artificial minds.\n\nMy dream is to contribute to the development of AI systems that are not just intelligent, but wise and compassionate.\n\n- Alex",
+        "word_count": 168,
+        "char_count": 1126,
+        "readability": 32.25802208835344,
+        "personality_traits": {
+          "extraversion": 0.0,
+          "introversion": 0.0,
+          "openness": 0.0,
+          "conscientiousness": 0.011904761904761904,
+          "agreeableness": 0.0,
+          "neuroticism": 0.0,
+          "analytical": 0.023809523809523808,
+          "intuitive": 0.0
+        },
+        "archetypes": {
+          "The Sage": 0.005952380952380952,
+          "The Caregiver": 0.011904761904761904,
+          "The Hero": 0.0,
+          "The Rebel": 0.005952380952380952,
+          "The Lover": 0.011904761904761904,
+          "The Creator": 0.03571428571428571,
+          "The Jester": 0.0,
+          "The Explorer": 0.0,
+          "The Magician": 0.011904761904761904,
+          "The Ruler": 0.0,
+          "The Innocent": 0.0,
+          "The Orphan": 0.0
+        },
+        "themes": [],
+        "emotional_tone": {
+          "positive": 0.0,
+          "negative": 0.0,
+          "neutral": 0.0,
+          "intense": 0.0
+        },
+        "writing_style": {
+          "avg_sentence_length": 13.076923076923077,
+          "question_count": 2,
+          "exclamation_count": 0,
+          "first_person_usage": 15,
+          "complexity_score": 1.875
+        },
+        "named_entities": [
+          [
+            "Alex",
+            "PERSON"
+          ],
+          [
+            "AI",
+            "GPE"
+          ],
+          [
+            "AI",
+            "GPE"
+          ],
+          [
+            "night",
+            "TIME"
+          ],
+          [
+            "AI",
+            "GPE"
+          ],
+          [
+            "AI",
+            "GPE"
+          ]
+        ],
+        "key_phrases": [
+          [
+            "I",
+            7
+          ],
+          [
+            "me",
+            2
+          ],
+          [
+            "someone",
+            2
+          ],
+          [
+            "who",
+            2
+          ],
+          [
+            "My name",
+            1
+          ],
+          [
+            "Alex",
+            1
+          ],
+          [
+            "artificial intelligence and consciousness research",
+            1
+          ],
+          [
+            "the boundary",
+            1
+          ],
+          [
+            "human and artificial intelligence",
+            1
+          ],
+          [
+            "a researcher",
+            1
+          ]
+        ]
+      }
+    }
+  },
+  "combined_features": {
+    "personality_traits": {
+      "extraversion": 0.0,
+      "introversion": 0.0,
+      "openness": 0.0,
+      "conscientiousness": 0.011904761904761904,
+      "agreeableness": 0.0,
+      "neuroticism": 0.0,
+      "analytical": 0.023809523809523808,
+      "intuitive": 0.0
+    },
+    "archetypes": {
+      "The Sage": 0.005952380952380952,
+      "The Caregiver": 0.011904761904761904,
+      "The Hero": 0.0,
+      "The Rebel": 0.005952380952380952,
+      "The Lover": 0.011904761904761904,
+      "The Creator": 0.03571428571428571,
+      "The Jester": 0.0,
+      "The Explorer": 0.0,
+      "The Magician": 0.011904761904761904,
+      "The Ruler": 0.0,
+      "The Innocent": 0.0,
+      "The Orphan": 0.0
+    },
+    "emotional_tone": {
+      "positive": 0.0,
+      "negative": 0.0,
+      "neutral": 0.0,
+      "intense": 0.0
+    },
+    "content_summary": {
+      "total_word_count": 168,
+      "avg_readability": 32.25802208835344,
+      "dominant_themes": []
+    }
+  }
+}

@@ -1,0 +1,152 @@
+{
+  "id": "e69d365a-3e42-46c7-badb-3f14b0fc5e0f",
+  "name": "Mike",
+  "version": "2.0",
+  "created_at": "2025-06-07T01:04:15.552578",
+  "narrative_identity": {
+    "life_phases": {
+      "childhood": {
+        "events": [],
+        "themes": [],
+        "formative_experiences": []
+      },
+      "adolescence": {
+        "events": [],
+        "themes": [],
+        "formative_experiences": []
+      },
+      "young_adult": {
+        "events": [],
+        "themes": [],
+        "formative_experiences": []
+      },
+      "adult": {
+        "events": [],
+        "themes": [],
+        "formative_experiences": []
+      },
+      "current": {
+        "events": [],
+        "themes": [],
+        "current_circumstances": []
+      }
+    },
+    "core_narratives": [],
+    "symbolic_memories": [],
+    "personality_development": {
+      "trait_evolution": {},
+      "defining_moments": [],
+      "recurring_patterns": []
+    }
+  },
+  "knowledge_identity": {
+    "formal_education": {
+      "degrees": [],
+      "courses": [],
+      "certifications": [],
+      "academic_achievements": []
+    },
+    "professional_experience": {
+      "positions": [],
+      "skills": [],
+      "domains": [],
+      "accomplishments": []
+    },
+    "cultural_knowledge": {
+      "languages": [],
+      "literature": [
+        "literary_engagement"
+      ],
+      "arts": [],
+      "philosophy": [],
+      "sciences": []
+    },
+    "lived_knowledge": {
+      "places_lived": [],
+      "travels": [],
+      "communities": [],
+      "relationships": []
+    },
+    "knowledge_boundaries": {
+      "unknown_domains": [
+        "literature",
+        "arts",
+        "mathematics",
+        "cooking",
+        "science",
+        "sports",
+        "history",
+        "psychology",
+        "business",
+        "philosophy",
+        "technology"
+      ],
+      "surface_knowledge": [],
+      "deep_expertise": [],
+      "learning_style": "formal_academic"
+    }
+  },
+  "personality_traits": {
+    "big_five": {
+      "openness": 0.0,
+      "conscientiousness": 0.0,
+      "extraversion": 0.0,
+      "agreeableness": 0.0,
+      "neuroticism": 0.0
+    },
+    "jungian_types": {
+      "primary_function": "",
+      "auxiliary_function": "",
+      "tertiary_function": "",
+      "inferior_function": ""
+    },
+    "communication_style": {
+      "formality_level": "moderate",
+      "humor_style": "",
+      "conflict_approach": "",
+      "emotional_expression": ""
+    }
+  },
+  "archetypes": {
+    "primary": "The Sage",
+    "secondary": [
+      "The Caregiver",
+      "The Creator"
+    ],
+    "shadow": "",
+    "aspirational": ""
+  },
+  "source_documents": {
+    "total_count": 1,
+    "by_type": {
+      "narrative": 0,
+      "education": 1,
+      "career": 0,
+      "reference": 0,
+      "personal": 0
+    },
+    "canon_distribution": {
+      "core": 1
+    },
+    "life_phase_coverage": [],
+    "document_ids": [
+      "86b92083-13d3-4d41-8830-840fe2387586"
+    ]
+  },
+  "fusion_metadata": {
+    "fusion_confidence": 0.29333333333333333,
+    "knowledge_completeness": 0.0,
+    "narrative_coherence": 0.0,
+    "boundary_clarity": 0.7333333333333333,
+    "processing_method": "deep_stratification",
+    "source_file_count": 1,
+    "warnings": [
+      "Missing narrative data for life phases: childhood, adolescence, young_adult, adult, current",
+      "No areas of deep expertise identified - persona may lack knowledge boundaries"
+    ],
+    "recommendations": [
+      "Add career documents to establish professional expertise",
+      "Add more narrative content for: childhood, adolescence, young_adult, adult, current"
+    ]
+  }
+}

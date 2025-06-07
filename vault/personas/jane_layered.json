@@ -1,0 +1,165 @@
+{
+  "id": "22a591c1-ce61-4206-a169-d119533e4a76",
+  "name": "Jane",
+  "version": "2.0",
+  "created_at": "2025-06-07T01:03:40.595965",
+  "narrative_identity": {
+    "life_phases": {
+      "childhood": {
+        "events": [
+          "college"
+        ],
+        "themes": [
+          "discovery"
+        ],
+        "formative_experiences": []
+      },
+      "adolescence": {
+        "events": [],
+        "themes": [],
+        "formative_experiences": []
+      },
+      "young_adult": {
+        "events": [],
+        "themes": [],
+        "formative_experiences": []
+      },
+      "adult": {
+        "events": [],
+        "themes": [],
+        "formative_experiences": []
+      },
+      "current": {
+        "events": [],
+        "themes": [],
+        "current_circumstances": []
+      }
+    },
+    "core_narratives": [
+      "discovery"
+    ],
+    "symbolic_memories": [],
+    "personality_development": {
+      "trait_evolution": {},
+      "defining_moments": [],
+      "recurring_patterns": []
+    }
+  },
+  "knowledge_identity": {
+    "formal_education": {
+      "degrees": [
+        "phd in clinical psychology from northwestern university in 2018",
+        "phd in clinical psychology from northwestern university in 2018"
+      ],
+      "courses": [],
+      "certifications": [],
+      "academic_achievements": []
+    },
+    "professional_experience": {
+      "positions": [],
+      "skills": [],
+      "domains": [],
+      "accomplishments": []
+    },
+    "cultural_knowledge": {
+      "languages": [],
+      "literature": [
+        "literary_engagement"
+      ],
+      "arts": [],
+      "philosophy": [],
+      "sciences": []
+    },
+    "lived_knowledge": {
+      "places_lived": [],
+      "travels": [],
+      "communities": [],
+      "relationships": []
+    },
+    "knowledge_boundaries": {
+      "unknown_domains": [
+        "business",
+        "mathematics",
+        "cooking",
+        "history",
+        "science",
+        "sports",
+        "technology",
+        "literature"
+      ],
+      "surface_knowledge": [
+        "philosophy",
+        "psychology",
+        "arts"
+      ],
+      "deep_expertise": [],
+      "learning_style": "formal_academic"
+    }
+  },
+  "personality_traits": {
+    "big_five": {
+      "openness": 0.0,
+      "conscientiousness": 0.0,
+      "extraversion": 0.0,
+      "agreeableness": 0.0,
+      "neuroticism": 0.0
+    },
+    "jungian_types": {
+      "primary_function": "",
+      "auxiliary_function": "",
+      "tertiary_function": "",
+      "inferior_function": ""
+    },
+    "communication_style": {
+      "formality_level": "moderate",
+      "humor_style": "",
+      "conflict_approach": "",
+      "emotional_expression": ""
+    }
+  },
+  "archetypes": {
+    "primary": "The Caregiver",
+    "secondary": [
+      "The Sage",
+      "The Creator"
+    ],
+    "shadow": "",
+    "aspirational": ""
+  },
+  "source_documents": {
+    "total_count": 3,
+    "by_type": {
+      "narrative": 1,
+      "education": 1,
+      "career": 1,
+      "reference": 0,
+      "personal": 0
+    },
+    "canon_distribution": {
+      "core": 3
+    },
+    "life_phase_coverage": [
+      "childhood"
+    ],
+    "document_ids": [
+      "b8d57419-0406-4e0f-8619-d9f4f8784f08",
+      "1cd62793-46f2-4181-adc2-8d4846482af3",
+      "2685c68e-22da-4403-8d1f-8c2eab68a85d"
+    ]
+  },
+  "fusion_metadata": {
+    "fusion_confidence": 0.35333333333333333,
+    "knowledge_completeness": 0.0,
+    "narrative_coherence": 0.2,
+    "boundary_clarity": 0.7333333333333333,
+    "processing_method": "deep_stratification",
+    "source_file_count": 3,
+    "warnings": [
+      "Missing narrative data for life phases: adolescence, young_adult, adult, current",
+      "No areas of deep expertise identified - persona may lack knowledge boundaries"
+    ],
+    "recommendations": [
+      "Add more narrative content for: childhood, adolescence, young_adult, adult, current"
+    ]
+  }
+}

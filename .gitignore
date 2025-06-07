@@ -1,12 +1,19 @@
-# VALIS Archive Folders
-VALIS_1_0/
+# VALIS Repository Cleanup
+# Backup directory (archived old code)
+backup/
 
-# Test and debug files (prevent confusion)
+# Large build artifacts and models
+local_llm/
+*.gguf
+*.bin
+*.safetensors
+
+# Test and debug files
 test_*.py
 debug_*.py
 *_test.py
 *_debug.py
-tests/
+tests/temp/
 __pycache__/
 
 # Build artifacts
@@ -53,15 +60,20 @@ Thumbs.db
 
 # Log files
 *.log
-logs/
+logs/temp/
 
-# Local LLM models and build artifacts (large files)
-local_llm/models/*.gguf
-local_llm/models/*.bin
-local_llm/models/*.safetensors
-local_llm/llama.cpp/
+# Database files (development)
+*.db-journal
+*.sqlite-wal
+*.sqlite-shm
 
 # Temporary files
 tmp/
 temp/
 *.tmp
+
+# Memory system temp files
+claude-memory-ADV/MEMORY_DEV/temp/
+
+# Node modules (if any)
+node_modules/

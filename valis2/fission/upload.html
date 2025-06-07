@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VALIS - Mr. Fission Upload Portal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        background: 'hsl(0, 0%, 5%)',
+                        foreground: 'hsl(300, 20%, 95%)',
+                        card: 'hsl(0, 0%, 8%)',
+                        'card-foreground': 'hsl(300, 20%, 95%)',
+                        primary: 'hsl(300, 100%, 60%)',
+                        'primary-foreground': 'hsl(0, 0%, 5%)',
+                        secondary: 'hsl(300, 30%, 15%)',
+                        'secondary-foreground': 'hsl(300, 20%, 95%)',
+                        muted: 'hsl(300, 20%, 12%)',
+                        'muted-foreground': 'hsl(300, 15%, 65%)',
+                        accent: 'hsl(300, 50%, 20%)',
+                        'accent-foreground': 'hsl(300, 20%, 95%)',
+                        border: 'hsl(300, 30%, 18%)',
+                        input: 'hsl(300, 20%, 12%)',
+                        destructive: 'hsl(0, 62.8%, 30.6%)',
+                        'destructive-foreground': 'hsl(300, 20%, 95%)',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: hsl(0, 0%, 5%);
+            color: hsl(300, 20%, 95%);
+        }
+        .card {
+            background-color: hsl(0, 0%, 8%);
+            border: 1px solid hsl(300, 30%, 18%);
+        }
+        .btn-primary {
+            background-color: hsl(300, 100%, 60%);
+            color: hsl(0, 0%, 5%);
+        }
+        .btn-primary:hover {
+            background-color: hsl(300, 100%, 70%);
+        }
+        .btn-secondary {
+            background-color: hsl(300, 30%, 15%);
+            color: hsl(300, 20%, 95%);
+            border: 1px solid hsl(300, 30%, 18%);
+        }
+        .btn-secondary:hover {
+            background-color: hsl(300, 30%, 20%);
+        }
+        .upload-zone {
+            border: 2px dashed hsl(300, 30%, 18%);
+            transition: all 0.3s ease;
+        }
+        .upload-zone:hover {
+            border-color: hsl(300, 100%, 60%);
+            background-color: hsl(300, 20%, 8%);
+        }
+        .upload-zone.dragover {
+            border-color: hsl(300, 100%, 60%);
+            background-color: hsl(300, 50%, 10%);
+        }
+        .status-bar {
+            background-color: hsl(0, 0%, 3%);
+            border-top: 1px solid hsl(300, 30%, 18%);
+        }
+        .spinner {
+            border: 2px solid hsl(300, 30%, 18%);
+            border-top: 2px solid hsl(300, 100%, 60%);
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .trait-bar {
+            background-color: hsl(300, 30%, 15%);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .trait-fill {
+            background: linear-gradient(90deg, hsl(300, 100%, 60%), hsl(300, 100%, 70%));
+            height: 100%;
+            transition: width 0.3s ease;
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-background text-foreground">
+    <div class="container mx-auto px-4 py-8 max-w-6xl">
+        <!-- Header -->
+        <div class="text-center mb-8">
+            <h1 class="text-4xl font-bold text-primary mb-2">MR. FISSION</h1>
+            <p class="text-muted-foreground text-lg">The Portal to Jane - Soul Upload Interface</p>
+            <div class="w-24 h-1 bg-primary mx-auto mt-4"></div>
+        </div>
+
+        <!-- Main Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+            <!-- Upload Section -->
+            <div class="space-y-6">
+                <div class="card rounded-lg p-6">
+                    <h2 class="text-xl font-semibold mb-4 text-card-foreground">Upload Files</h2>
+                    <div id="uploadZone" class="upload-zone rounded-lg p-8 text-center cursor-pointer">
+                        <div class="text-6xl mb-4">📁</div>
+                        <h3 class="text-lg font-semibold mb-2">Drop files here or click to browse</h3>
+                        <p class="text-muted-foreground mb-2">PDF, TXT, MD, JSON, Images supported</p>
+                        <p class="text-sm text-muted-foreground">Max 16MB per file</p>
+                        <input type="file" id="fileInput" multiple 
+                               accept=".txt,.md,.pdf,.json,.csv,.jpg,.jpeg,.png,.bmp,.wav,.mp3" 
+                               class="hidden">
+                    </div>
+                </div>
+
+                <!-- File List -->
+                <div class="card rounded-lg p-6">
+                    <h3 class="text-lg font-semibold mb-4 text-card-foreground">Upload Queue</h3>
+                    <div id="fileList" class="space-y-2 max-h-64 overflow-y-auto">
+                        <p class="text-muted-foreground text-center py-4">No files selected</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Preview Section -->
+            <div class="space-y-6">
+                <div class="card rounded-lg p-6">
+                    <h2 class="text-xl font-semibold mb-4 text-card-foreground">Persona Preview</h2>
+                    <div id="personaPreview" class="hidden">
+                        <!-- Identity -->
+                        <div class="mb-6">
+                            <h3 class="text-lg font-semibold mb-3 text-accent-foreground">Identity</h3>
+                            <div class="space-y-2 text-sm">
+                                <div><strong>Name:</strong> <span id="personaName" class="text-primary">-</span></div>
+                                <div><strong>Role:</strong> <span id="personaRole" class="text-muted-foreground">-</span></div>
+                                <div><strong>Tone:</strong> <span id="personaTone" class="text-muted-foreground">-</span></div>
+                            </div>
+                        </div>
+
+                        <!-- Traits -->
+                        <div class="mb-6">
+                            <h3 class="text-lg font-semibold mb-3 text-accent-foreground">Core Traits</h3>
+                            <div id="traitGrid" class="space-y-3">
+                                <!-- Traits will be populated here -->
+                            </div>
+                        </div>
+
+                        <!-- Archetypes -->
+                        <div class="mb-6">
+                            <h3 class="text-lg font-semibold mb-3 text-accent-foreground">Archetypes</h3>
+                            <div id="archetypeList" class="flex flex-wrap gap-2">
+                                <!-- Archetypes will be populated here -->
+                            </div>
+                        </div>
+
+                        <!-- Fusion Info -->
+                        <div class="mb-6">
+                            <h3 class="text-lg font-semibold mb-3 text-accent-foreground">Fusion Metadata</h3>
+                            <div class="space-y-2 text-sm">
+                                <div><strong>Confidence:</strong> <span id="fusionConfidence" class="text-primary">-</span></div>
+                                <div><strong>Source Files:</strong> <span id="sourceCount" class="text-muted-foreground">-</span></div>
+                                <div><strong>Method:</strong> <span id="processingMethod" class="text-muted-foreground">-</span></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="previewPlaceholder" class="text-center py-12 text-muted-foreground">
+                        <div class="text-4xl mb-4">🧠</div>
+                        <p>Upload files and build persona to see preview</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="flex justify-center space-x-4 mb-8">
+            <button id="buildBtn" class="btn-primary px-6 py-3 rounded-lg font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                🧠 Build Persona
+            </button>
+            <button id="saveBtn" class="btn-secondary px-6 py-3 rounded-lg font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                📥 Save to Vault
+            </button>
+            <button id="deployBtn" class="btn-primary px-6 py-3 rounded-lg font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                🚀 Deploy to VALIS
+            </button>
+        </div>
+
+        <!-- Status Messages -->
+        <div id="statusMessages" class="space-y-2">
+            <!-- Status messages will appear here -->
+        </div>
+    </div>
+
+    <!-- Status Bar -->
+    <div id="statusBar" class="status-bar fixed bottom-0 left-0 right-0 p-4 hidden">
+        <div class="container mx-auto flex items-center space-x-4">
+            <div class="spinner"></div>
+            <span id="statusText">Processing...</span>
+        </div>
+    </div>
+
+    <script>
+        class MrFissionPortal {
+            constructor() {
+                this.files = [];
+                this.sessionId = null;
+                this.personaName = null;
+                this.apiBase = 'http://localhost:8001';
+                this.vaultApiBase = 'http://localhost:8002';
+                
+                this.initializeElements();
+                this.attachEventListeners();
+            }
+            
+            initializeElements() {
+                this.uploadZone = document.getElementById('uploadZone');
+                this.fileInput = document.getElementById('fileInput');
+                this.fileList = document.getElementById('fileList');
+                this.buildBtn = document.getElementById('buildBtn');
+                this.saveBtn = document.getElementById('saveBtn');
+                this.deployBtn = document.getElementById('deployBtn');
+                this.personaPreview = document.getElementById('personaPreview');
+                this.previewPlaceholder = document.getElementById('previewPlaceholder');
+                this.statusBar = document.getElementById('statusBar');
+                this.statusText = document.getElementById('statusText');
+                this.statusMessages = document.getElementById('statusMessages');
+            }
+            
+            attachEventListeners() {
+                // Upload zone interactions
+                this.uploadZone.addEventListener('click', () => this.fileInput.click());
+                this.uploadZone.addEventListener('dragover', this.handleDragOver.bind(this));
+                this.uploadZone.addEventListener('dragleave', this.handleDragLeave.bind(this));
+                this.uploadZone.addEventListener('drop', this.handleDrop.bind(this));
+                
+                // File input
+                this.fileInput.addEventListener('change', this.handleFileSelect.bind(this));
+                
+                // Control buttons
+                this.buildBtn.addEventListener('click', this.buildPersona.bind(this));
+                this.saveBtn.addEventListener('click', this.saveToVault.bind(this));
+                this.deployBtn.addEventListener('click', this.deployToValis.bind(this));
+            }
+            
+            handleDragOver(e) {
+                e.preventDefault();
+                this.uploadZone.classList.add('dragover');
+            }
+            
+            handleDragLeave(e) {
+                e.preventDefault();
+                this.uploadZone.classList.remove('dragover');
+            }
+            
+            handleDrop(e) {
+                e.preventDefault();
+                this.uploadZone.classList.remove('dragover');
+                const files = Array.from(e.dataTransfer.files);
+                this.addFiles(files);
+            }
+            
+            handleFileSelect(e) {
+                const files = Array.from(e.target.files);
+                this.addFiles(files);
+            }
+            
+            addFiles(newFiles) {
+                newFiles.forEach(file => {
+                    if (this.isValidFile(file)) {
+                        this.files.push(file);
+                    }
+                });
+                this.updateFileList();
+                this.updateButtonStates();
+            }
+            
+            isValidFile(file) {
+                const allowedTypes = [
+                    'text/plain', 'text/markdown', 'application/pdf', 
+                    'application/json', 'text/csv',
+                    'image/jpeg', 'image/png', 'image/bmp',
+                    'audio/wav', 'audio/mpeg'
+                ];
+                
+                const maxSize = 16 * 1024 * 1024; // 16MB
+                
+                if (file.size > maxSize) {
+                    this.showError(`File ${file.name} is too large (max 16MB)`);
+                    return false;
+                }
+                
+                const isValidType = allowedTypes.some(type => 
+                    file.type === type || file.name.toLowerCase().endsWith(type.split('/')[1])
+                );
+                
+                if (!isValidType) {
+                    this.showError(`File ${file.name} type not supported`);
+                    return false;
+                }
+                
+                return true;
+            }
+            
+            updateFileList() {
+                if (this.files.length === 0) {
+                    this.fileList.innerHTML = '<p class="text-muted-foreground text-center py-4">No files selected</p>';
+                    return;
+                }
+                
+                const html = this.files.map((file, index) => `
+                    <div class="flex items-center justify-between p-3 bg-muted rounded-lg">
+                        <div class="flex-1">
+                            <div class="font-medium text-sm">${file.name}</div>
+                            <div class="text-xs text-muted-foreground">${this.formatFileSize(file.size)}</div>
+                        </div>
+                        <button onclick="portal.removeFile(${index})" 
+                                class="text-destructive hover:text-destructive-foreground px-2 py-1 rounded">
+                            ✕
+                        </button>
+                    </div>
+                `).join('');
+                
+                this.fileList.innerHTML = html;
+            }
+            
+            removeFile(index) {
+                this.files.splice(index, 1);
+                this.updateFileList();
+                this.updateButtonStates();
+            }
+            
+            formatFileSize(bytes) {
+                if (bytes === 0) return '0 Bytes';
+                const k = 1024;
+                const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+                const i = Math.floor(Math.log(bytes) / Math.log(k));
+                return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+            }
+            
+            updateButtonStates() {
+                const hasFiles = this.files.length > 0;
+                this.buildBtn.disabled = !hasFiles;
+                this.saveBtn.disabled = !this.personaName;
+                this.deployBtn.disabled = !this.personaName;
+            }
+            
+            async buildPersona() {
+                if (this.files.length === 0) return;
+                
+                try {
+                    this.showStatus('Uploading files...');
+                    
+                    // Step 1: Upload files
+                    const uploadResult = await this.uploadFiles();
+                    this.sessionId = uploadResult.session_id;
+                    
+                    this.showStatus('Ingesting content...');
+                    
+                    // Step 2: Ingest files
+                    await this.ingestFiles();
+                    
+                    this.showStatus('Fusing persona...');
+                    
+                    // Step 3: Fuse persona
+                    const personaName = prompt('Enter persona name:', 'Jane') || 'Jane';
+                    await this.fusePersona(personaName);
+                    
+                    this.personaName = personaName;
+                    
+                    this.showStatus('Loading preview...');
+                    
+                    // Step 4: Get preview
+                    const preview = await this.getPersonaPreview(personaName);
+                    this.displayPersonaPreview(preview);
+                    
+                    this.hideStatus();
+                    this.updateButtonStates();
+                    this.showSuccess(`Persona "${personaName}" created successfully!`);
+                    
+                } catch (error) {
+                    this.hideStatus();
+                    this.showError(`Build failed: ${error.message}`);
+                }
+            }
+                        
+            async uploadFiles() {
+                const formData = new FormData();
+                this.files.forEach(file => {
+                    formData.append('files', file);
+                });
+                
+                const response = await fetch(`${this.apiBase}/api/fission/upload`, {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`Upload failed: ${response.statusText}`);
+                }
+                
+                return await response.json();
+            }
+            
+            async ingestFiles() {
+                const response = await fetch(`${this.apiBase}/api/fission/ingest/${this.sessionId}`, {
+                    method: 'POST'
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`Ingestion failed: ${response.statusText}`);
+                }
+                
+                return await response.json();
+            }
+            
+            async fusePersona(name) {
+                const response = await fetch(`${this.apiBase}/api/fission/fuse/${this.sessionId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ name: name })
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`Fusion failed: ${response.statusText}`);
+                }
+                
+                return await response.json();
+            }
+            
+            async getPersonaPreview(name) {
+                const response = await fetch(`${this.apiBase}/api/fission/preview/${name}`);
+                
+                if (!response.ok) {
+                    throw new Error(`Preview failed: ${response.statusText}`);
+                }
+                
+                return await response.json();
+            }
+            
+            displayPersonaPreview(previewData) {
+                const { blueprint } = previewData;
+                
+                // Update identity info
+                document.getElementById('personaName').textContent = blueprint.name || 'Unknown';
+                document.getElementById('personaRole').textContent = blueprint.role || 'Digital Entity';
+                document.getElementById('personaTone').textContent = blueprint.tone || 'Adaptive';
+                
+                // Update traits with progress bars
+                const traitGrid = document.getElementById('traitGrid');
+                const traits = blueprint.traits || {};
+                traitGrid.innerHTML = Object.entries(traits).map(([name, value]) => `
+                    <div class="space-y-1">
+                        <div class="flex justify-between text-xs">
+                            <span class="font-medium">${name.replace('_', ' ').toUpperCase()}</span>
+                            <span class="text-primary">${(value * 100).toFixed(0)}%</span>
+                        </div>
+                        <div class="trait-bar h-2">
+                            <div class="trait-fill" style="width: ${value * 100}%"></div>
+                        </div>
+                    </div>
+                `).join('');
+                
+                // Update archetypes
+                const archetypeList = document.getElementById('archetypeList');
+                const archetypes = blueprint.archetypes || [];
+                archetypeList.innerHTML = archetypes.map(archetype => `
+                    <span class="bg-accent text-accent-foreground px-3 py-1 rounded-full text-sm">${archetype}</span>
+                `).join('');
+                
+                // Update fusion info
+                const fusionMeta = blueprint.fusion_metadata || {};
+                document.getElementById('fusionConfidence').textContent = 
+                    fusionMeta.fusion_confidence ? `${(fusionMeta.fusion_confidence * 100).toFixed(1)}%` : 'Unknown';
+                document.getElementById('sourceCount').textContent = 
+                    fusionMeta.source_file_count || this.files.length;
+                document.getElementById('processingMethod').textContent = 
+                    fusionMeta.processing_method || 'Automatic';
+                
+                // Show preview, hide placeholder
+                this.personaPreview.classList.remove('hidden');
+                this.previewPlaceholder.classList.add('hidden');
+            }
+            
+            async saveToVault() {
+                if (!this.personaName) return;
+                
+                try {
+                    this.showStatus('Saving to vault...');
+                    
+                    const response = await fetch(`${this.vaultApiBase}/api/persona/register`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            persona_name: this.personaName,
+                            status: 'draft',
+                            source: 'mr_fission_portal'
+                        })
+                    });
+                    
+                    if (!response.ok) {
+                        throw new Error(`Vault save failed: ${response.statusText}`);
+                    }
+                    
+                    const result = await response.json();
+                    this.hideStatus();
+                    this.showSuccess(`Persona "${this.personaName}" saved to vault with ID: ${result.persona_id}`);
+                    
+                } catch (error) {
+                    this.hideStatus();
+                    this.showError(`Vault save failed: ${error.message}`);
+                }
+            }
+            
+            async deployToValis() {
+                if (!this.personaName) return;
+                
+                try {
+                    this.showStatus('Activating persona...');
+                    
+                    // First activate in vault
+                    const activateResponse = await fetch(`${this.vaultApiBase}/api/persona/activate`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            persona_name: this.personaName
+                        })
+                    });
+                    
+                    if (!activateResponse.ok) {
+                        throw new Error(`Activation failed: ${activateResponse.statusText}`);
+                    }
+                    
+                    this.showStatus('Deploying to VALIS...');
+                    
+                    // Then deploy to main VALIS database
+                    const deployResponse = await fetch(`${this.vaultApiBase}/api/persona/deploy`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            persona_name: this.personaName,
+                            target: 'valis_main'
+                        })
+                    });
+                    
+                    if (!deployResponse.ok) {
+                        throw new Error(`VALIS deployment failed: ${deployResponse.statusText}`);
+                    }
+                    
+                    const result = await deployResponse.json();
+                    this.hideStatus();
+                    this.showSuccess(`${this.personaName} is now ALIVE in VALIS! Soul ID: ${result.valis_id}`);
+                    
+                    // Option to verify deployment
+                    setTimeout(() => {
+                        if (confirm(`${this.personaName} has been deployed! Would you like to verify the soul is active in the database?`)) {
+                            window.open('http://localhost:8000/admin', '_blank');
+                        }
+                    }, 2000);
+                    
+                } catch (error) {
+                    this.hideStatus();
+                    this.showError(`VALIS deployment failed: ${error.message}`);
+                }
+            }
+            
+            showStatus(message) {
+                this.statusText.textContent = message;
+                this.statusBar.classList.remove('hidden');
+            }
+            
+            hideStatus() {
+                this.statusBar.classList.add('hidden');
+            }
+            
+            showMessage(message, type = 'info') {
+                const messageEl = document.createElement('div');
+                messageEl.className = `p-4 rounded-lg border ${
+                    type === 'error' ? 'bg-destructive/10 border-destructive text-destructive' :
+                    type === 'success' ? 'bg-primary/10 border-primary text-primary' :
+                    'bg-muted border-border text-foreground'
+                }`;
+                messageEl.textContent = message;
+                
+                this.statusMessages.appendChild(messageEl);
+                
+                // Auto remove after 5 seconds
+                setTimeout(() => {
+                    messageEl.remove();
+                }, 5000);
+                
+                // Scroll to message
+                messageEl.scrollIntoView({ behavior: 'smooth' });
+            }
+            
+            showError(message) {
+                this.showMessage(message, 'error');
+            }
+            
+            showSuccess(message) {
+                this.showMessage(message, 'success');
+            }
+        }
+        
+        // Initialize the portal when page loads
+        let portal;
+        document.addEventListener('DOMContentLoaded', () => {
+            portal = new MrFissionPortal();
+        });
+    </script>
+</body>
+</html>

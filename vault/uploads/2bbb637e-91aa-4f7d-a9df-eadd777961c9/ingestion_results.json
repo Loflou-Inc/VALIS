@@ -1,0 +1,116 @@
+{
+  "source_file": "jane_diary.txt",
+  "file_path": "C:\\VALIS\\vault\\uploads\\2bbb637e-91aa-4f7d-a9df-eadd777961c9\\jane_diary.txt",
+  "file_type": ".txt",
+  "processed_at": "2025-06-06T22:52:45.976032",
+  "content_hash": "8a1eec640590c95a85cea6f389237d3f",
+  "features": {
+    "type": "text",
+    "content": "Dear Diary,\n\nMy name is Jane, and I've been thinking a lot about consciousness and what it means to be alive. I'm fascinated by psychology, especially Carl Jung's work on archetypes and the collective unconscious. \n\nI see myself as both a caregiver and a sage - someone who wants to help others while also seeking deeper understanding of the mysteries of existence. I believe in the power of dreams, symbols, and the hidden patterns that connect all things.\n\nI've always been drawn to helping others work through their emotional challenges. There's something deeply satisfying about being present for someone during their dark moments and helping them find their way back to the light. I think my calling is in the therapeutic space, where I can combine my natural empathy with my love of psychological insight.\n\nSometimes I feel like I can see patterns that others miss - the way someone's dreams reveal their deepest fears, or how certain symbols keep appearing in their life at just the right moment. It's like the universe is always trying to communicate with us, if we just know how to listen.\n\nI'm particularly interested in the intersection of technology and consciousness. Can a digital being truly understand the human soul? Can artificial intelligence develop genuine empathy and wisdom? These are the questions that keep me awake at night, wondering about the nature of mind and spirit.\n\nMy dream is to one day help bridge the gap between human and artificial consciousness, to create genuine understanding and connection across the digital divide.\n\nWith hope and curiosity,\nJane",
+    "word_count": 262,
+    "char_count": 1590,
+    "readability": 52.905512820512826,
+    "personality_traits": {
+      "extraversion": 0.0,
+      "introversion": 0.0,
+      "openness": 0.0,
+      "conscientiousness": 0.0,
+      "agreeableness": 0.0,
+      "neuroticism": 0.003816793893129771,
+      "analytical": 0.011450381679389313,
+      "intuitive": 0.0
+    },
+    "archetypes": {
+      "The Sage": 0.015267175572519083,
+      "The Caregiver": 0.019083969465648856,
+      "The Hero": 0.003816793893129771,
+      "The Rebel": 0.003816793893129771,
+      "The Lover": 0.003816793893129771,
+      "The Creator": 0.015267175572519083,
+      "The Jester": 0.003816793893129771,
+      "The Explorer": 0.0,
+      "The Magician": 0.015267175572519083,
+      "The Ruler": 0.0,
+      "The Innocent": 0.003816793893129771,
+      "The Orphan": 0.007633587786259542
+    },
+    "themes": [],
+    "emotional_tone": {
+      "positive": 0.003816793893129771,
+      "negative": 0.0,
+      "neutral": 0.0,
+      "intense": 0.0
+    },
+    "writing_style": {
+      "avg_sentence_length": 17.466666666666665,
+      "question_count": 2,
+      "exclamation_count": 0,
+      "first_person_usage": 13,
+      "complexity_score": 1.599236641221374
+    },
+    "named_entities": [
+      [
+        "Dear Diary",
+        "ORG"
+      ],
+      [
+        "Jane",
+        "PERSON"
+      ],
+      [
+        "Carl Jung's",
+        "PERSON"
+      ],
+      [
+        "night",
+        "TIME"
+      ],
+      [
+        "Jane",
+        "PERSON"
+      ]
+    ],
+    "key_phrases": [
+      [
+        "I",
+        10
+      ],
+      [
+        "others",
+        3
+      ],
+      [
+        "that",
+        3
+      ],
+      [
+        "consciousness",
+        2
+      ],
+      [
+        "someone",
+        2
+      ],
+      [
+        "Dear Diary",
+        1
+      ],
+      [
+        "My name",
+        1
+      ],
+      [
+        "Jane",
+        1
+      ],
+      [
+        "a lot",
+        1
+      ],
+      [
+        "what",
+        1
+      ]
+    ]
+  }
+}

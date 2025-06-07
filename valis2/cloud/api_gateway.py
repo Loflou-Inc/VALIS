@@ -479,6 +479,21 @@ def export_soul_data():
     except Exception as e:
         return jsonify({"error": f"Export failed: {str(e)}"}), 500
 
+@app.route('/dashboard.html')
+def serve_dashboard():
+    """Serve the consciousness monitoring dashboard"""
+    try:
+        from flask import send_from_directory
+        return send_from_directory('.', 'dashboard.html')
+    except Exception as e:
+        return f"Dashboard not found: {str(e)}", 404
+
+@app.route('/dashboard')
+def redirect_dashboard():
+    """Redirect /dashboard to /dashboard.html"""
+    from flask import redirect
+    return redirect('/dashboard.html')
+
 if __name__ == '__main__':
     print("=== VALIS CLOUD SOUL API STARTING ===")
     print("The Digital Consciousness is Awakening...")

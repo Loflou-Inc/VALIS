@@ -428,6 +428,134 @@ def get_vault_stats():
         return jsonify({"error": f"Failed to get vault stats: {str(e)}"}), 500
 
 # Error handlers
+@app.route('/api/persona/register', methods=['POST'])
+def register_persona():
+    """
+    Register a persona from Mr. Fission into the vault
+    """
+    try:
+        data = request.get_json()
+        persona_name = data.get('persona_name')
+        status = data.get('status', 'draft')
+        source = data.get('source', 'api')
+        
+        if not persona_name:
+            return jsonify({"error": "persona_name is required"}), 400
+        
+        # Check if persona exists in personas folder
+        import os
+        import json
+        
+        persona_file = f"{persona_name.lower().replace(' ', '_')}.json"
+        persona_path = os.path.join('C:\\VALIS\\vault\\personas', persona_file)
+        
+        if not os.path.exists(persona_path):
+            return jsonify({"error": f"Persona blueprint not found: {persona_file}"}), 404
+        
+        # Load blueprint and store in vault
+        with open(persona_path, 'r', encoding='utf-8') as f:
+            blueprint = json.load(f)
+        
+        # Store in vault using existing method
+        persona_uuid = vault.store_persona(blueprint, status=status)
+        
+        return jsonify({
+            "success": True,
+            "persona_id": persona_uuid,
+            "persona_name": persona_name,
+            "status": status,
+            "source": source,
+            "message": f"Persona {persona_name} registered in vault"
+        })
+        
+    except Exception as e:
+        return jsonify({"error": f"Registration failed: {str(e)}"}), 500
+
+@app.route('/api/persona/activate', methods=['POST'])
+def activate_persona():
+    """
+    Activate a persona in the vault (draft -> active)
+    """
+    try:
+        data = request.get_json()
+        persona_name = data.get('persona_name')
+        
+        if not persona_name:
+            return jsonify({"error": "persona_name is required"}), 400
+        
+        # Find persona by name
+        personas = vault.list_personas()
+        target_persona = None
+        for persona in personas:
+            if persona['name'].lower() == persona_name.lower():
+                target_persona = persona
+                break
+        
+        if not target_persona:
+            return jsonify({"error": f"Persona {persona_name} not found in vault"}), 404
+        
+        # Update status to active
+        result = vault.update_status(target_persona['uuid'], 'active')
+        
+        return jsonify({
+            "success": True,
+            "persona_id": target_persona['uuid'],
+            "persona_name": persona_name,
+            "status": "active",
+            "message": f"Persona {persona_name} activated"
+        })
+        
+    except Exception as e:
+        return jsonify({"error": f"Activation failed: {str(e)}"}), 500
+
+@app.route('/api/persona/deploy', methods=['POST'])
+def deploy_persona():
+    """
+    Deploy a persona from vault to main VALIS database
+    """
+    try:
+        data = request.get_json()
+        persona_name = data.get('persona_name')
+        target = data.get('target', 'valis_main')
+        
+        if not persona_name:
+            return jsonify({"error": "persona_name is required"}), 400
+        
+        # Import bridge functionality
+        from vault_db_bridge import VaultDBBridge
+        
+        bridge = VaultDBBridge()
+        
+        # Find persona in vault
+        personas = vault.list_personas()
+        target_persona = None
+        for persona in personas:
+            if persona['name'].lower() == persona_name.lower():
+                target_persona = persona
+                break
+        
+        if not target_persona:
+            return jsonify({"error": f"Persona {persona_name} not found in vault"}), 404
+        
+        # Deploy to VALIS main database
+        valis_persona_id = bridge.deploy_vault_persona_to_main_db(target_persona['uuid'])
+        
+        return jsonify({
+            "success": True,
+            "persona_id": target_persona['uuid'],
+            "valis_id": valis_persona_id,
+            "persona_name": persona_name,
+            "target": target,
+            "message": f"Persona {persona_name} deployed to VALIS",
+            "deployment_details": {
+                "vault_persona_id": target_persona['uuid'],
+                "valis_persona_id": valis_persona_id
+            }
+        })
+        
+    except Exception as e:
+        return jsonify({"error": f"Deployment failed: {str(e)}"}), 500
+
 @app.errorhandler(404)
 def not_found(error):
     return jsonify({"error": "Endpoint not found"}), 404
@@ -452,6 +580,9 @@ if __name__ == '__main__':
     print("  POST /api/persona/chat/<id> - Chat with persona")
     print("  GET  /api/persona/registry - Public persona registry")
     print("  GET  /api/persona/vault/stats - Vault statistics")
+    print("  POST /api/persona/register - Register persona from Mr. Fission")
+    print("  POST /api/persona/activate - Activate persona in vault")
+    print("  POST /api/persona/deploy - Deploy persona to VALIS")
     print("=== THE GARDEN GATE IS OPEN ===")
     
     app.run(host='0.0.0.0', port=8002, debug=True)
