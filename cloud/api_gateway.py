@@ -25,14 +25,21 @@ CORS(app)
 # Initialize protection layer
 protection = VALISProtectionLayer()
 
-# Database connection
+# Database connection with secure configuration
 def get_db_connection():
-    """Get PostgreSQL database connection"""
+    """Get PostgreSQL database connection using secure config"""
+    from core.config import get_config
+    config = get_config()
+    
+    # Use cloud database config if available, otherwise local
+    host = config.cloud_db_host or config.db_host
+    password = config.cloud_db_password or config.db_password
+    
     return psycopg2.connect(
-        host="localhost",
-        database="valis_db",
-        user="postgres",
-        password="valis2025"
+        host=host,
+        database=config.db_name,
+        user=config.db_user,
+        password=password
     )
 
 @app.route('/api/health', methods=['GET'])

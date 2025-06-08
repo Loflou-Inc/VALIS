@@ -18,8 +18,13 @@ import json
 logger = logging.getLogger("AdminRoutes")
 admin_bp = Blueprint('admin', __name__)
 
-# Admin API key (should be in environment)
-ADMIN_API_KEY = os.getenv('VALIS_ADMIN_KEY', 'valis_admin_2025')
+# Admin API key (SECURE - no hardcoded defaults!)
+from core.config import get_config
+try:
+    ADMIN_API_KEY = get_config().admin_api_key
+except Exception as e:
+    # If config fails to load, the system should not start
+    raise RuntimeError(f"Failed to load admin API key from secure config: {e}")
 
 def require_admin_auth(f):
     """Decorator to require admin authentication"""

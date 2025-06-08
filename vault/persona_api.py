@@ -8,6 +8,10 @@ from flask_cors import CORS
 import json
 import sys
 import os
+
+# Import VALIS inference system
+sys.path.append('C:\\VALIS')
+from inference import run_inference, initialize as initialize_valis
 from datetime import datetime, timezone
 from typing import Dict, List, Any, Optional
 
@@ -291,7 +295,7 @@ def end_session(session_id):
 def chat_with_persona(session_id):
     """
     Chat with a persona in an active session
-    This is a placeholder - actual implementation would integrate with VALIS runtime
+    Integrated with VALIS runtime for actual AI inference
     """
     try:
         data = request.get_json()
@@ -323,8 +327,34 @@ def chat_with_persona(session_id):
         # Get persona blueprint for response generation
         blueprint = vault.get_persona(session_data['persona_uuid'])
         
-        # Generate simulated response (placeholder)
-        response = f"[{session_data['persona_name']}]: Thank you for your message. This is a simulated response in session {session_id}."
+        # VALIS INFERENCE INTEGRATION - Replace placeholder with actual AI
+        try:
+            # Initialize VALIS if not already done
+            initialize_valis()
+            
+            # Run inference using VALIS runtime
+            inference_result = run_inference(
+                prompt=message,
+                client_id=session_id,
+                persona_id=session_data['persona_uuid']
+            )
+            
+            if inference_result.get("success"):
+                response = inference_result.get("response", "No response generated")
+                inference_metadata = {
+                    "inference_time": inference_result.get("inference_time"),
+                    "model_used": inference_result.get("model_used"),
+                    "persona_cognition": inference_result.get("cognition_state")
+                }
+            else:
+                # Fallback to simple response if inference fails
+                response = f"[{session_data['persona_name']}]: I'm experiencing some technical difficulties. Please try again."
+                inference_metadata = {"error": inference_result.get("error")}
+                
+        except Exception as inference_error:
+            # Fallback if VALIS integration fails
+            response = f"[{session_data['persona_name']}]: I apologize, but I'm having trouble processing your message right now."
+            inference_metadata = {"error": str(inference_error)}
         
         # Update interaction count
         with sqlite3.connect(vault.db_path) as conn:
@@ -339,7 +369,9 @@ def chat_with_persona(session_id):
             "response": response,
             "session_id": session_id,
             "persona_name": session_data['persona_name'],
-            "timestamp": datetime.now(timezone.utc).isoformat()
+            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "inference_metadata": inference_metadata,
+            "valis_integration": "active"
         })
         
     except Exception as e:

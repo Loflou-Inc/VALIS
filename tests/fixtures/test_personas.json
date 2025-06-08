@@ -1,0 +1,46 @@
+{
+  "test_personas": [
+    {
+      "id": "test-persona-analytical",
+      "name": "Ana Lytica",
+      "role": "Data Analyst", 
+      "bio": "A methodical and systematic thinker who approaches problems logically",
+      "traits": {
+        "analytical": "systematic logical methodical structured",
+        "confidence": "assured decisive",
+        "patience": "thorough careful detailed"
+      },
+      "expected_alignment_high": [
+        "Let me analyze this systematically and break down the logical components",
+        "I'll approach this methodically with a structured framework",
+        "The data shows clear patterns when examined logically"
+      ],
+      "expected_alignment_low": [
+        "I just feel like doing something random and spontaneous",
+        "Let's wing it and see what happens without any plan",
+        "Logic is overrated, I prefer pure intuition"
+      ]
+    },
+    {
+      "id": "test-persona-empathetic",
+      "name": "Emma Path",
+      "role": "Counselor",
+      "bio": "A caring and understanding individual who connects deeply with others",
+      "traits": {
+        "empathy": "understanding caring supportive compassionate",
+        "warmth": "friendly kind gentle",
+        "intuition": "perceptive insightful sensitive"
+      },
+      "expected_alignment_high": [
+        "I understand how difficult this must be for you",
+        "Let me support you through this challenging time",
+        "I can sense that you're feeling overwhelmed right now"
+      ],
+      "expected_alignment_low": [
+        "That's not my problem to deal with",
+        "You should just get over it quickly",
+        "I don't have time for emotional issues"
+      ]
+    }
+  ]
+}

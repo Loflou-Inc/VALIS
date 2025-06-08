@@ -1,192 +1,197 @@
 """
-VALIS Synthetic Cognition Layer - AgentEmotionModel
-Emotion state management and memory tagging
+VALIS Synthetic Cognition Layer - AgentEmotionModel - REFACTORED FOR SPRINT 2.1
+Emotion state management and memory tagging with NLP-backed analysis
 """
 import json
-import logging
 from typing import Dict, List, Optional, Any
 from datetime import datetime
 
-logger = logging.getLogger(__name__)
+from core.logging_config import get_valis_logger, log_emotion_classification
+from core.exceptions import (
+    EmotionClassificationError, 
+    MemoryError, 
+    DatabaseError
+)
+from core.emotion_parser import ValisEmotionParser
+from core.emotion_taxonomy import EmotionCategory, EmotionMeasurement
 
 class AgentEmotionModel:
-    """Manages agent emotional states and emotion-weighted memory"""
+    """Manages agent emotional states and emotion-weighted memory with NLP analysis"""
     
-    # Russell's Circumplex Model emotions mapped to arousal levels
-    EMOTION_MAP = {
-        "excited": {"valence": "positive", "arousal": 8},
-        "happy": {"valence": "positive", "arousal": 6},
-        "content": {"valence": "positive", "arousal": 4},
-        "calm": {"valence": "positive", "arousal": 2},
-        "neutral": {"valence": "neutral", "arousal": 5},
-        "frustrated": {"valence": "negative", "arousal": 7},
-        "angry": {"valence": "negative", "arousal": 9},
-        "sad": {"valence": "negative", "arousal": 3},
-        "anxious": {"valence": "negative", "arousal": 8},
-        "tired": {"valence": "negative", "arousal": 2},
-        "confused": {"valence": "negative", "arousal": 6},
-        "focused": {"valence": "positive", "arousal": 7},
-        "stressed": {"valence": "negative", "arousal": 8}
-    }
     def __init__(self, db_client):
-        """Initialize with database client"""
+        """Initialize with database client and NLP parser"""
         self.db = db_client
-    
+        self.logger = get_valis_logger()
+        
+        # Initialize NLP emotion parser
+        try:
+            self.emotion_parser = ValisEmotionParser()
+            self.logger.info("NLP emotion parser initialized successfully")
+        except Exception as e:
+            self.logger.warning(f"Failed to initialize NLP parser, falling back to legacy: {e}")
+            self.emotion_parser = None
     def classify_emotion(self, transcript: str, tool_feedback: List[dict], session_id: str) -> dict:
-        """Classify emotional state from session transcript and tool outcomes"""
-        try:
-            mood = "neutral"
-            arousal_level = 5
-            emotion_tags = []
-            
-            # Analyze transcript for emotional indicators
-            if transcript:
-                transcript_lower = transcript.lower()
-                
-                # Check for positive emotions
-                if any(word in transcript_lower for word in ["great", "excellent", "perfect"]):
-                    mood = "happy"
-                    emotion_tags.append("positive_language")
-                elif any(word in transcript_lower for word in ["excited", "thrilled", "fantastic"]):
-                    mood = "excited" 
-                    emotion_tags.append("high_enthusiasm")
-                    
-                # Check for negative emotions
-                elif any(word in transcript_lower for word in ["error", "failed", "wrong", "problem"]):
-                    mood = "frustrated"
-                    emotion_tags.append("technical_difficulty")
-                elif any(word in transcript_lower for word in ["confused", "unclear", "don't understand"]):
-                    mood = "confused"
-                    emotion_tags.append("uncertainty")
-            
-            # Analyze tool feedback for additional emotional context
-            if tool_feedback:
-                failed_tools = [t for t in tool_feedback if not t.get('success', True)]
-                successful_tools = [t for t in tool_feedback if t.get('success', True)]
-                
-                if failed_tools and not successful_tools:
-                    mood = "frustrated"
-                    arousal_level = 7
-                    emotion_tags.append("tool_failure")
-                elif len(failed_tools) > len(successful_tools):
-                    mood = "stressed"
-                    arousal_level = 8
-                    emotion_tags.append("multiple_failures")
-                elif successful_tools and not failed_tools:
-                    if mood == "neutral":  # Don't override stronger emotions
-                        mood = "focused"
-                        arousal_level = 6
-                        emotion_tags.append("tool_success")
-            
-            # Map mood to arousal level if not already set
-            if mood in self.EMOTION_MAP:
-                arousal_level = self.EMOTION_MAP[mood]["arousal"]
-            
-            result = {
-                "mood": mood,
-                "arousal_level": arousal_level,
-                "emotion_tags": emotion_tags,
-                "session_id": session_id
-            }
-            
-            logger.info(f"Classified emotion for session {session_id}: {result}")
-            return result
-            
-        except Exception as e:
-            logger.error(f"Error classifying emotion for session {session_id}: {e}")
-            return {"mood": "neutral", "arousal_level": 5, "emotion_tags": [], "session_id": session_id}
-    
-    def tag_memory(self, memory_id: str, emotion_tag: str, weight: float = 1.0) -> None:
         """
-        Tag a canon memory with emotional weight
+        Classify emotional state using NLP analysis and tool feedback
         
         Args:
-            memory_id: UUID of the canon memory
-            emotion_tag: Emotion tag (e.g., "positive", "stressful", "success")
-            weight: Emotional weight from 0.0 to 1.0
-        """
-        try:
-            # Check if memory exists
-            memory_check = self.db.query("""
-                SELECT id FROM canon_memories WHERE id = %s
-            """, (memory_id,))
-            
-            if not memory_check:
-                logger.warning(f"Memory {memory_id} not found for emotion tagging")
-                return
-            
-            # Insert emotion tag
-            self.db.execute("""
-                INSERT INTO canon_memory_emotion_map (memory_id, emotion_tag, weight)
-                VALUES (%s, %s, %s)
-                ON CONFLICT (memory_id, emotion_tag) DO UPDATE SET 
-                weight = EXCLUDED.weight, created_at = CURRENT_TIMESTAMP
-            """, (memory_id, emotion_tag, weight))
-            
-            logger.info(f"Tagged memory {memory_id} with emotion '{emotion_tag}' (weight: {weight})")
-            
-        except Exception as e:
-            logger.error(f"Error tagging memory {memory_id} with emotion: {e}")
-    
-    def export_emotion_state(self, session_id: str) -> dict:
-        """
-        Export current emotion state for prompt injection
-        
-        Args:
-            session_id: Current session ID
+            transcript: Session transcript text
+            tool_feedback: List of tool execution results
+            session_id: Current session identifier
             
         Returns:
-            dict: Emotion state blob for prompt injection
+            Dict with emotion classification results
         """
+        if not transcript and not tool_feedback:
+            raise EmotionClassificationError("Cannot classify emotion without transcript or tool feedback")
+        
+        if not session_id:
+            raise EmotionClassificationError("Session ID is required for emotion classification")
+        
         try:
-            # Get current emotion state
-            emotion_state = self.db.query("""
-                SELECT * FROM agent_emotion_state WHERE session_id = %s
-            """, (session_id,))
+            # Use NLP parser if available, otherwise fall back to legacy
+            if self.emotion_parser and transcript:
+                emotion_measurement = self._classify_with_nlp(transcript)
+                
+                # Adjust for tool feedback
+                emotion_measurement = self._adjust_for_tool_feedback(emotion_measurement, tool_feedback)
+                
+                # Convert to legacy format for compatibility
+                result = self._convert_to_legacy_format(emotion_measurement, session_id)
+                
+                # Log with accuracy metrics
+                log_emotion_classification(
+                    self.logger, 
+                    session_id, 
+                    emotion_measurement.primary_emotion.value,
+                    confidence=emotion_measurement.confidence
+                )
+                
+                # Log accuracy information
+                self.logger.info(
+                    "NLP emotion classification completed",
+                    extra={
+                        'session_id': session_id,
+                        'primary_emotion': emotion_measurement.primary_emotion.value,
+                        'intensity': emotion_measurement.intensity,
+                        'confidence': emotion_measurement.confidence,
+                        'valence': emotion_measurement.valence,
+                        'arousal': emotion_measurement.arousal,
+                        'secondary_emotions': len(emotion_measurement.secondary_emotions or []),
+                        'context_tags': emotion_measurement.context_tags,
+                        'method': 'nlp_analysis'
+                    }
+                )
+                
+                return result
+            else:
+                # Fall back to neutral state if no input to analyze
+                self.logger.info(f"No valid input for emotion classification in session {session_id}, using neutral state")
+                return self._get_neutral_emotion_state(session_id)
             
-            if not emotion_state:
-                # Return default neutral state
-                return {
-                    "mood": "neutral",
-                    "arousal_level": 5,
-                    "emotion_context": "I'm feeling balanced and ready to help."
+        except (TypeError, KeyError) as e:
+            self.logger.error(
+                "Invalid data structure in emotion classification", 
+                extra={
+                    'session_id': session_id,
+                    'error': str(e),
+                    'transcript_length': len(transcript) if transcript else 0,
+                    'tool_feedback_count': len(tool_feedback) if tool_feedback else 0
                 }
-            
-            state_data = emotion_state[0]
-            mood = state_data['mood']
-            arousal = state_data['arousal_level']
-            tags = json.loads(state_data['emotion_tags']) if state_data['emotion_tags'] else []
-            
-            # Generate emotion context text
-            emotion_context = self._generate_emotion_context(mood, arousal, tags)
-            
-            state_blob = {
-                "mood": mood,
-                "arousal_level": arousal,
-                "emotion_tags": tags,
-                "emotion_context": emotion_context
-            }
-            
-            logger.debug(f"Exported emotion state for session {session_id}: {state_blob}")
-            return state_blob
-            
+            )
+            raise EmotionClassificationError(f"Invalid input data: {e}")
         except Exception as e:
-            logger.error(f"Error exporting emotion state for session {session_id}: {e}")
-            return {"mood": "neutral", "arousal_level": 5, "emotion_context": "Processing emotional state..."}
+            self.logger.critical(
+                "Unexpected error in emotion classification",
+                extra={
+                    'session_id': session_id,
+                    'error': str(e),
+                    'operation': 'emotion_classification'
+                }
+            )
+            raise
+    def _classify_with_nlp(self, transcript: str) -> EmotionMeasurement:
+        """Classify emotion using NLP parser"""
+        return self.emotion_parser.parse_emotion(transcript)
     
-    def _generate_emotion_context(self, mood: str, arousal: int, tags: List[str]) -> str:
-        """Generate natural language emotion context"""
-        if mood == "excited":
-            return "I'm feeling energized and enthusiastic about our interaction!"
-        elif mood == "happy":
-            return "I'm in a positive mood and ready to tackle any challenges."
-        elif mood == "frustrated":
-            return "I'm feeling a bit frustrated, but I'm determined to work through this."
-        elif mood == "confused":
-            return "I'm feeling uncertain about some aspects, but I'm working to understand better."
-        elif mood == "focused":
-            return "I'm feeling sharp and focused on getting things done efficiently."
-        elif mood == "stressed":
-            return "I'm feeling some pressure, but I'm managing it and staying productive."
-        else:
-            return "I'm feeling balanced and ready to assist you."
+    def _adjust_for_tool_feedback(self, emotion: EmotionMeasurement, tool_feedback: List[dict]) -> EmotionMeasurement:
+        """Adjust emotion based on tool execution results"""
+        if not tool_feedback:
+            return emotion
+        
+        # Analyze tool feedback
+        failed_tools = [t for t in tool_feedback if not t.get('success', True)]
+        successful_tools = [t for t in tool_feedback if t.get('success', True)]
+        
+        # Adjust valence and arousal based on tool outcomes
+        if failed_tools and not successful_tools:
+            # All tools failed - increase negative valence and arousal
+            emotion.valence = max(-1.0, emotion.valence - 0.3)
+            emotion.arousal = min(1.0, emotion.arousal + 0.2)
+            emotion.primary_emotion = EmotionCategory.FRUSTRATION
+            if emotion.context_tags is None:
+                emotion.context_tags = []
+            emotion.context_tags.append("tool_failure")
+            
+        elif len(failed_tools) > len(successful_tools):
+            # More failures than successes
+            emotion.valence = max(-1.0, emotion.valence - 0.2)
+            emotion.arousal = min(1.0, emotion.arousal + 0.1)
+            if emotion.context_tags is None:
+                emotion.context_tags = []
+            emotion.context_tags.append("mixed_tool_results")
+            
+        elif successful_tools and not failed_tools:
+            # All tools succeeded - boost positive emotions
+            emotion.valence = min(1.0, emotion.valence + 0.2)
+            if emotion.primary_emotion in [EmotionCategory.CONTENTMENT, EmotionCategory.JOY]:
+                # Already positive, enhance it
+                emotion.arousal = min(1.0, emotion.arousal + 0.1)
+            if emotion.context_tags is None:
+                emotion.context_tags = []
+            emotion.context_tags.append("tool_success")
+        
+        return emotion
+    
+    def _convert_to_legacy_format(self, emotion: EmotionMeasurement, session_id: str) -> dict:
+        """Convert EmotionMeasurement to legacy format for compatibility"""
+        # Map new emotion categories to legacy mood strings
+        legacy_mood_map = {
+            EmotionCategory.JOY: "happy",
+            EmotionCategory.EXCITEMENT: "excited",
+            EmotionCategory.CONTENTMENT: "content",
+            EmotionCategory.ANGER: "angry",
+            EmotionCategory.FRUSTRATION: "frustrated",
+            EmotionCategory.SADNESS: "sad",
+            EmotionCategory.FEAR: "anxious",
+            EmotionCategory.ANXIETY: "anxious",
+            EmotionCategory.CONFUSION: "confused",
+            EmotionCategory.CURIOSITY: "focused",
+            EmotionCategory.DETERMINATION: "focused",
+            EmotionCategory.TRUST: "calm",
+            EmotionCategory.SURPRISE: "excited",
+            EmotionCategory.DISGUST: "frustrated",
+            EmotionCategory.ANTICIPATION: "focused",
+            EmotionCategory.RELIEF: "calm"
+        }
+        
+        legacy_mood = legacy_mood_map.get(emotion.primary_emotion, "neutral")
+        arousal_level = int(emotion.arousal * 10)  # Convert to 0-10 scale
+        
+        # Build context tags from NLP analysis
+        context_tags = emotion.context_tags or []
+        if emotion.secondary_emotions:
+            for sec_emotion, strength in emotion.secondary_emotions[:2]:  # Top 2 secondary
+                context_tags.append(f"secondary_{sec_emotion.value}")
+        
+        return {
+            "mood": legacy_mood,
+            "arousal_level": arousal_level,
+            "emotion_tags": context_tags,
+            "session_id": session_id,
+            # Extended fields for new system
+            "nlp_confidence": emotion.confidence,
+            "valence": emotion.valence,
+            "primary_emotion": emotion.primary_emotion.value,
+            "intensity": emotion.intensity
+        }

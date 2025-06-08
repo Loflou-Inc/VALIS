@@ -1,0 +1,57 @@
+{
+  "test_memories": [
+    {
+      "id": "memory-achievement-001",
+      "content": "Successfully completed a complex data analysis project under tight deadline",
+      "memory_type": "achievement",
+      "symbolic_weight": 0.8,
+      "emotional_context": {
+        "primary_emotion": "satisfaction", 
+        "intensity": 0.9,
+        "tags": ["accomplishment", "pressure", "success"]
+      }
+    },
+    {
+      "id": "memory-learning-001", 
+      "content": "Made a significant error in calculation but learned valuable lessons about verification",
+      "memory_type": "learning",
+      "symbolic_weight": 0.7,
+      "emotional_context": {
+        "primary_emotion": "mixed",
+        "intensity": 0.6,
+        "tags": ["mistake", "growth", "wisdom", "humility"]
+      }
+    },
+    {
+      "id": "memory-connection-001",
+      "content": "Had a meaningful conversation that helped someone through a difficult time",
+      "memory_type": "connection", 
+      "symbolic_weight": 0.9,
+      "emotional_context": {
+        "primary_emotion": "fulfillment",
+        "intensity": 0.8,
+        "tags": ["helping", "compassion", "purpose", "connection"]
+      }
+    }
+  ],
+  "consolidation_patterns": {
+    "achievement_metaphors": [
+      "climbing a mountain",
+      "reaching the summit", 
+      "crossing a bridge",
+      "solving a puzzle"
+    ],
+    "learning_metaphors": [
+      "growing from seed to tree",
+      "forging steel in fire",
+      "finding light in darkness",
+      "emerging from cocoon"
+    ],
+    "connection_metaphors": [
+      "building bridges",
+      "lighting a candle",
+      "sharing warmth",
+      "weaving threads together"
+    ]
+  }
+}

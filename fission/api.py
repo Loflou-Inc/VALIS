@@ -17,6 +17,7 @@ from werkzeug.utils import secure_filename
 from fission.deep_fusion import DeepFusionEngine, LayeredPersonaBlueprint, DocumentClassifier
 from fission.ingestion_utils import IngestionUtils
 from memory.db import db
+from vault.vault_db_bridge import VaultDBBridge
 
 app = Flask(__name__)
 CORS(app)
@@ -623,21 +624,50 @@ def deploy_layered_persona(persona_name):
                 "message": "Faust problem not addressed - persona needs better knowledge boundary definition"
             }), 400
         
-        # TODO: Integrate with VALIS runtime deployment
-        # This would connect to the vault system and VALIS main database
-        
-        return jsonify({
-            "persona_name": persona_name,
-            "deployment_status": "ready_for_valis",
-            "blueprint_path": blueprint_path,
-            "validation_passed": True,
-            "knowledge_boundaries_enforced": True,
-            "deployment_details": {
+        # VALIS Runtime Integration - Deploy to main database
+        try:
+            bridge = VaultDBBridge()
+            
+            # Deploy persona blueprint to VALIS main database
+            deployed_persona_id = bridge.deploy_vault_persona_to_main_db(persona_name)
+            
+            deployment_details = {
                 "fusion_confidence": blueprint_data['fusion_metadata']['fusion_confidence'],
                 "knowledge_completeness": blueprint_data['fusion_metadata']['knowledge_completeness'],
-                "boundary_clarity": blueprint_data['fusion_metadata']['boundary_clarity']
-            },
-            "message": "Layered persona ready for VALIS deployment with enforced knowledge boundaries"
+                "boundary_clarity": blueprint_data['fusion_metadata']['boundary_clarity'],
+                "deployed_persona_id": deployed_persona_id,
+                "deployment_timestamp": datetime.now().isoformat()
+            }
+            
+            return jsonify({
+                "persona_name": persona_name,
+                "deployment_status": "deployed_to_valis",
+                "blueprint_path": blueprint_path,
+                "validation_passed": True,
+                "knowledge_boundaries_enforced": True,
+                "deployment_details": deployment_details,
+                "message": f"Persona '{persona_name}' successfully deployed to VALIS runtime (ID: {deployed_persona_id})"
+            })
+            
+        except ValueError as e:
+            # Handle deployment errors (persona already exists, etc.)
+            return jsonify({
+                "persona_name": persona_name,
+                "deployment_status": "deployment_failed",
+                "error": str(e),
+                "validation_passed": True,
+                "fallback_status": "ready_for_manual_deployment"
+            }), 409
+            
+        except Exception as e:
+            # Handle unexpected deployment errors
+            return jsonify({
+                "persona_name": persona_name,
+                "deployment_status": "deployment_error", 
+                "error": f"Deployment failed: {str(e)}",
+                "validation_passed": True,
+                "fallback_status": "ready_for_manual_deployment"
+            }), 500
         })
         
     except Exception as e:
